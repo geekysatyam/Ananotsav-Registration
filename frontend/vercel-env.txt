@@ -1,9 +1,9 @@
-# Vercel Production env vars
-# Copy into Vercel → Settings → Environment Variables → Production
+# Vercel Production — copy into Vercel dashboard (Production environment)
 
-# DELETE the old VITE_API_URL variable if it still points to railway.app
 VITE_PUBLIC_URL=https://aanandotsav.vercel.app
 
-# vercel.json proxies /api/* to Railway — no direct Railway URL needed in the browser.
+# Do NOT set VITE_API_URL in production.
+# If it exists in Vercel, DELETE it.
+# vercel.json proxies /api/* → Railway.
 
-# After saving → Deployments → Redeploy (required).
+# After saving → Deployments → Redeploy

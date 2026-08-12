@@ -28,15 +28,24 @@ function validateApiUrl(url) {
     return url.startsWith("/") ? url.replace(/\/$/, "") : "";
   }
 }
+function isLocalDevUrl(url) {
+  if (!url) return false;
+  try {
+    const { hostname } = new URL(url);
+    return hostname === "localhost" || hostname === "127.0.0.1";
+  } catch {
+    return false;
+  }
+}
 function resolveApiUrl() {
   const envUrl = validateApiUrl(_RAW_API_URL);
   const publicUrl = validateApiUrl(import.meta.env.VITE_PUBLIC_URL ?? "");
 
   // Production on Vercel: call /api on the public site (vercel.json proxies to Railway).
-  // Direct *.railway.app calls fail on some Indian ISPs even when the proxy works.
+  // Never use localhost (from committed .env) or *.railway.app (blocked on some ISPs).
   if (import.meta.env.PROD) {
-    if (publicUrl) return publicUrl;
-    if (!envUrl || envUrl.includes("railway.app")) return "";
+    if (publicUrl && !isLocalDevUrl(publicUrl)) return publicUrl;
+    if (!envUrl || isLocalDevUrl(envUrl) || envUrl.includes("railway.app")) return "";
   }
 
   return envUrl;
