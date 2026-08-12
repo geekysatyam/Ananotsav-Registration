@@ -1,0 +1,315 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * SITE CONFIG — edit this file to update website content across the app
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Sri Gokul Gaushala, Amritsar
+ * Sri Krishna Janmashtami Anandotsav 2026
+ */
+
+export const siteConfig = {
+  // ── Brand ────────────────────────────────────────────────────────────────
+  brand: {
+    /** Main event name shown in headings & QR pass */
+    name: "Anandotsav 2026",
+
+    /** Shorter name for navbar / tight spaces */
+    shortName: "Anandotsav",
+
+    /** Line under logo in navbar */
+    tagline: "Sri Krishna Janmashtami",
+
+    /** Emoji or single character for logo icon until you add an image */
+    logoEmoji: "🦚",
+  },
+
+  // ── Organisation ────────────────────────────────────────────────────────
+  organization: {
+    name: "Sri Gokul Gaushala, Amritsar",
+    copyrightYear: 2026,
+
+    /** Footer “about” paragraph */
+    about:
+      "Sri Gokul Gaushala is a spiritual and cultural community on the outskirts of Amritsar, home to Gauvansh, Sri Sri Gaur-Nitai Temple and Srila Prabhupada Vedic Gurukul. Anandotsav celebrates the divine appearance of Sri Krishna through bhakti, kirtan, culture and seva.",
+
+    footerTagline: "Where Gokul comes alive 🦚",
+  },
+
+  // ── Event details ────────────────────────────────────────────────────────
+  event: {
+    /** Full event name */
+    fullName: "Sri Krishna Janmashtami Anandotsav 2026",
+
+    /** Full date line */
+    date: "Sunday, 6 September 2026",
+
+    /** Timing range */
+    timing: "5:00 PM onwards",
+
+    /** Google Calendar event window (IST) */
+    calendarStart: "2026-09-06T17:00:00+05:30",
+    calendarEnd: "2026-09-06T23:00:00+05:30",
+
+    /** Venue name */
+    venue: "Sri Gokul Gaushala, Amritsar",
+
+    /** Short venue label for home page cards */
+    venueShort: "Sri Gokul Gaushala",
+
+    /** Full postal / location description */
+    address:
+      "Sri Gokul Gaushala, Birbalpura, Fatehgarh Churian Road, Amritsar, Punjab",
+
+    city: "Amritsar",
+
+    /**
+     * ISO datetime — update when the final registration/referral deadline
+     * is officially announced.
+     */
+    competitionEnds: "2026-09-05T23:59:59",
+
+  /** Home page hero subtitle */
+    heroTagline: "A celebration of Krishna, devotion, culture & joy",
+
+    /**
+     * Previous Anandotsav photo carousel (home page, after hero).
+     * Put images in frontend/public/gallery/ and update src paths below.
+     * Supported: .jpg, .jpeg, .png, .webp, .svg
+     */
+    gallery: {
+      title: "Memories from Anandotsav",
+      subtitle: "Glimpses from past celebrations at Sri Gokul Gaushala, Amritsar",
+      photos: [
+        {
+          src: "/gallery/anandotsav-2025.svg",
+          alt: "Anandotsav 2025 celebrations at Sri Gokul Gaushala",
+          caption: "Anandotsav 2025 — Bhakti & togetherness",
+          year: "2025",
+          theme: { from: "#D89B24", to: "#08495B" },
+        },
+        {
+          src: "/gallery/anandotsav-2024.svg",
+          alt: "Anandotsav 2024 kirtan and cultural celebrations",
+          caption: "Anandotsav 2024 — Kirtan & celebrations",
+          year: "2024",
+          theme: { from: "#FFF8E7", to: "#126B82" },
+        },
+        {
+          src: "/gallery/anandotsav-2023.svg",
+          alt: "Anandotsav 2023 Janmashtami celebrations",
+          caption: "Anandotsav 2023 — Janmashtami utsav",
+          year: "2023",
+          theme: { from: "#08495B", to: "#D89B24" },
+        },
+        {
+          src: "/gallery/kirtan-evening.svg",
+          alt: "Kirtan evening at Anandotsav",
+          caption: "Kirtan evening",
+          theme: { from: "#126B82", to: "#083F54" },
+        },
+        {
+          src: "/gallery/prasadam-seva.svg",
+          alt: "Prasadam and seva at Anandotsav",
+          caption: "Prasadam & seva",
+          theme: { from: "#FFFDF7", to: "#D89B24" },
+        },
+      ],
+    },
+
+    /** Programme schedule */
+    programme: [
+      "5:00 PM · Anandotsav celebrations begin",
+      "· Krishna bhakti & devotional celebrations",
+      "· Kirtan and spiritual music",
+      "· Krishna-themed cultural celebrations",
+      "· Darshan & devotional activities",
+      "· Prasadam & seva",
+      "· Janmashtami celebrations",
+    ],
+
+    // ── Festival highlights ──────────────────────────────────────────────
+    highlights: [
+      {
+        title: "Krishna Bhakti",
+        copy:
+          "Immerse yourself in the devotion, chanting and spiritual atmosphere of Sri Krishna Janmashtami.",
+      },
+      {
+        title: "Kirtan",
+        copy:
+          "Experience the joy of congregational chanting, devotional music and Krishna consciousness.",
+      },
+      {
+        title: "Gau Seva",
+        copy:
+          "Celebrate the spirit of Gokul through seva and the sacred connection between Sri Krishna and Gauvansh.",
+      },
+      {
+        title: "Cultural Celebration",
+        copy:
+          "Experience the colours, music and traditions surrounding the celebration of Lord Sri Krishna.",
+      },
+      {
+        title: "Prasadam",
+        copy:
+          "Come together with family and devotees to honour Krishna prasadam in a spirit of gratitude and devotion.",
+      },
+      {
+        title: "Family & Children",
+        copy:
+          "A joyful Janmashtami experience designed to bring families and the younger generation closer to Krishna culture.",
+      },
+    ],
+
+    // ── About the venue ───────────────────────────────────────────────────
+    venueInfo: {
+      title: "Sri Gokul Gaushala",
+      description:
+        "Sri Gokul Gaushala is a holistic spiritual community in Birbalpura on the outskirts of Amritsar. The campus includes a Gaushala with 125+ Gauvansh, the beautiful Sri Sri Gaur-Nitai Temple and Srila Prabhupada Vedic Gurukul.",
+      cows:
+        "The Gaushala began in 2019 with seven Sahiwal cows and has grown into a community of 125+ Gauvansh.",
+      temple:
+        "Sri Sri Gaur-Nitai Temple is the spiritual centre of the community and hosts regular worship and spiritual celebrations.",
+      gurukul:
+        "Srila Prabhupada Vedic Gurukul provides Vedic as well as modern education to children in a residential setting.",
+    },
+
+    // ── Travel / logistics cards ─────────────────────────────────────────
+    logistics: [
+      {
+        title: "Venue",
+        copy:
+          "Sri Gokul Gaushala, Birbalpura, near Fatehgarh Churian Road, on the outskirts of Amritsar.",
+      },
+      {
+        title: "Temple",
+        copy:
+          "Visit the Sri Sri Gaur-Nitai Temple and experience the spiritual atmosphere of the Gaushala campus.",
+      },
+      {
+        title: "Gau Seva",
+        copy:
+          "The Gaushala is home to 125+ Gauvansh and is dedicated to their care and protection.",
+      },
+      {
+        title: "Festival",
+        copy:
+          "Anandotsav brings together Krishna bhakti, kirtan, culture, family celebration and seva.",
+      },
+    ],
+  },
+
+  // ── Contact & seva desk ──────────────────────────────────────────────────
+  contact: {
+    deskHeading: "Reach the Seva Desk",
+
+    /**
+     * Replace these with the official Anandotsav contact details once
+     * confirmed by the organizers.
+     */
+    phone: "",
+    phoneHref: "",
+
+    email: "srigokulgaushala@gmail.com",
+    emailHref: "mailto:srigokulgaushala@gmail.com",
+
+    /** Short location line in footer */
+    location: "Birbalpura, Amritsar",
+
+    /** Registration desk note */
+    giftDeskNote:
+      "Show your registration pass at the Seva Desk for event assistance.",
+  },
+
+  // ── Social links ─────────────────────────────────────────────────────────
+  social: {
+    instagram: "",
+    facebook: "",
+    youtube: "",
+  },
+
+  // ── Registration defaults ────────────────────────────────────────────────
+  registration: {
+    defaultCityPlaceholder: "Amritsar",
+    defaultPhonePlaceholder: "9876543210",
+  },
+
+  // ── Referral / participation prizes ─────────────────────────────────────
+  /**
+   * Keep empty until official 2026 Anandotsav prizes are confirmed.
+   */
+  prizes: [],
+
+  // ── SEO defaults ─────────────────────────────────────────────────────────
+  seo: {
+    siteTitle:
+      "Anandotsav 2026 — Sri Krishna Janmashtami | Sri Gokul Gaushala Amritsar",
+
+    description:
+      "Celebrate Sri Krishna Janmashtami at Anandotsav 2026, Sri Gokul Gaushala, Amritsar. Join a joyful celebration of Krishna bhakti, kirtan, culture, Gau Seva and togetherness.",
+
+    author: "Sri Gokul Gaushala, Amritsar",
+  },
+};
+
+/** @deprecated Prefer siteConfig — kept for existing imports */
+export const eventInfo = {
+  name: siteConfig.brand.name,
+  date: siteConfig.event.date,
+  timing: siteConfig.event.timing,
+  venue: siteConfig.event.venue,
+  competitionEnds: siteConfig.event.competitionEnds,
+};
+
+// Use VITE_PUBLIC_URL if set (recommended for production), otherwise fall back
+// to window.location.origin on the client or a relative path on the server.
+// Set VITE_PUBLIC_URL=https://yourdomain.com in your production environment.
+export const REFERRAL_LINK_BASE =
+  import.meta.env.VITE_PUBLIC_URL
+    ? `${import.meta.env.VITE_PUBLIC_URL}/register`
+    : typeof window !== "undefined"
+      ? `${window.location.origin}/register`
+      : "/register";
+
+/** Replace `{name}` in gift desk copy */
+export function giftDeskMessage(fullName) {
+  return siteConfig.contact.giftDeskNote.replace("{name}", fullName.trim());
+}
+
+function formatGoogleCalendarUtc(iso) {
+  const d = new Date(iso);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}${p(d.getUTCDate())}T${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}Z`;
+}
+
+/** Event description with each bhakta’s entry / registration number */
+export function buildCalendarEventDescription(registrations = []) {
+  const { timing } = siteConfig.event;
+  const lines = [
+    `Janmashtami Anandotsav — ${timing}.`,
+    "",
+    "Bring your entry QR at the gate. Collect your Krishna keychain at the registration desk.",
+  ];
+
+  if (registrations.length > 0) {
+    lines.push("", "Entry passes (registration numbers):");
+    for (const reg of registrations) {
+      lines.push(`• ${reg.fullName} — ${reg.entryCode}`);
+    }
+  }
+
+  return lines.join("\n");
+}
+
+/** Opens Google Calendar “create event” with utsav details and entry codes pre-filled */
+export function getGoogleCalendarEventUrl(registrations = []) {
+  const { fullName, calendarStart, calendarEnd, address } = siteConfig.event;
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: fullName,
+    dates: `${formatGoogleCalendarUtc(calendarStart)}/${formatGoogleCalendarUtc(calendarEnd)}`,
+    details: buildCalendarEventDescription(registrations),
+    location: address,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}

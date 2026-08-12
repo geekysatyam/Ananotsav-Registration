@@ -1,0 +1,7 @@
+<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M32 8c7 9 7 20 0 30-7-10-7-21 0-30Z" fill="var(--gold)"/>
+  <path d="M14 18c10 4 16 13 18 24-11-2-18-11-18-24Z" fill="var(--peacock)" opacity=".75"/>
+  <path d="M50 18c-10 4-16 13-18 24 11-2 18-11 18-24Z" fill="var(--peacock)" opacity=".75"/>
+  <path d="M4 32c11-1 21 4 28 12-11 3-22-2-28-12Z" fill="var(--gold-deep)" opacity=".85"/>
+  <path d="M60 32c-11-1-21 4-28 12 11 3 22-2 28-12Z" fill="var(--gold-deep)" opacity=".85"/>
+</svg>

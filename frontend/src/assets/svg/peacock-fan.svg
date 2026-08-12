@@ -1,0 +1,65 @@
+<svg viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="rotate(-80 160 290)">
+    <path d="M160 290V120" stroke="var(--peacock)" stroke-width="3" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="26" ry="34" fill="var(--peacock)" opacity=".28"/>
+    <ellipse cx="160" cy="100" rx="17" ry="23" fill="var(--peacock-deep)" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="11" ry="15" fill="var(--gold)" opacity=".9"/>
+    <ellipse cx="160" cy="100" rx="5" ry="7" fill="var(--maroon)" opacity=".85"/>
+  </g>
+  <g transform="rotate(-60 160 290)">
+    <path d="M160 290V120" stroke="var(--peacock)" stroke-width="3" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="26" ry="34" fill="var(--peacock)" opacity=".28"/>
+    <ellipse cx="160" cy="100" rx="17" ry="23" fill="var(--peacock-deep)" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="11" ry="15" fill="var(--gold)" opacity=".9"/>
+    <ellipse cx="160" cy="100" rx="5" ry="7" fill="var(--maroon)" opacity=".85"/>
+  </g>
+  <g transform="rotate(-40 160 290)">
+    <path d="M160 290V120" stroke="var(--peacock)" stroke-width="3" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="26" ry="34" fill="var(--peacock)" opacity=".28"/>
+    <ellipse cx="160" cy="100" rx="17" ry="23" fill="var(--peacock-deep)" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="11" ry="15" fill="var(--gold)" opacity=".9"/>
+    <ellipse cx="160" cy="100" rx="5" ry="7" fill="var(--maroon)" opacity=".85"/>
+  </g>
+  <g transform="rotate(-20 160 290)">
+    <path d="M160 290V120" stroke="var(--peacock)" stroke-width="3" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="26" ry="34" fill="var(--peacock)" opacity=".28"/>
+    <ellipse cx="160" cy="100" rx="17" ry="23" fill="var(--peacock-deep)" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="11" ry="15" fill="var(--gold)" opacity=".9"/>
+    <ellipse cx="160" cy="100" rx="5" ry="7" fill="var(--maroon)" opacity=".85"/>
+  </g>
+  <g transform="rotate(0 160 290)">
+    <path d="M160 290V120" stroke="var(--peacock)" stroke-width="3" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="26" ry="34" fill="var(--peacock)" opacity=".28"/>
+    <ellipse cx="160" cy="100" rx="17" ry="23" fill="var(--peacock-deep)" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="11" ry="15" fill="var(--gold)" opacity=".9"/>
+    <ellipse cx="160" cy="100" rx="5" ry="7" fill="var(--maroon)" opacity=".85"/>
+  </g>
+  <g transform="rotate(20 160 290)">
+    <path d="M160 290V120" stroke="var(--peacock)" stroke-width="3" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="26" ry="34" fill="var(--peacock)" opacity=".28"/>
+    <ellipse cx="160" cy="100" rx="17" ry="23" fill="var(--peacock-deep)" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="11" ry="15" fill="var(--gold)" opacity=".9"/>
+    <ellipse cx="160" cy="100" rx="5" ry="7" fill="var(--maroon)" opacity=".85"/>
+  </g>
+  <g transform="rotate(40 160 290)">
+    <path d="M160 290V120" stroke="var(--peacock)" stroke-width="3" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="26" ry="34" fill="var(--peacock)" opacity=".28"/>
+    <ellipse cx="160" cy="100" rx="17" ry="23" fill="var(--peacock-deep)" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="11" ry="15" fill="var(--gold)" opacity=".9"/>
+    <ellipse cx="160" cy="100" rx="5" ry="7" fill="var(--maroon)" opacity=".85"/>
+  </g>
+  <g transform="rotate(60 160 290)">
+    <path d="M160 290V120" stroke="var(--peacock)" stroke-width="3" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="26" ry="34" fill="var(--peacock)" opacity=".28"/>
+    <ellipse cx="160" cy="100" rx="17" ry="23" fill="var(--peacock-deep)" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="11" ry="15" fill="var(--gold)" opacity=".9"/>
+    <ellipse cx="160" cy="100" rx="5" ry="7" fill="var(--maroon)" opacity=".85"/>
+  </g>
+  <g transform="rotate(80 160 290)">
+    <path d="M160 290V120" stroke="var(--peacock)" stroke-width="3" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="26" ry="34" fill="var(--peacock)" opacity=".28"/>
+    <ellipse cx="160" cy="100" rx="17" ry="23" fill="var(--peacock-deep)" opacity=".45"/>
+    <ellipse cx="160" cy="100" rx="11" ry="15" fill="var(--gold)" opacity=".9"/>
+    <ellipse cx="160" cy="100" rx="5" ry="7" fill="var(--maroon)" opacity=".85"/>
+  </g>
+</svg>

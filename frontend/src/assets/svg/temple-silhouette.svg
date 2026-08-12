@@ -1,0 +1,4 @@
+<svg viewBox="0 0 400 180" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0 180V120h30V96l24-20 24 20v24h26V70l30-26 30 26v50h30V40l46-34 46 34v80h30v-30l26-20 26 20v30h32v60H0Z" fill="currentColor"/>
+  <circle cx="200" cy="0" r="8" fill="currentColor"/>
+</svg>

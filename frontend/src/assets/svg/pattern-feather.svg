@@ -1,0 +1,12 @@
+<defs>
+  <pattern id="pat-feather" width="120" height="120" patternUnits="userSpaceOnUse">
+    <g stroke="currentColor" fill="none" stroke-width="1.2">
+      <ellipse cx="30" cy="34" rx="14" ry="20"/>
+      <ellipse cx="30" cy="34" rx="6" ry="9"/>
+      <path d="M30 54v34"/>
+      <ellipse cx="90" cy="86" rx="14" ry="20"/>
+      <ellipse cx="90" cy="86" rx="6" ry="9"/>
+      <path d="M90 106v14"/>
+    </g>
+  </pattern>
+</defs>

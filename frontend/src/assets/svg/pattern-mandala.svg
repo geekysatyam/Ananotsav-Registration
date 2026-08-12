@@ -1,0 +1,21 @@
+<defs>
+  <pattern id="pat-mandala" width="120" height="120" patternUnits="userSpaceOnUse">
+    <g stroke="currentColor" fill="none" stroke-width="1.2">
+      <circle cx="60" cy="60" r="34"/>
+      <circle cx="60" cy="60" r="22"/>
+      <circle cx="60" cy="60" r="10"/>
+      <path d="M60 26c6 8 6 14 0 20-6-6-6-12 0-20Z" transform="rotate(0 60 60)"/>
+      <path d="M60 26c6 8 6 14 0 20-6-6-6-12 0-20Z" transform="rotate(30 60 60)"/>
+      <path d="M60 26c6 8 6 14 0 20-6-6-6-12 0-20Z" transform="rotate(60 60 60)"/>
+      <path d="M60 26c6 8 6 14 0 20-6-6-6-12 0-20Z" transform="rotate(90 60 60)"/>
+      <path d="M60 26c6 8 6 14 0 20-6-6-6-12 0-20Z" transform="rotate(120 60 60)"/>
+      <path d="M60 26c6 8 6 14 0 20-6-6-6-12 0-20Z" transform="rotate(150 60 60)"/>
+      <path d="M60 26c6 8 6 14 0 20-6-6-6-12 0-20Z" transform="rotate(180 60 60)"/>
+      <path d="M60 26c6 8 6 14 0 20-6-6-6-12 0-20Z" transform="rotate(210 60 60)"/>
+      <path d="M60 26c6 8 6 14 0 20-6-6-6-12 0-20Z" transform="rotate(240 60 60)"/>
+      <path d="M60 26c6 8 6 14 0 20-6-6-6-12 0-20Z" transform="rotate(270 60 60)"/>
+      <path d="M60 26c6 8 6 14 0 20-6-6-6-12 0-20Z" transform="rotate(300 60 60)"/>
+      <path d="M60 26c6 8 6 14 0 20-6-6-6-12 0-20Z" transform="rotate(330 60 60)"/>
+    </g>
+  </pattern>
+</defs>
