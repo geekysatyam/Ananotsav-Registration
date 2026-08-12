@@ -83,8 +83,8 @@ function Countdown({ to, variant = "dark", compact = false }) {
   const cellClass =
     variant === "light"
       ? compact
-        ? "jh-glass rounded-lg border border-[#D89B24]/15 px-2 py-1.5 text-center sm:rounded-xl sm:px-2.5 sm:py-2 lg:px-3 lg:py-2"
-        : "jh-glass rounded-xl border border-[#D89B24]/15 px-3 py-2.5 text-center lg:rounded-2xl lg:px-4 lg:py-3"
+        ? "jh-countdown-cell rounded-lg px-2 py-1.5 text-center sm:rounded-xl sm:px-2.5 sm:py-2 lg:px-3 lg:py-2"
+        : "jh-glass-gold rounded-xl px-3 py-2.5 text-center lg:rounded-2xl lg:px-4 lg:py-3"
       : "rounded-2xl bg-white/10 p-4 text-center lg:p-5";
 
   const valueClass = compact ? "text-lg sm:text-xl lg:text-2xl" : "text-2xl lg:text-3xl";
@@ -289,7 +289,7 @@ function Landing() {
                     ].map((item) => (
                       <div
                         key={item.label}
-                        className="jh-glass rounded-lg border border-[#D89B24]/15 px-2 py-2 text-center sm:rounded-xl sm:px-2.5 sm:py-2.5 lg:rounded-2xl lg:px-3 lg:py-3"
+                        className="jh-glass-gold rounded-lg px-2 py-2 text-center sm:rounded-xl sm:px-2.5 sm:py-2.5 lg:rounded-2xl lg:px-3 lg:py-3"
                       >
                         <div className="text-sm sm:text-base lg:text-xl">{item.icon}</div>
                         <p className="mt-0.5 text-[9px] font-bold leading-tight text-[#08495B] sm:mt-1 sm:text-[10px] lg:text-xs">
@@ -299,7 +299,7 @@ function Landing() {
                     ))}
                   </div>
 
-                  <div className="jh-glass rounded-xl border border-[#D89B24]/15 p-3 sm:rounded-2xl sm:p-3 lg:p-4">
+                  <div className="jh-glass-gold rounded-xl p-3 sm:rounded-2xl sm:p-3 lg:p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-[9px] font-bold tracking-[0.16em] text-[#D89B24] uppercase sm:text-[10px] lg:text-xs">
