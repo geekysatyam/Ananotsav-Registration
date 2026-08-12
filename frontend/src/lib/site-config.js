@@ -120,12 +120,63 @@ export const siteConfig = {
     programme: [
       "5:00 PM · Anandotsav celebrations begin",
       "· Krishna bhakti & devotional celebrations",
-      "· Kirtan and spiritual music",
-      "· Krishna-themed cultural celebrations",
+      "· Soulful kirtan & divine katha",
+      "· Spiritual dance & cultural offerings",
+      "· 56 bhoga offering to Sri Krishna",
+      "· Pushp abhishek — 551 kg flowers",
       "· Darshan & devotional activities",
-      "· Prasadam & seva",
+      "· Delicious prasadam & dinner prasadam",
       "· Janmashtami celebrations",
     ],
+
+    /** Poster invitation copy */
+    invitation: {
+      lead: "You are cordially invited to",
+      tagline: "A divine celebration of Lord Krishna's divine appearance",
+      body:
+        "We kindly invite you and your family & friends to join us in this joyful celebration and seek the pleasure of Lord Krishna.",
+      closing:
+        "Come with your family and friends to celebrate Lord Krishna's Divine Appearance with full energy and devotion!",
+      footerBanner:
+        "Your presence and support will make this celebration truly special.",
+    },
+
+    /** Poster feature grid — A Divine Celebration Featuring */
+    celebrationFeatures: [
+      {
+        title: "56 Bhoga Offering",
+        emoji: "🪔",
+        copy: "Fifty-six sacred bhog preparations offered to Sri Krishna with devotion.",
+      },
+      {
+        title: "Spiritual Dance",
+        emoji: "🪷",
+        copy: "Devotional dance performances celebrating Krishna's divine pastimes.",
+      },
+      {
+        title: "Soulful Kirtan & Divine Katha",
+        emoji: "🎵",
+        copy: "Congregational chanting, spiritual discourse and Krishna katha.",
+      },
+      {
+        title: "Pushp Abhishek — 551 kg Flowers",
+        emoji: "🌸",
+        copy: "A magnificent flower abhishek with over five hundred kilograms of blossoms.",
+      },
+      {
+        title: "Delicious Prasadam",
+        emoji: "🍛",
+        copy: "Sattvik Krishna prasadam served with love throughout the celebration.",
+      },
+      {
+        title: "Dinner Prasadam",
+        emoji: "🙏",
+        copy: "Communal dinner prasadam for all Bhaktas and families attending the utsav.",
+      },
+    ],
+
+    /** Official poster asset (public/) */
+    posterSrc: "/anandotsav-2026-poster.png",
 
     // ── Festival highlights ──────────────────────────────────────────────
     highlights: [
@@ -179,22 +230,17 @@ export const siteConfig = {
       {
         title: "Venue",
         copy:
-          "Sri Gokul Gaushala, Birbalpura, near Fatehgarh Churian Road, on the outskirts of Amritsar.",
+          "ISKCON Sri Gokul Gaushala, Birbalpura, Fatehgarh Churian Road, on the outskirts of Amritsar.",
       },
       {
-        title: "Temple",
+        title: "Parking",
         copy:
-          "Visit the Sri Sri Gaur-Nitai Temple and experience the spiritual atmosphere of the Gaushala campus.",
+          "On-campus parking available at Sri Gokul Gaushala. Please follow seva volunteer directions on arrival.",
       },
       {
-        title: "Gau Seva",
+        title: "Prasadam",
         copy:
-          "The Gaushala is home to 125+ Gauvansh and is dedicated to their care and protection.",
-      },
-      {
-        title: "Festival",
-        copy:
-          "Anandotsav brings together Krishna bhakti, kirtan, culture, family celebration and seva.",
+          "Delicious prasadam and dinner prasadam served during the celebration — sattvik, no onion or garlic.",
       },
     ],
   },
@@ -207,8 +253,8 @@ export const siteConfig = {
      * Replace these with the official Anandotsav contact details once
      * confirmed by the organizers.
      */
-    phone: "",
-    phoneHref: "",
+    phone: "+91-9509509698",
+    phoneHref: "tel:+919509509698",
 
     email: "srigokulgaushala@gmail.com",
     emailHref: "mailto:srigokulgaushala@gmail.com",
