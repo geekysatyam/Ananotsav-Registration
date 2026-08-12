@@ -106,13 +106,13 @@ export const Route = createFileRoute("/register")({
   }),
   head: () => ({
     meta: [
-      { title: "Register as a Bhakta — Janmashtami Utsav 2026" },
+      { title: "Register for Free !! — Janmashtami Utsav 2026" },
       {
         name: "description",
         content:
           "Register yourself and your family for Janmashtami Utsav 2026 in under 60 seconds and reserve a free Krishna keychain each.",
       },
-      { property: "og:title", content: "Register as a Bhakta — Janmashtami Utsav 2026" },
+      { property: "og:title", content: "Register for Free !! — Janmashtami Utsav 2026" },
       {
         property: "og:description",
         content: "Takes less than 60 seconds. Add family members and get an entry QR for each.",

@@ -227,7 +227,7 @@ function Landing() {
                     to="/register"
                     className="jh-pulse-glow inline-flex items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-extrabold text-white shadow-lg transition hover:bg-[#08495B] sm:px-6 sm:py-3 lg:px-7 lg:py-3.5 lg:text-base"
                   >
-                    Register as a Bhakta <span>→</span>
+                    Register for Free !! <span>→</span>
                   </Link>
                   <a
                     href="#competition"
@@ -621,7 +621,7 @@ function Landing() {
                 to="/register"
                 className="jh-pulse-glow inline-flex rounded-2xl bg-gradient-peacock px-8 py-4 text-lg font-extrabold text-white shadow-2xl transition hover:-translate-y-1"
               >
-                Register Now · It&apos;s Free
+                Register for Free !! · It&apos;s Free
               </Link>
               <Link
                 to="/event-details"

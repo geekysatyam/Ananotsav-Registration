@@ -184,7 +184,7 @@ function FindPage() {
               to: "/register",
               className: "relative mt-6 inline-block",
               children: /*#__PURE__*/_jsx(GoldButton, {
-                children: "Register now"
+                children: "Register for Free !!"
               })
             })]
           })

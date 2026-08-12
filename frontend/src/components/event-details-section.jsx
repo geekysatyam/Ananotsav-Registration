@@ -48,7 +48,7 @@ export function EventDetailsSection() {
                   to="/register"
                   className="jh-pulse-glow inline-flex items-center justify-center gap-2 rounded-xl bg-secondary px-6 py-3 text-sm font-extrabold text-white shadow-lg transition hover:bg-[#08495B]"
                 >
-                  Register Now <span aria-hidden>→</span>
+                  Register for Free !! <span aria-hidden>→</span>
                 </Link>
                 <a
                   href={event.posterSrc}
