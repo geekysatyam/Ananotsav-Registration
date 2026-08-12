@@ -28,7 +28,20 @@ function validateApiUrl(url) {
     return url.startsWith("/") ? url.replace(/\/$/, "") : "";
   }
 }
-const API_URL = validateApiUrl(_RAW_API_URL);
+function resolveApiUrl() {
+  const envUrl = validateApiUrl(_RAW_API_URL);
+  const publicUrl = validateApiUrl(import.meta.env.VITE_PUBLIC_URL ?? "");
+
+  // Production on Vercel: call /api on the public site (vercel.json proxies to Railway).
+  // Direct *.railway.app calls fail on some Indian ISPs even when the proxy works.
+  if (import.meta.env.PROD) {
+    if (publicUrl) return publicUrl;
+    if (!envUrl || envUrl.includes("railway.app")) return "";
+  }
+
+  return envUrl;
+}
+const API_URL = resolveApiUrl();
 export const REGISTRATION_STORAGE_KEY = "janmashtami_registration_result";
 // Use sessionStorage instead of localStorage for the admin token.
 // sessionStorage is cleared when the tab closes, limiting the exposure window

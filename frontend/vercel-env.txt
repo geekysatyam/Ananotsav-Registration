@@ -1,8 +1,9 @@
-# Vercel Production — no custom domain needed
-# Leave VITE_API_URL empty so the browser calls your Vercel site (/api/...),
-# and vercel.json proxies those requests to Railway (bypasses ISP blocking).
+# Vercel Production env vars
+# Copy into Vercel → Settings → Environment Variables → Production
 
-VITE_API_URL=
+# DELETE the old VITE_API_URL variable if it still points to railway.app
 VITE_PUBLIC_URL=https://aanandotsav.vercel.app
 
-# After setting these in Vercel → Redeploy (required for Vite env vars).
+# vercel.json proxies /api/* to Railway — no direct Railway URL needed in the browser.
+
+# After saving → Deployments → Redeploy (required).
