@@ -10,6 +10,9 @@ export default defineConfig({
     resolve: {
       tsconfigPaths: true,
     },
+    ssr: {
+      noExternal: ["framer-motion", "motion-dom"],
+    },
   },
   tanstackStart: {
     server: {

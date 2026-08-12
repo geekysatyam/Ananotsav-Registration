@@ -1,0 +1,722 @@
+================================================================================
+  ANANDOTSAV 2026 — REGISTRATION PLATFORM
+  Complete Project Documentation
+  Sri Gokul Gaushala, Amritsar
+================================================================================
+
+Written in plain language for anyone on the team — developers, organisers,
+or volunteers — to understand how the whole system works.
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+
+  1.  What Is This Project?
+  2.  Who Uses It and How?
+  3.  Tech Stack (What It Is Built With)
+  4.  Project Folder Structure
+  5.  Pages and What Each One Does
+  6.  Complete User Flows (Step by Step)
+  7.  The Referral / Competition System
+  8.  The QR Code System
+  9.  The Scanner / Check-In System
+  10. Data Storage (What Is Saved Where)
+  11. API Calls (How the Frontend Talks to the Backend)
+  12. Environment Variables (Configuration)
+  13. Key Components Explained
+  14. Known Limitations and Notes for Developers
+
+
+================================================================================
+1. WHAT IS THIS PROJECT?
+================================================================================
+
+Anandotsav 2026 is the Sri Krishna Janmashtami celebration held at
+Sri Gokul Gaushala, Birbalpura, Amritsar on Sunday, 6 September 2026.
+
+This platform is the FRONTEND WEBSITE for that event. It does three things:
+
+  A) REGISTRATION
+     People visit the website and register themselves and their family members
+     for the event. Each registered person gets a unique Entry QR code.
+
+  B) REFERRAL COMPETITION
+     Registered people can optionally get a personal "Krishna referral code".
+     They share this code with friends. Every friend who registers using their
+     code adds to their referral count. The person with the most referrals
+     wins recognition at the event. A live leaderboard shows the rankings.
+
+  C) EVENT CHECK-IN (SCANNER)
+     On the day of the event, staff at the registration desk use a special
+     Scanner page (password protected) to scan each person's Entry QR code
+     and mark them as checked in. Each person also collects a free Krishna
+     keychain at this desk.
+
+This is a FRONTEND-ONLY project. It talks to a separate backend server
+(API) for all data storage and business logic. The frontend never stores
+any registration data permanently — it only displays and submits it.
+
+
+================================================================================
+2. WHO USES IT AND HOW?
+================================================================================
+
+There are three types of users:
+
+  --- BHAKTAS (General Public) ---
+  - Visit the website on their phone or computer
+  - Register themselves and family members
+  - Get a QR code for each person
+  - Optionally join the referral competition
+  - Share their referral code with friends
+  - Check the leaderboard to see their rank
+  - On event day: show their QR at the desk to check in and get their keychain
+
+  --- ORGANISERS ---
+  - Monitor the leaderboard to see how many people have registered
+  - Use the stats counter on the home page to track total registrations
+
+  --- DESK STAFF (Event Day) ---
+  - Log in to the Scanner page using a username and password
+  - Use their phone/tablet camera to scan each bhakta's QR code
+  - The screen shows green (success) or red (error) instantly
+  - Can also type in an entry code manually if the QR is damaged
+
+
+================================================================================
+3. TECH STACK (WHAT IT IS BUILT WITH)
+================================================================================
+
+  React 19          — The JavaScript framework. Every page and component is
+                      a React component.
+
+  TanStack Router   — Handles navigation between pages (/, /register,
+                      /leaderboard, etc.). Also handles SSR (server-side
+                      rendering) so pages load fast.
+
+  TanStack Start    — The full-stack framework wrapping TanStack Router.
+                      Handles the server, SSR, and deployment.
+
+  Vite              — The build tool. Compiles and bundles all the code
+                      for production.
+
+  Tailwind CSS 4    — Utility-based CSS framework. All styling is done
+                      with Tailwind class names directly in the JSX.
+
+  Framer Motion     — Animation library. Used for floating motifs,
+                      page transitions, confetti, and scroll animations.
+
+  Radix UI          — Accessible UI primitives (dropdowns, dialogs, etc.)
+                      used under the hood by the shadcn/ui components.
+
+  shadcn/ui         — Pre-built UI components (buttons, cards, carousels,
+                      etc.) built on top of Radix UI and Tailwind.
+
+  TanStack Query    — Data fetching and caching library. Set up in the
+                      root but available for future use.
+
+  QRCode (npm)      — Generates QR code SVGs and PNG images in the browser.
+
+  html5-qrcode      — Camera-based QR code scanner used on the Scanner page.
+
+  Lucide React      — Icon library used throughout the site.
+
+  Embla Carousel    — Powers the photo gallery carousel and the success
+                      page family member carousel.
+
+  Cloudflare        — The deployment target. The site is built and deployed
+                      to Cloudflare Pages/Workers via Nitro.
+
+
+================================================================================
+4. PROJECT FOLDER STRUCTURE
+================================================================================
+
+  frontend/
+  ├── src/
+  │   ├── routes/              All pages live here. Each file = one page/route.
+  │   │   ├── __root.jsx       Root layout: HTML shell, fonts, meta tags, error boundary
+  │   │   ├── index.jsx        Home / Landing page
+  │   │   ├── register.jsx     Registration form page
+  │   │   ├── success.jsx      Post-registration confirmation + QR page
+  │   │   ├── find.jsx         "Find My Registration" page
+  │   │   ├── leaderboard.jsx  Full leaderboard page
+  │   │   ├── event-details.jsx Event info page
+  │   │   └── scanner.jsx      Staff-only QR scanner page
+  │   │
+  │   ├── components/          Reusable UI components
+  │   │   ├── ui/              shadcn/ui base components (button, card, etc.)
+  │   │   ├── navbar.jsx       Top navigation bar
+  │   │   ├── footer.jsx       Site footer
+  │   │   ├── site-shell.jsx   Page wrapper (navbar + main + footer)
+  │   │   ├── ambient.jsx      Floating motifs and gradient mesh backgrounds
+  │   │   ├── festive.jsx      Festive UI pieces: SectionHeading, FestiveCard,
+  │   │   │                    GoldButton, Reveal animation wrapper
+  │   │   ├── motifs.jsx       Re-exports all SVG decorative icons
+  │   │   ├── leaderboard-list.jsx  Renders the ranked leaderboard rows
+  │   │   ├── anandotsav-gallery.jsx  Photo carousel of past events
+  │   │   ├── event-details-section.jsx  Date/venue/timing cards section
+  │   │   └── qr.jsx           QR code generator (SVG display + PNG download)
+  │   │
+  │   ├── assets/svg/          All SVG decorative icons as React components
+  │   │   └── (peacock feather, diya, lotus, flute, krishna, temple, etc.)
+  │   │
+  │   ├── lib/                 Utility and configuration files
+  │   │   ├── api.js           All API call functions + storage helpers
+  │   │   ├── site-config.js   ALL editable content: event name, date, venue,
+  │   │   │                    gallery photos, programme, contact info, etc.
+  │   │   ├── event-info.js    Re-exports from site-config (backward compat)
+  │   │   ├── utils.js         Tailwind class merge utility (cn function)
+  │   │   ├── error-capture.js Server-side error capture for Nitro
+  │   │   └── lovable-error-reporting.js  Error boundary reporting
+  │   │
+  │   ├── hooks/
+  │   │   └── use-mobile.jsx   Hook that returns true if screen width < 768px
+  │   │
+  │   ├── router.jsx           Router configuration
+  │   ├── routeTree.gen.js     Auto-generated route tree (do not edit manually)
+  │   ├── server.js            Nitro server entry point
+  │   ├── start.js             TanStack Start entry point
+  │   └── styles.css           Global CSS: Tailwind base + custom animations
+  │
+  ├── public/
+  │   └── gallery/             Past event photos shown in the home page carousel
+  │       ├── anandotsav-2025.svg
+  │       ├── anandotsav-2024.svg
+  │       ├── anandotsav-2023.svg
+  │       ├── kirtan-evening.svg
+  │       └── prasadam-seva.svg
+  │
+  ├── .env.example             Template for environment variables
+  ├── package.json             Dependencies and scripts
+  ├── vite.config.js           Build configuration
+  └── tsconfig.json            TypeScript path aliases
+
+
+================================================================================
+5. PAGES AND WHAT EACH ONE DOES
+================================================================================
+
+  --- HOME PAGE  (/) ---
+  The main landing page. It is a long scrolling page with multiple sections:
+
+  · Hero Section
+    Big heading, CTA button to register, floating animated motifs.
+    Shows the event tagline and date.
+
+  · Gallery Section
+    A carousel of photos from past Anandotsav celebrations (2023, 2024, 2025).
+    Auto-scrolls every 5 seconds. Pauses when user swipes manually.
+
+  · Stats / Challenge Section
+    Shows a live count of how many bhaktas have registered so far.
+    The number animates upward (count-up effect) when it scrolls into view.
+
+  · Keychain Section
+    Explains that every registered bhakta gets a free Krishna keychain
+    at the event desk. Shows an illustrated keychain graphic.
+
+  · Event Details Section
+    Cards showing the Date, Venue, and Timing of the event.
+
+  · Competition Section
+    Explains the referral competition in 3 steps.
+    Shows a countdown timer to the competition end date.
+
+  · Leaderboard Preview Section
+    Shows the top 5 referrers as a preview.
+    Has a "View Full Leaderboard" button.
+
+  · Register CTA Section
+    Final call-to-action to register.
+
+  --- REGISTER PAGE  (/register) ---
+  The registration form. This is the most important page.
+  See Section 6 for the full flow.
+
+  --- SUCCESS PAGE  (/success) ---
+  Shown after successful registration (or after "Find My Registration").
+  Displays the Entry QR code(s) and allows downloading them.
+  See Section 6 for the full flow.
+
+  --- FIND MY REGISTRATION PAGE  (/find) ---
+  For people who already registered but lost their QR code.
+  They enter their phone number and date of birth to retrieve their registration.
+
+  --- LEADERBOARD PAGE  (/leaderboard) ---
+  Full ranked list of all referral competition participants.
+  Has a search bar to find yourself by name or referral code.
+  Auto-refreshes every 60 seconds to stay live.
+  Top 3 get gold/silver/bronze medal treatment.
+
+  --- EVENT DETAILS PAGE  (/event-details) ---
+  Detailed information about the event:
+  date, timing, venue, programme schedule, travel/parking/prasad info.
+
+  --- SCANNER PAGE  (/scanner) ---
+  Staff-only page. Not in the public navigation.
+  Used on event day to check in bhaktas.
+  See Section 9 for the full flow.
+
+
+================================================================================
+6. COMPLETE USER FLOWS (STEP BY STEP)
+================================================================================
+
+--- FLOW A: NEW REGISTRATION ---
+
+  Step 1: User visits the website (home page or direct /register link)
+
+  Step 2: User clicks "Register as a Bhakta" or "Register Now"
+          → Goes to /register
+
+  Step 3: User fills in the form:
+          - Full Name
+          - Phone Number
+          - Date of Birth
+          - City
+          (All four fields are required)
+
+  Step 4: Referral section (optional):
+          - "Were you referred by someone?" — Yes / No toggle
+          - If Yes: a text field appears to enter the referrer's Krishna code
+          - As they type the code, it is validated live against the backend
+            (with a 400ms debounce — waits for them to stop typing)
+          - A green tick appears if the code is valid, red X if not
+
+  Step 5: Own referral code (optional):
+          - "Do you want your own referral code?" — Yes / No toggle
+          - If Yes: they will receive a personal Krishna code after registration
+            that they can share with others
+
+  Step 6: Add family members (optional):
+          - Click "Add" to add more people (spouse, children, parents, etc.)
+          - Each family member needs: Name, Date of Birth
+          - Phone is optional for family members
+          - Each family member gets their own separate Entry QR code
+
+  Step 7: User clicks "Complete Registration"
+          → The form is submitted to the backend API
+          → If successful: registration result is saved to sessionStorage
+            and user is redirected to /success
+          → If duplicate: error message shown with link to /find
+          → If other error: error message shown, user can try again
+
+  NOTE: The form auto-saves a draft to localStorage every 500ms as the user
+  types. If they close the tab and come back, their progress is restored.
+  The draft is deleted after successful submission.
+
+--- FLOW B: SUCCESS / QR CODE PAGE ---
+
+  Step 1: User lands on /success after registration (or after Find My Reg)
+
+  Step 2: Page reads the registration result from sessionStorage
+          - If nothing is found (e.g. direct URL visit): redirects to /register
+          - If found: shows a loading spinner briefly, then displays the QR
+
+  Step 3: For a single registrant:
+          - One QR code card is shown with their name and entry code
+          - A "Download Pass" button downloads a full PNG entry pass card
+
+  Step 4: For a family group:
+          - A carousel shows one card per family member
+          - Left/right arrows and dot indicators to navigate between members
+          - "Download Pass" downloads the current member's pass
+          - "Download All" downloads every member's pass one by one
+
+  Step 5: Keychain reminder card:
+          - Shown under each QR: "Show this at the desk for [Name]'s keychain"
+
+  Step 6: Referral section (only if they opted in for a referral code):
+          - Their personal Krishna referral code is shown
+          - A QR code for their referral link is shown
+          - Share buttons: WhatsApp, SMS, Copy Link
+
+  Step 7: User saves/downloads their QR and leaves
+
+--- FLOW C: FIND MY REGISTRATION ---
+
+  Step 1: User visits /find (linked from the register page and navbar)
+
+  Step 2: User enters:
+          - Phone Number (the one they registered with)
+          - Date of Birth (the primary registrant's DOB)
+
+  Step 3: User clicks "Find My Registration"
+          → API call is made to look up the registration
+
+  Step 4a: If found:
+           → Result is saved to sessionStorage
+           → User is redirected to /success (same as after registration)
+
+  Step 4b: If not found:
+           → A friendly "no match" card is shown with an illustrated graphic
+           → Link to register fresh is provided
+
+--- FLOW D: LEADERBOARD ---
+
+  Step 1: User visits /leaderboard (from navbar or home page)
+
+  Step 2: Full leaderboard loads from the API
+          - Shows rank, name, referral code, referral count
+          - Top 3 have medal icons and highlighted styling
+
+  Step 3: User can search by name or Krishna code
+          - Search is debounced (250ms) — filters after they stop typing
+          - If their name matches, a sticky "Your Rank" card appears at the top
+
+  Step 4: Page auto-refreshes data every 60 seconds silently in the background
+
+
+================================================================================
+7. THE REFERRAL / COMPETITION SYSTEM
+================================================================================
+
+HOW IT WORKS:
+
+  1. When registering, a bhakta can choose "Yes" to get their own referral code.
+
+  2. They receive a unique "Krishna code" — e.g. "Murari219" — after registration.
+     This code is shown on the success page along with a shareable QR code.
+
+  3. They share this code (or the QR / link) with friends and family.
+
+  4. When a new person registers and enters this code in the "Were you referred?"
+     field, the original person's referral count goes up by 1.
+
+  5. The leaderboard ranks everyone by their referral count.
+     The person with the most referrals at the competition end date wins.
+
+  6. The competition end date is set in site-config.js (competitionEnds field).
+     A countdown timer on the home page shows how much time is left.
+
+THE REFERRAL LINK:
+
+  When a bhakta shares their code, the link looks like:
+  https://yourdomain.com/register?ref=Murari219
+
+  When someone opens this link, the registration form automatically:
+  - Sets "Were you referred?" to Yes
+  - Pre-fills the referral code field with "Murari219"
+
+  This is handled by the ?ref= URL parameter in the register page.
+
+VALIDATION:
+
+  When someone types a referral code, the frontend calls the API to check
+  if the code exists. This happens with a 400ms delay after they stop typing.
+  A green tick or red X is shown instantly.
+
+
+================================================================================
+8. THE QR CODE SYSTEM
+================================================================================
+
+ENTRY QR CODE:
+
+  Every registered person gets a unique Entry QR code.
+  This QR code contains a "signed payload" — a cryptographically signed
+  string generated by the backend. It cannot be faked.
+
+  The QR is displayed as an SVG on the success page.
+  It can also be downloaded as a full PNG "Entry Pass" card that includes:
+  - Event name and "BHAKTA ENTRY PASS" header
+  - The QR code itself
+  - The person's full name
+  - Their entry code (e.g. JN2026-00452)
+  - A "Your Free Gift" keychain reminder box
+  - Event date and venue at the bottom
+
+REFERRAL QR CODE:
+
+  If a bhakta opted in for a referral code, a second QR is shown on the
+  success page. This QR encodes their referral link:
+  https://yourdomain.com/register?ref=TheirCode
+
+  Scanning this QR takes someone directly to the registration form
+  with the referral code pre-filled.
+
+QR GENERATION:
+
+  QR codes are generated entirely in the browser using the "qrcode" npm library.
+  No server call is needed to generate them.
+  The SVG version is shown on screen; the PNG version is generated on canvas
+  when the user clicks "Download Pass".
+
+
+================================================================================
+9. THE SCANNER / CHECK-IN SYSTEM
+================================================================================
+
+This is a separate, staff-only flow. The /scanner page is not in the
+public navigation menu.
+
+--- LOGIN ---
+
+  Step 1: Staff member opens /scanner on their phone or tablet
+
+  Step 2: A login form is shown (username + password)
+
+  Step 3: Credentials are sent to the backend API (/api/admin/login)
+
+  Step 4: If correct: a JWT (JSON Web Token) is returned and saved to
+          sessionStorage. The scanner view is shown.
+          If wrong: "Invalid username or password" error is shown.
+
+  Step 5: The token is used for all subsequent scanner API calls.
+          It is stored in sessionStorage (cleared when the tab closes).
+
+--- SCANNING ---
+
+  Step 1: The camera opens automatically using html5-qrcode library.
+          It scans at 10 frames per second looking for a QR code.
+
+  Step 2: When a QR is detected, the signed payload is sent to the backend
+          API (/api/scan/checkin) along with the staff JWT token.
+
+  Step 3a: SUCCESS — Green card shown with:
+           - Bhakta's full name (large text, readable from arm's length)
+           - "Checked in · keychain issued · [time]"
+
+  Step 3b: ALREADY CHECKED IN — Red card shown with:
+           - "Already Checked In"
+           - Name and time of original check-in
+
+  Step 3c: NOT FOUND — Red card shown:
+           - "Not Found — This code is not in the register"
+
+  Step 3d: SIGNATURE MISMATCH — Red card shown:
+           - "QR may be damaged. Use manual override below."
+           - The entry code is auto-filled in the manual entry box
+
+--- MANUAL ENTRY FALLBACK ---
+
+  If a QR code is damaged or won't scan, staff can type the entry code
+  (e.g. JN2026-00452) manually into the text box and click "Check".
+  This calls /api/scan/checkin/override on the backend.
+
+--- LOGOUT ---
+
+  Staff clicks "Exit" in the top right.
+  The token is removed from sessionStorage and the login screen is shown again.
+
+
+================================================================================
+10. DATA STORAGE (WHAT IS SAVED WHERE)
+================================================================================
+
+The frontend uses three types of browser storage. NO permanent data is stored
+in the frontend — everything important lives in the backend database.
+
+  --- sessionStorage ---
+  (Cleared automatically when the browser tab is closed)
+
+  · Registration result after successful registration or Find My Registration
+    Key: "janmashtami_registration_result"
+    Contains: list of registrations with QR payloads, entry codes, names
+    Used by: the /success page to display QR codes
+    Cleared: when the tab closes
+
+  · Admin JWT token for the scanner
+    Key: "janmashtami_admin_token"
+    Contains: the JWT returned after staff login
+    Used by: the /scanner page for all API calls
+    Cleared: when the tab closes, or when staff clicks "Exit"
+
+  --- localStorage ---
+  (Persists across sessions until manually cleared)
+
+  · Registration form draft
+    Key: "janmashtami_register_draft"
+    Contains: partially filled form data (name, phone, dob, city, family, etc.)
+    Used by: the /register page to restore progress if user closes and returns
+    Cleared: immediately after successful registration submission
+    Saved: with a 500ms debounce as the user types (not on every keystroke)
+
+  --- In-memory (React state only) ---
+  Everything else — leaderboard data, stats count, form validation states,
+  UI states — lives only in React component state and is gone on page refresh.
+
+
+================================================================================
+11. API CALLS (HOW THE FRONTEND TALKS TO THE BACKEND)
+================================================================================
+
+All API calls go through the central api.js file in src/lib/api.js.
+The base URL is set via the VITE_API_URL environment variable.
+
+  ENDPOINT                          METHOD   USED BY           PURPOSE
+  ─────────────────────────────────────────────────────────────────────────────
+  /api/register                     POST     register.jsx      Submit registration
+  /api/validate-referral/:code      GET      register.jsx      Check if code exists
+  /api/leaderboard                  GET      leaderboard.jsx   Get full rankings
+                                             index.jsx         Get top 5 preview
+  /api/stats/count                  GET      register.jsx      Get total registrant count
+                                             index.jsx         Get count for home page
+  /api/find-registration            POST     find.jsx          Look up by phone + DOB
+  /api/registration/:id             GET      (available)       Get single registration
+  /api/admin/login                  POST     scanner.jsx       Staff login
+  /api/scan/checkin                 POST     scanner.jsx       Check in via QR payload
+  /api/scan/checkin/override        POST     scanner.jsx       Check in via entry code
+
+ERROR HANDLING:
+
+  All API errors are wrapped in an ApiError class with:
+  - code: a string like "DUPLICATE_REGISTRATION", "NOT_FOUND", etc.
+  - message: a human-readable error message
+  - status: the HTTP status code
+  - data: any extra data from the backend (e.g. list of duplicate names)
+
+  Each page handles errors individually and shows appropriate UI messages.
+
+URL VALIDATION:
+
+  The VITE_API_URL is validated at startup. Only http:// and https:// protocols
+  are allowed. If the URL is invalid or missing, all calls use relative paths
+  (meaning the frontend and backend must be on the same domain).
+
+
+================================================================================
+12. ENVIRONMENT VARIABLES (CONFIGURATION)
+================================================================================
+
+These must be set in your deployment environment (e.g. Cloudflare Pages settings).
+Copy .env.example to .env for local development.
+
+  VITE_API_URL
+  ─────────────
+  The URL of the backend API server.
+  · Local dev:    http://localhost:5000
+  · Production:   Leave empty ("") if frontend and backend are on the same domain.
+                  OR set to your backend URL: https://api.yourdomain.com
+  · If not set in production: all API calls use relative paths (same-origin).
+
+  VITE_PUBLIC_URL
+  ────────────────
+  The public-facing URL of the frontend website.
+  Used to generate referral share links and for SSR meta tags.
+  · Local dev:    http://localhost:3000
+  · Production:   https://yourdomain.com  (no trailing slash)
+  · If not set:   Falls back to window.location.origin (client-side only).
+                  SSR-generated referral links will be relative (/register)
+                  which may break in some share contexts.
+
+IMPORTANT: Both variables must be set correctly before going live.
+Without VITE_API_URL, all API calls will fail.
+Without VITE_PUBLIC_URL, referral share links may be broken on SSR.
+
+
+================================================================================
+13. KEY COMPONENTS EXPLAINED
+================================================================================
+
+  site-config.js
+  ──────────────
+  This is the SINGLE FILE to edit for all event content.
+  Change the event name, date, venue, timing, gallery photos, programme
+  schedule, contact details, social links, and prizes — all in one place.
+  Every page reads from this file. You never need to hunt through multiple
+  files to update event information.
+
+  SiteShell (site-shell.jsx)
+  ──────────────────────────
+  A wrapper component used by every public page.
+  It renders: Navbar → page content → Footer.
+  Pass hideFooter={true} to hide the footer (used on the register page).
+
+  FloatingMotifs (ambient.jsx)
+  ────────────────────────────
+  Renders 8 small animated SVG icons (peacock feathers, diyas, lotuses)
+  that float upward continuously in the background of a section.
+  Wrapped in React.memo so it does not re-render unnecessarily.
+  Used on: leaderboard, register, find, success, event-details pages.
+
+  GradientMesh (ambient.jsx)
+  ──────────────────────────
+  Three large blurred colored circles that slowly drift around in the
+  background, creating a soft animated gradient effect.
+  Used on: leaderboard, register, find, success, scanner pages.
+
+  QrSvg (qr.jsx)
+  ──────────────
+  Renders a QR code as an inline SVG.
+  Shows an animated skeleton (pulsing grey box) while the QR is generating.
+  Used on: success page (entry QR and referral QR).
+
+  downloadEntryPass (qr.jsx)
+  ──────────────────────────
+  Generates a full PNG entry pass card using HTML Canvas.
+  Draws: event header, QR code image, name, entry code, keychain note, footer.
+  Triggers a browser download of the PNG file.
+
+  LeaderboardList (leaderboard-list.jsx)
+  ──────────────────────────────────────
+  Renders the list of ranked referrers.
+  Top 3 get a gradient border and medal icon.
+  Wrapped in React.memo — only re-renders when the rows data changes.
+
+  AnandotsavGallery (anandotsav-gallery.jsx)
+  ──────────────────────────────────────────
+  The photo carousel on the home page.
+  Auto-scrolls every 5 seconds.
+  Pauses when the user is actively swiping (pointerDown/pointerUp events).
+  Background gradient changes to match the active photo's theme colors.
+
+
+================================================================================
+14. KNOWN LIMITATIONS AND NOTES FOR DEVELOPERS
+================================================================================
+
+  · BACKEND REQUIRED
+    This is a frontend-only project. It will not work without a running
+    backend API server. The backend handles all data storage, QR signing,
+    referral validation, and check-in logic.
+
+  · NO REAL-TIME UPDATES
+    The leaderboard refreshes every 60 seconds. It is not a true real-time
+    WebSocket connection. For a truly live leaderboard, the backend would
+    need to support WebSockets or Server-Sent Events.
+
+  · SESSION-BASED QR STORAGE
+    Registration results (QR codes) are stored in sessionStorage.
+    If the user closes the tab before downloading their QR, they must use
+    "Find My Registration" to retrieve it. This is by design for privacy.
+
+  · SCANNER IS CAMERA-DEPENDENT
+    The scanner page requires camera access. On iOS Safari, camera access
+    requires HTTPS. The scanner will not work on HTTP in production.
+
+  · FONTS ARE FROM GOOGLE CDN
+    The site uses Marcellus (display) and Mulish (body) fonts loaded from
+    Google Fonts. If Google Fonts is blocked (e.g. in China), the site will
+    fall back to system serif/sans-serif fonts. Consider self-hosting fonts
+    for maximum reliability.
+
+  · NITRO IS ON A BETA VERSION
+    The nitro package in package.json is pinned to a beta version
+    (3.0.260603-beta). This should be updated to a stable release before
+    the event goes live to avoid unexpected breaking changes.
+
+  · ERROR REPORTING IS CONSOLE-ONLY IN PRODUCTION
+    Currently, production errors are logged to console.error.
+    For a production event, consider integrating Sentry or a similar
+    error tracking service. The hook is already in lovable-error-reporting.js
+    — just replace the console.error block with Sentry.captureException().
+
+  · CONTACT DETAILS ARE EMPTY
+    In site-config.js, the phone number field is currently empty ("").
+    The footer will show a blank phone link until this is filled in.
+    Social media links (Instagram, Facebook, YouTube) are also empty.
+
+  · GALLERY PHOTOS ARE SVG PLACEHOLDERS
+    The gallery photos in public/gallery/ are SVG placeholder files.
+    Replace them with real JPEG/PNG/WebP photos from past Anandotsav events
+    for the best visual result. Update the src paths in site-config.js.
+
+
+================================================================================
+  END OF DOCUMENT
+  Last updated: 2025
+  Project: Anandotsav 2026 Registration Platform
+  Organisation: Sri Gokul Gaushala, Amritsar
+================================================================================
