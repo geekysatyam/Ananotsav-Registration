@@ -83,8 +83,8 @@ function Countdown({ to, variant = "dark", compact = false }) {
   const cellClass =
     variant === "light"
       ? compact
-        ? "rounded-lg border border-[#D89B24]/15 bg-white px-2 py-1.5 text-center shadow-sm sm:rounded-xl sm:px-2.5 sm:py-2 lg:px-3 lg:py-2"
-        : "rounded-xl border border-[#D89B24]/15 bg-white px-3 py-2.5 text-center shadow-sm lg:rounded-2xl lg:px-4 lg:py-3"
+        ? "jh-glass rounded-lg border border-[#D89B24]/15 px-2 py-1.5 text-center sm:rounded-xl sm:px-2.5 sm:py-2 lg:px-3 lg:py-2"
+        : "jh-glass rounded-xl border border-[#D89B24]/15 px-3 py-2.5 text-center lg:rounded-2xl lg:px-4 lg:py-3"
       : "rounded-2xl bg-white/10 p-4 text-center lg:p-5";
 
   const valueClass = compact ? "text-lg sm:text-xl lg:text-2xl" : "text-2xl lg:text-3xl";
@@ -178,7 +178,7 @@ function Landing() {
         {/* Hero — one viewport; event details + countdown sit under the illustration */}
         <section
           id="home"
-          className="jh-hero-bg relative flex h-[calc(100dvh-3.75rem)] items-center overflow-hidden py-4 sm:py-5 lg:py-6"
+          className="jh-hero-bg relative flex h-[calc(100dvh-3.75rem)] items-center overflow-x-clip py-4 sm:py-5 lg:py-6"
         >
           <div className="jh-pattern" />
           <div className="jh-mandala absolute top-1/2 right-[-80px] hidden -translate-y-1/2 opacity-60 lg:block" />
@@ -246,10 +246,10 @@ function Landing() {
 
               {/* Illustration — desktop only */}
               <div className="order-2 hidden w-full justify-center lg:flex lg:order-2 lg:col-start-2 lg:row-start-1">
-                <div className="relative flex w-full max-w-sm items-center justify-center sm:max-w-md lg:max-w-none">
+                <div className="relative flex w-full max-w-sm items-center justify-center overflow-visible pt-2 sm:max-w-md lg:max-w-none lg:pt-4">
                   <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-br from-[#D89B24]/12 via-transparent to-secondary/10 blur-3xl" />
 
-                  <div className="jh-float2 jh-glass absolute top-0 right-0 z-20 hidden items-center gap-2 rounded-xl border border-[#D89B24]/20 px-3 py-2 lg:flex xl:-right-4">
+                  <div className="jh-float2 jh-glass absolute top-6 right-2 z-20 hidden items-center gap-2 rounded-xl border border-[#D89B24]/15 px-3 py-2 lg:flex lg:top-10 lg:right-6">
                     <div className="grid h-9 w-9 place-items-center rounded-full bg-[#D89B24]/15 text-lg">🔑</div>
                     <div>
                       <div className="text-xs font-bold text-[#08495B]">Free Krishna Keychain</div>
@@ -257,7 +257,7 @@ function Landing() {
                     </div>
                   </div>
 
-                  <div className="jh-float3 jh-glass absolute bottom-2 -left-4 z-20 hidden items-center gap-2 rounded-xl px-3 py-2 lg:flex xl:-left-10">
+                  <div className="jh-float3 jh-glass absolute bottom-2 -left-4 z-20 hidden items-center gap-2 rounded-xl border border-[#D89B24]/15 px-3 py-2 lg:flex xl:-left-8">
                     <div className="grid h-8 w-8 place-items-center rounded-full bg-secondary/10 text-base">🏆</div>
                     <div>
                       <div className="text-xs font-bold">Invite & Rise</div>
@@ -299,7 +299,7 @@ function Landing() {
                     ))}
                   </div>
 
-                  <div className="rounded-xl border border-[#D89B24]/20 bg-white/75 p-3 shadow-sm backdrop-blur-sm sm:rounded-2xl sm:p-3 lg:p-4">
+                  <div className="jh-glass rounded-xl border border-[#D89B24]/15 p-3 sm:rounded-2xl sm:p-3 lg:p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="text-[9px] font-bold tracking-[0.16em] text-[#D89B24] uppercase sm:text-[10px] lg:text-xs">
