@@ -11,7 +11,12 @@ export default defineConfig({
       tsconfigPaths: true,
     },
     ssr: {
-      noExternal: ["framer-motion", "motion-dom"],
+      // Bundle these for SSR — avoids Vite 8 / Rolldown unresolved lucide icon stubs
+      // and framer-motion ESM quirks on Vercel.
+      noExternal: ["framer-motion", "motion-dom", "lucide-react"],
+    },
+    optimizeDeps: {
+      include: ["lucide-react"],
     },
   },
   tanstackStart: {
