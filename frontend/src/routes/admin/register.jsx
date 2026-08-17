@@ -111,6 +111,15 @@ function AdminRegisterPage() {
       return;
     }
 
+    if (!fullName.trim()) {
+      setError("Please enter full name.");
+      return;
+    }
+    if (!city.trim()) {
+      setError("Please enter city.");
+      return;
+    }
+
     for (const m of family) {
       if (!m.name.trim() && !m.dob && !m.phone?.trim()) continue;
       if (m.name.trim() || m.dob) {
@@ -269,9 +278,10 @@ function AdminRegisterPage() {
         <Field
           label="City"
           icon={<Building2 className="h-4 w-4" />}
+          required
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          placeholder="Optional"
+          placeholder="Amritsar"
         />
 
         <div className="rounded-xl bg-primary/10 p-4 ring-1 ring-primary/20">

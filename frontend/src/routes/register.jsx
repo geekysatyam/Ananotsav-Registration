@@ -271,6 +271,11 @@ function RegisterPage() {
         return;
       }
 
+      if (!city.trim()) {
+        setError("Please enter your city.");
+        return;
+      }
+
       if (hasIncomingCode && incomingReferral.trim() && incomingValid === false) {
         setError("Please enter a valid referral code, or choose No for “Were you referred?”");
         return;
@@ -471,8 +476,8 @@ function RegisterPage() {
                 <Field
                   label="City"
                   icon={<Building2 className="h-4 w-4 sm:h-5 sm:w-5" />}
+                  required
                   placeholder="Amritsar"
-                  hint="Optional"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                 />
