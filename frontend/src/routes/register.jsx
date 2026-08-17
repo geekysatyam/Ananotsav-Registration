@@ -266,6 +266,11 @@ function RegisterPage() {
       setError(null);
       setDuplicateNames([]);
 
+      if (!fullName.trim()) {
+        setError("Please enter your full name.");
+        return;
+      }
+
       if (hasIncomingCode && incomingReferral.trim() && incomingValid === false) {
         setError("Please enter a valid referral code, or choose No for “Were you referred?”");
         return;
@@ -408,6 +413,7 @@ function RegisterPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
+            noValidate
             onSubmit={handleSubmit}
             className="mt-4 rounded-[1.5rem] bg-gradient-gold p-[2px] shadow-warm sm:mt-8 sm:rounded-[2rem] sm:p-[3px]"
           >
@@ -465,8 +471,8 @@ function RegisterPage() {
                 <Field
                   label="City"
                   icon={<Building2 className="h-4 w-4 sm:h-5 sm:w-5" />}
-                  required
-                  placeholder="Optional"
+                  placeholder="Amritsar"
+                  hint="Optional"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                 />

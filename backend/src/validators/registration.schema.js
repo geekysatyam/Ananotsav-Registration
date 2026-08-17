@@ -62,7 +62,7 @@ export const registrationSchema = z
       fullName: z.string().trim().min(1, 'Full name is required'),
       phone: indianPhoneSchema,
       dob: dobSchema,
-      city: z.string().trim().min(1, 'City is required'),
+      city: z.string().trim().optional().default(''),
       wantsReferral: z.boolean(),
       referredBy: z.string().trim().nullable().optional(),
       wantsVolunteer: z.boolean().optional().default(false),

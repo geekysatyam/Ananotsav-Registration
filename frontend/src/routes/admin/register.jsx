@@ -269,10 +269,9 @@ function AdminRegisterPage() {
         <Field
           label="City"
           icon={<Building2 className="h-4 w-4" />}
-          required
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          placeholder="Optional "
+          placeholder="Optional"
         />
 
         <div className="rounded-xl bg-primary/10 p-4 ring-1 ring-primary/20">

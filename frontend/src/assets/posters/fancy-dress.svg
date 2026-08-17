@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536" fill="none">
+  <defs>
+    <linearGradient id="fbg" x1="0" y1="0" x2="1024" y2="1536" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B87A12"/>
+      <stop offset="0.5" stop-color="#D89B24"/>
+      <stop offset="1" stop-color="#08495B"/>
+    </linearGradient>
+    <radialGradient id="fgold" cx="50%" cy="36%" r="40%">
+      <stop stop-color="#FFF8E7" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#FFF8E7" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1536" fill="url(#fbg)"/>
+  <rect width="1024" height="1536" fill="url(#fgold)"/>
+  <circle cx="512" cy="560" r="248" fill="none" stroke="rgba(255,248,231,0.35)" stroke-width="2"/>
+  <circle cx="512" cy="560" r="188" fill="none" stroke="rgba(255,248,231,0.2)" stroke-width="1.5"/>
+  <text x="512" y="320" text-anchor="middle" fill="#FFF8E7" font-family="Georgia, serif" font-size="34" font-weight="700" letter-spacing="6">ANANDOTSAV 2026</text>
+  <text x="512" y="510" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="70" font-weight="700">Fancy Dress</text>
+  <text x="512" y="600" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="70" font-weight="700">for Kids</text>
+  <text x="512" y="720" text-anchor="middle" fill="#FFF1C9" font-family="system-ui, sans-serif" font-size="28">Krishna · Radha · Gokul</text>
+  <rect x="412" y="760" width="200" height="4" rx="2" fill="#FFF8E7"/>
+  <text x="512" y="860" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-family="system-ui, sans-serif" font-size="26">Event day costume celebration</text>
+  <text x="512" y="1420" text-anchor="middle" fill="rgba(255,248,231,0.7)" font-family="system-ui, sans-serif" font-size="22">Sri Gokul Gaushala, Amritsar</text>
+</svg>

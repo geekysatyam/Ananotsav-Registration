@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536" fill="none">
+  <defs>
+    <linearGradient id="lbg" x1="0" y1="0" x2="1024" y2="1536" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A5A6E"/>
+      <stop offset="0.55" stop-color="#126B82"/>
+      <stop offset="1" stop-color="#062F3A"/>
+    </linearGradient>
+    <radialGradient id="lgold" cx="50%" cy="38%" r="42%">
+      <stop stop-color="#D89B24" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#D89B24" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1536" fill="url(#lbg)"/>
+  <rect width="1024" height="1536" fill="url(#lgold)"/>
+  <circle cx="512" cy="560" r="248" fill="none" stroke="rgba(247,217,138,0.3)" stroke-width="2"/>
+  <circle cx="512" cy="560" r="188" fill="none" stroke="rgba(247,217,138,0.18)" stroke-width="1.5"/>
+  <text x="512" y="320" text-anchor="middle" fill="#F7D98A" font-family="Georgia, serif" font-size="34" font-weight="700" letter-spacing="6">ANANDOTSAV 2026</text>
+  <text x="512" y="510" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="68" font-weight="700">Laddu Gopal</text>
+  <text x="512" y="600" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="68" font-weight="700">Shringar</text>
+  <text x="512" y="720" text-anchor="middle" fill="#F7D98A" font-family="system-ui, sans-serif" font-size="28">Utsav Mandapam · before 6 PM</text>
+  <rect x="412" y="760" width="200" height="4" rx="2" fill="#D89B24"/>
+  <text x="512" y="860" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="system-ui, sans-serif" font-size="26">Bring pre-shringar from home</text>
+  <text x="512" y="1420" text-anchor="middle" fill="rgba(247,217,138,0.7)" font-family="system-ui, sans-serif" font-size="22">Sri Gokul Gaushala, Amritsar</text>
+</svg>

@@ -7,6 +7,13 @@
  * Sri Krishna Janmashtami Anandotsav 2026
  */
 
+// Vite-bundled poster URLs (works on Vercel). Files in /public alone return 500
+// when the SSR handler catches static paths.
+import anandotsavPoster from "@/assets/posters/anandotsav-2026-poster.svg?url";
+import referralPoster from "@/assets/posters/referral.svg?url";
+import fancyDressPoster from "@/assets/posters/fancy-dress.svg?url";
+import ladduGopalPoster from "@/assets/posters/laddu-gopal.svg?url";
+
 export const siteConfig = {
   // ── Brand ────────────────────────────────────────────────────────────────
   brand: {
@@ -174,8 +181,8 @@ export const siteConfig = {
       },
     ],
 
-    /** Official poster — 1024 × 1536. Replace SVG placeholder via MEDIA_GUIDE.md */
-    posterSrc: "/anandotsav-2026-poster.svg",
+    /** Official poster — 1024 × 1536. Bundled via Vite assets for Vercel. */
+    posterSrc: anandotsavPoster,
 
     // ── Festival highlights ──────────────────────────────────────────────
     highlights: [
@@ -302,7 +309,7 @@ export const siteConfig = {
       audience: "All registered bhaktas",
       timing: "Ends 5 September 2026",
       endsAt: "2026-09-05T23:59:59",
-      poster: "/competitions/referral.svg",
+      poster: referralPoster,
       theme: { from: "#08495B", to: "#D89B24" },
       howTo: [
         "Complete Bhakta registration in under 60 seconds.",
@@ -321,7 +328,7 @@ export const siteConfig = {
         "A joyful costume competition for children. Dress should be related to Sanatan Dharma — Krishna, Radha, Ram, Sita, or any bhakta from our tradition.",
       audience: "Children under 12 years",
       timing: "Event day — 6 September 2026",
-      poster: "/competitions/fancy-dress.svg",
+      poster: fancyDressPoster,
       theme: { from: "#D89B24", to: "#126B82" },
       categories: [
         {
@@ -351,7 +358,7 @@ export const siteConfig = {
         "Bring your Laddu Gopal and offer festive shringar — flowers, clothes, and ornaments — in a spirit of devotion and celebration.",
       audience: "Families & devotees",
       timing: "Event day — 6 September 2026 · Utsav Mandapam",
-      poster: "/competitions/laddu-gopal.svg",
+      poster: ladduGopalPoster,
       theme: { from: "#126B82", to: "#F7D98A" },
       venue: "Utsav Mandapam",
       note: "Please bring your Laddu Gopal before 6:00 PM. Entry for the competition closes after that.",

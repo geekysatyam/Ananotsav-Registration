@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { siteConfig } from "@/lib/site-config";
-import { Flourish } from "@/components/motifs";
+import { Flourish, PeacockFeather } from "@/components/motifs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import {
@@ -14,26 +14,25 @@ import {
 
 function PosterSlide({ competition }) {
   const [failed, setFailed] = useState(false);
-  const theme = competition.theme ?? { from: "#08495B", to: "#D89B24" };
+  const theme = competition.theme ?? { from: "#08495B", to: "#126B82" };
+  const title = competition.shortTitle ?? competition.title;
+  const showImage = Boolean(competition.poster) && !failed;
 
   return (
     <Link
       to="/competitions"
       hash={competition.id}
-      className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D89B24] focus-visible:ring-offset-2"
+      className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F7D98A] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a5062]"
     >
-      <figure className="group relative aspect-[2/3] overflow-hidden rounded-2xl bg-[#08495B]/10 shadow-[0_16px_48px_-16px_rgba(8,73,91,0.45)] ring-1 ring-white/30">
-        {failed ? (
-          <div
-            className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center"
-            style={{
-              background: `linear-gradient(160deg, ${theme.from} 0%, ${theme.to} 100%)`,
-            }}
-          >
-            <p className="font-display text-2xl font-bold text-white">{competition.title}</p>
-            <p className="text-sm text-white/80">{competition.tagline}</p>
-          </div>
-        ) : (
+      <figure className="group relative aspect-[2/3] overflow-hidden rounded-[1.35rem] shadow-[0_20px_50px_-18px_rgba(0,0,0,0.55)] ring-1 ring-white/25">
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(165deg, ${theme.from} 0%, ${theme.to} 100%)`,
+          }}
+        />
+
+        {showImage ? (
           <img
             src={competition.poster}
             alt=""
@@ -42,22 +41,39 @@ function PosterSlide({ competition }) {
             loading="lazy"
             draggable={false}
             onError={() => setFailed(true)}
-            className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+            className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
           />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">
+            <PeacockFeather className="h-16 w-16 text-[#F7D98A]/70" aria-hidden />
+            <p className="font-display text-2xl font-bold text-white sm:text-3xl">{title}</p>
+            <p className="max-w-[14rem] text-sm leading-relaxed text-[#F7D98A]/90">
+              {competition.tagline}
+            </p>
+          </div>
         )}
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#08495B]/85 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#042830]/90 via-transparent to-transparent" />
 
-        <figcaption className="absolute inset-x-0 bottom-0 px-4 pb-5 pt-12">
-          <p className="font-display text-lg font-bold text-white drop-shadow-sm sm:text-xl">
-            {competition.shortTitle ?? competition.title}
-          </p>
-          <p className="mt-1 line-clamp-2 text-xs text-white/80 sm:text-sm">{competition.tagline}</p>
-        </figcaption>
+        {/* Caption only when poster is missing — avoids doubling SVG poster titles */}
+        {showImage ? (
+          <figcaption className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+            <p className="text-center text-[11px] font-semibold tracking-[0.18em] text-white/80 uppercase transition group-hover:text-[#F7D98A]">
+              View details
+            </p>
+          </figcaption>
+        ) : (
+          <figcaption className="sr-only">
+            {title}. {competition.tagline}
+          </figcaption>
+        )}
       </figure>
     </Link>
   );
 }
+
+const arrowClass =
+  "absolute z-10 top-1/2 hidden h-11 w-11 -translate-y-1/2 rounded-full border-2 border-[#F7D98A]/70 !bg-[#F7D98A] !text-[#08495B] shadow-lg hover:!bg-white hover:!border-white sm:flex";
 
 export function CompetitionsCarousel() {
   const competitions = siteConfig.competitions ?? [];
@@ -109,7 +125,7 @@ export function CompetitionsCarousel() {
           </p>
         </div>
 
-        <div className="relative mx-auto mt-8 max-w-5xl px-1 sm:px-10 lg:px-14">
+        <div className="relative mx-auto mt-10 max-w-5xl px-1 sm:px-12 lg:px-14">
           <Carousel
             key={isMobile ? "comp-mobile" : "comp-desktop"}
             setApi={setApi}
@@ -120,12 +136,12 @@ export function CompetitionsCarousel() {
               {competitions.map((competition, index) => (
                 <CarouselItem
                   key={competition.id}
-                  className="basis-[72%] pl-3 sm:basis-[42%] sm:pl-4 lg:basis-[30%]"
+                  className="basis-[78%] pl-3 sm:basis-[44%] sm:pl-4 lg:basis-[31%]"
                 >
                   <div
                     className={cn(
                       "h-full transition-[transform,opacity] duration-500",
-                      index === activeIndex ? "scale-100 opacity-100" : "scale-[0.96] opacity-85",
+                      index === activeIndex ? "scale-100 opacity-100" : "scale-[0.94] opacity-70",
                     )}
                   >
                     <PosterSlide competition={competition} />
@@ -135,24 +151,20 @@ export function CompetitionsCarousel() {
             </CarouselContent>
 
             <CarouselPrevious
-              variant="outline"
+              variant="secondary"
               size="icon"
-              className={cn(
-                "absolute z-10 hidden h-9 w-9 rounded-full border-white/40 bg-white/90 text-[#08495B] shadow-md backdrop-blur-sm hover:bg-white sm:flex sm:h-10 sm:w-10",
-                "top-1/2 -left-1 -translate-y-1/2 lg:-left-3",
-              )}
+              disabled={false}
+              className={cn(arrowClass, "-left-1 lg:-left-4")}
             />
             <CarouselNext
-              variant="outline"
+              variant="secondary"
               size="icon"
-              className={cn(
-                "absolute z-10 hidden h-9 w-9 rounded-full border-white/40 bg-white/90 text-[#08495B] shadow-md backdrop-blur-sm hover:bg-white sm:flex sm:h-10 sm:w-10",
-                "top-1/2 -right-1 -translate-y-1/2 lg:-right-3",
-              )}
+              disabled={false}
+              className={cn(arrowClass, "-right-1 lg:-right-4")}
             />
           </Carousel>
 
-          <div className="mt-5 flex flex-col items-center gap-3">
+          <div className="mt-6 flex flex-col items-center gap-4">
             <div className="flex items-center justify-center gap-2">
               {competitions.map((c, index) => (
                 <button
@@ -166,18 +178,18 @@ export function CompetitionsCarousel() {
                   <span
                     className={cn(
                       "block h-2 rounded-full transition-all duration-500",
-                      index === activeIndex ? "w-6 bg-[#F7D98A]" : "w-2 bg-white/35",
+                      index === activeIndex ? "w-7 bg-[#F7D98A]" : "w-2 bg-white/40",
                     )}
                   />
                 </button>
               ))}
             </div>
-            <p className="text-[10px] font-semibold tracking-wide text-white/50 uppercase sm:hidden">
+            <p className="text-[10px] font-semibold tracking-wide text-white/55 uppercase sm:hidden">
               Swipe posters · tap to open
             </p>
             <Link
               to="/competitions"
-              className="inline-flex items-center justify-center rounded-xl bg-[#F7D98A] px-6 py-2.5 text-sm font-extrabold text-[#08495B] transition hover:bg-white"
+              className="inline-flex items-center justify-center rounded-xl bg-[#F7D98A] px-6 py-2.5 text-sm font-extrabold text-[#08495B] shadow-md transition hover:bg-white"
             >
               View all competitions →
             </Link>

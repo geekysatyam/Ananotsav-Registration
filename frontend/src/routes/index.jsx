@@ -292,12 +292,17 @@ function Landing() {
                   adds to your count and moves you closer to the top of the leaderboard.
                 </p>
               </div>
-              <div className="jh-glass mx-auto w-full max-w-sm rounded-3xl border-white/10 bg-white/10 px-6 py-6 text-center sm:px-10 sm:py-7 md:mx-0 md:min-w-[240px]">
-                <div className="text-[11px] font-bold tracking-[0.18em] text-white/65 uppercase sm:text-sm">Bhaktas Registered</div>
-                <div ref={counter.ref} className="mt-2 font-display text-5xl font-bold text-[#F7D98A] tabular-nums sm:text-6xl">
+              <div className="mx-auto w-full max-w-sm rounded-3xl border border-white/20 bg-[#042f3c]/75 px-6 py-6 text-center shadow-[0_18px_50px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:px-10 sm:py-7 md:mx-0 md:min-w-[240px]">
+                <div className="text-[11px] font-bold tracking-[0.18em] text-[#F7D98A]/85 uppercase sm:text-sm">
+                  Bhaktas Registered
+                </div>
+                <div
+                  ref={counter.ref}
+                  className="mt-2 font-display text-5xl font-bold text-[#F7D98A] tabular-nums sm:text-6xl"
+                >
                   {counter.value.toLocaleString("en-IN")}
                 </div>
-                <div className="mt-2 text-sm text-white/60">and counting...</div>
+                <div className="mt-2 text-sm text-white/80">and counting...</div>
               </div>
             </div>
           </div>

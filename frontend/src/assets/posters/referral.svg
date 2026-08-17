@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536" fill="none">
+  <defs>
+    <linearGradient id="rbg" x1="0" y1="0" x2="1024" y2="1536" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#063D4C"/>
+      <stop offset="0.45" stop-color="#0A5A6E"/>
+      <stop offset="1" stop-color="#C4891A"/>
+    </linearGradient>
+    <radialGradient id="rgold" cx="50%" cy="38%" r="42%">
+      <stop stop-color="#F7D98A" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#F7D98A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1536" fill="url(#rbg)"/>
+  <rect width="1024" height="1536" fill="url(#rgold)"/>
+  <circle cx="512" cy="560" r="248" fill="none" stroke="rgba(247,217,138,0.28)" stroke-width="2"/>
+  <circle cx="512" cy="560" r="188" fill="none" stroke="rgba(247,217,138,0.18)" stroke-width="1.5"/>
+  <text x="512" y="320" text-anchor="middle" fill="#F7D98A" font-family="Georgia, serif" font-size="34" font-weight="700" letter-spacing="6">ANANDOTSAV 2026</text>
+  <text x="512" y="520" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="78" font-weight="700">Referral</text>
+  <text x="512" y="610" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="78" font-weight="700">Challenge</text>
+  <text x="512" y="720" text-anchor="middle" fill="#F7D98A" font-family="system-ui, sans-serif" font-size="30">Register · Share · Rise</text>
+  <rect x="412" y="760" width="200" height="4" rx="2" fill="#F7D98A"/>
+  <text x="512" y="860" text-anchor="middle" fill="rgba(255,255,255,0.82)" font-family="system-ui, sans-serif" font-size="26">Climb the live leaderboard</text>
+  <text x="512" y="1420" text-anchor="middle" fill="rgba(247,217,138,0.7)" font-family="system-ui, sans-serif" font-size="22">Sri Gokul Gaushala, Amritsar</text>
+</svg>
