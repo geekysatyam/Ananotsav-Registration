@@ -153,7 +153,7 @@ function Landing() {
                 </div>
 
                 <p className="mt-1.5 text-[10px] font-bold tracking-[0.2em] text-[#D89B24] uppercase sm:text-xs lg:mt-2 lg:text-sm">
-                  Jai Shri Krishna · {eventInfo.date.split(",")[0]}
+                  Hare Krishna · {eventInfo.date.split(",")[0]}
                 </p>
 
                 <h1 className="mt-2 font-display text-[clamp(1.35rem,5vw,1.75rem)] leading-[1.08] font-bold text-[#08495B] lg:mt-3 lg:text-[clamp(2.5rem,3.8vw,4rem)] lg:leading-[1.02]">

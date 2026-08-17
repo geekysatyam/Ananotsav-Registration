@@ -179,7 +179,7 @@ function SuccessPage() {
         children: [/*#__PURE__*/_jsx(SectionHeading, {
           compact: true,
           eyebrow: `Confirmation · ${confirmationLabel}`,
-          title: "Jai Shri Krishna — you're registered! 🎉",
+          title: "Hari Bol! You're registered! 🎉",
           subtitle: `${eventInfo.date} · ${eventInfo.venue}`
         }), /*#__PURE__*/_jsx(Reveal, {
           className: "mt-4 sm:mt-10",
