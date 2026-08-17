@@ -210,17 +210,21 @@ export async function downloadEntryPass({
   const giftLines = wrapText(measure, giftDeskMessage(fullName), innerWidth - 64);
 
   const giftBoxH = 36 + 28 + giftLines.length * 28 + 28;
+  const nameFontSize = 48;
+  const clearBelowQr = 36;
+  const nameAscent = Math.ceil(nameFontSize * 0.85);
   const height =
     pad +
     86 +
     28 +
     (qrSize + qrFrame) +
-    36 +
-    nameLines.length * 54 +
-    36 +
+    clearBelowQr +
+    nameAscent +
+    nameLines.length * (nameFontSize + 10) +
+    44 +
     28 +
     giftBoxH +
-    28 +
+    36 +
     52 +
     pad;
 
@@ -244,19 +248,21 @@ export async function downloadEntryPass({
 
   const qrX = (width - qrSize - qrFrame) / 2;
   paintQrFrame(ctx, qrImg, qrX, y, qrSize);
-  y += qrSize + qrFrame + 36;
+  // fillText y is the baseline — leave clear space under the QR frame first
+  y += qrSize + qrFrame + clearBelowQr + nameAscent;
 
   ctx.fillStyle = "#17313A";
-  ctx.font = "bold 48px Georgia, 'Times New Roman', serif";
+  ctx.font = `bold ${nameFontSize}px Georgia, 'Times New Roman', serif`;
   for (const line of nameLines) {
     ctx.fillText(line, width / 2, y);
-    y += 54;
+    y += nameFontSize + 10;
   }
 
+  y += 16;
   ctx.fillStyle = "#126B82";
   ctx.font = "600 24px system-ui, sans-serif";
   ctx.fillText(`ENTRY PASS · ${entryCode}`, width / 2, y);
-  y += 36;
+  y += 44;
 
   paintNoteBox(ctx, pad, y, innerWidth, giftBoxH, "Your Divine Gift", giftLines);
   y += giftBoxH + 36;
@@ -295,17 +301,21 @@ export async function downloadReferralPass({
     innerWidth - 64,
   );
   const noteBoxH = 36 + 28 + noteLines.length * 28 + 28;
+  const codeFontSize = 48;
+  const clearBelowQr = 36;
+  const codeAscent = Math.ceil(codeFontSize * 0.85);
   const height =
     pad +
     86 +
     28 +
     (qrSize + qrFrame) +
-    36 +
-    54 +
-    32 +
+    clearBelowQr +
+    codeAscent +
+    (codeFontSize + 10) +
+    44 +
     28 +
     noteBoxH +
-    28 +
+    36 +
     52 +
     pad;
 
@@ -329,17 +339,17 @@ export async function downloadReferralPass({
 
   const qrX = (width - qrSize - qrFrame) / 2;
   paintQrFrame(ctx, qrImg, qrX, y, qrSize);
-  y += qrSize + qrFrame + 36;
+  y += qrSize + qrFrame + clearBelowQr + codeAscent;
 
   ctx.fillStyle = "#08495B";
-  ctx.font = "bold 48px Georgia, 'Times New Roman', serif";
+  ctx.font = `bold ${codeFontSize}px Georgia, 'Times New Roman', serif`;
   ctx.fillText(referralCode, width / 2, y);
-  y += 50;
+  y += codeFontSize + 18;
 
   ctx.fillStyle = "#126B82";
   ctx.font = "600 22px system-ui, sans-serif";
   ctx.fillText("Scan to register with this code", width / 2, y);
-  y += 36;
+  y += 40;
 
   paintNoteBox(ctx, pad, y, innerWidth, noteBoxH, "Share & rise on the leaderboard", noteLines);
   y += noteBoxH + 36;

@@ -61,9 +61,10 @@ export function DobPicker({
   const [open, setOpen] = useState(false);
   const [viewYear, setViewYear] = useState(initialView.getFullYear());
   const [viewMonth, setViewMonth] = useState(initialView.getMonth());
-  const [coords, setCoords] = useState({ top: 0, left: 0, width: 280, maxHeight: 360 });
+  const [coords, setCoords] = useState({ top: 0, left: 0, width: 320 });
 
   const triggerRef = useRef(null);
+  const panelRef = useRef(null);
 
   const years = useMemo(() => {
     const list = [];
@@ -111,32 +112,39 @@ export function DobPicker({
 
     const place = () => {
       const el = triggerRef.current;
+      const panel = panelRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const gap = 8;
-      const pad = 8;
+      const pad = 12;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      const width = Math.min(Math.max(rect.width, 260), vw - pad * 2);
-      const left = Math.min(Math.max(pad, rect.left), vw - width - pad);
+      // Keep a compact calendar on desktop — stretching to the field width
+      // makes aspect-square days huge and clips the last week.
+      const width = Math.min(320, vw - pad * 2);
+      const left = Math.min(
+        Math.max(pad, rect.left + (rect.width - width) / 2),
+        vw - width - pad,
+      );
+      const panelH = panel?.offsetHeight || 340;
       const spaceBelow = vh - rect.bottom - gap - pad;
       const spaceAbove = rect.top - gap - pad;
-      const preferBelow = spaceBelow >= 260 || spaceBelow >= spaceAbove;
-      const maxHeight = Math.max(220, Math.min(380, preferBelow ? spaceBelow : spaceAbove));
-      const top = preferBelow
-        ? rect.bottom + gap
-        : Math.max(pad, rect.top - gap - maxHeight);
-      setCoords({ top, left, width, maxHeight });
+      const openBelow = spaceBelow >= panelH || spaceBelow >= spaceAbove;
+      let top = openBelow ? rect.bottom + gap : rect.top - gap - panelH;
+      top = Math.min(Math.max(pad, top), vh - pad - Math.min(panelH, vh - pad * 2));
+      setCoords({ top, left, width });
     };
 
     place();
+    const id = requestAnimationFrame(place);
     window.addEventListener("resize", place);
     window.addEventListener("scroll", place, true);
     return () => {
+      cancelAnimationFrame(id);
       window.removeEventListener("resize", place);
       window.removeEventListener("scroll", place, true);
     };
-  }, [open]);
+  }, [open, viewMonth, viewYear]);
 
   const calendar = open
     ? createPortal(
@@ -148,15 +156,15 @@ export function DobPicker({
             onClick={() => setOpen(false)}
           />
           <div
+            ref={panelRef}
             role="dialog"
             aria-label="Choose date of birth"
             style={{
               top: coords.top,
               left: coords.left,
               width: coords.width,
-              maxHeight: coords.maxHeight,
             }}
-            className="fixed z-[90] overflow-y-auto rounded-2xl border border-primary/20 bg-card p-3 shadow-xl ring-1 ring-primary/10"
+            className="fixed z-[90] rounded-2xl border border-primary/20 bg-card p-3 shadow-xl ring-1 ring-primary/10"
           >
             <div className="mb-3 flex items-center gap-2">
               <button
@@ -223,7 +231,7 @@ export function DobPicker({
                       setOpen(false);
                     }}
                     className={cn(
-                      "grid aspect-square place-items-center rounded-lg text-sm font-semibold transition-colors",
+                      "grid h-9 place-items-center rounded-lg text-sm font-semibold transition-colors",
                       disabledDay && "cursor-not-allowed text-muted-foreground/30",
                       !disabledDay && !isSelected && "hover:bg-primary/15 text-foreground",
                       isSelected && "bg-gradient-gold text-primary-foreground shadow-warm",

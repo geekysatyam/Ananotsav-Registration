@@ -14,9 +14,9 @@ import {
 import { SiteShell } from "@/components/site-shell";
 import { Reveal, SectionHeading, FestiveIcon } from "@/components/festive";
 import { FloatingMotifs, GradientMesh } from "@/components/ambient";
-import { Flourish, PatternBackdrop, PeacockFeather, Lotus } from "@/components/motifs";
+import { Flourish, Gift, PatternBackdrop, PeacockFeather, Lotus } from "@/components/motifs";
 import { QrSvg, downloadEntryPass, downloadReferralPass } from "@/components/qr";
-import { eventInfo, REFERRAL_LINK_BASE, getGoogleCalendarEventUrl, siteConfig } from "@/lib/event-info";
+import { eventInfo, REFERRAL_LINK_BASE, getGoogleCalendarEventUrl } from "@/lib/event-info";
 import { loadRegistrationResult } from "@/lib/api";
 
 export const Route = createFileRoute("/success")({
@@ -62,41 +62,29 @@ function Confetti() {
   );
 }
 
-function EntryPassCard({ member }) {
+function displayFirstName(name) {
+  const part = name.trim().split(/\s+/)[0] || name;
+  return part.length > 14 ? `${part.slice(0, 14)}…` : part;
+}
+
+function GiftCard({ name }) {
+  const first = displayFirstName(name);
   return (
-    <article className="mx-auto w-full max-w-[22rem] rounded-[1.6rem] bg-[#D89B24] p-[2px] shadow-warm sm:max-w-[24rem]">
-      <div className="rounded-[calc(1.6rem-2px)] bg-[#F7D98A]/50 p-[4px]">
-        <div className="relative overflow-hidden rounded-[1.25rem] bg-[#fffdf8] px-5 py-5 text-center sm:px-6 sm:py-6">
-          <p className="font-display text-[1.55rem] font-bold leading-none text-[#08495B] sm:text-[1.75rem]">
-            {siteConfig.brand.name}
+    <div className="mt-2 rounded-xl bg-gradient-gold p-[2px] sm:mt-3">
+      <div className="flex items-start gap-2.5 rounded-[calc(0.75rem-1px)] bg-card p-2.5 sm:items-center sm:gap-3 sm:p-3">
+        <Gift className="h-10 w-10 shrink-0 sm:h-12 sm:w-12" />
+        <div className="min-w-0 flex-1">
+          <div className="font-display text-sm sm:text-base">Your Divine Gift</div>
+          <p className="text-xs leading-snug text-muted-foreground">
+            Show at the Registration Desk for{" "}
+            <span className="break-all font-semibold text-foreground" title={name}>
+              {first}
+            </span>
+            &apos;s Divine Gift.
           </p>
-          <p className="mt-1.5 text-[10px] font-bold tracking-[0.22em] text-[#D89B24] uppercase">
-            Bhakta Entry Pass
-          </p>
-
-          <div className="mx-auto mt-4 w-fit rounded-2xl border-[3px] border-[#126B82] bg-white p-2">
-            <QrSvg value={member.signedPayload} size={188} />
-          </div>
-
-          <h3 className="mt-4 break-words font-display text-[1.45rem] font-bold leading-tight text-[#08495B] sm:text-2xl">
-            {member.fullName}
-          </h3>
-          <p className="mt-1 text-[11px] font-semibold tracking-[0.12em] text-[#126B82] uppercase">
-            Entry pass · {member.entryCode}
-          </p>
-
-          <div className="mt-4 rounded-xl border border-[#D89B24]/50 bg-[#F7D98A]/35 px-3.5 py-3 text-left">
-            <p className="font-display text-sm font-bold text-[#08495B]">Your Divine Gift</p>
-            <p className="mt-1 text-xs leading-snug text-slate-600">
-              Show your registration pass at the Seva Desk for event assistance.
-            </p>
-          </div>
-
-          <p className="mt-4 text-xs text-slate-500">{eventInfo.date}</p>
-          <p className="mt-0.5 text-[11px] text-slate-400">{eventInfo.venue}</p>
         </div>
       </div>
-    </article>
+    </div>
   );
 }
 
@@ -104,7 +92,7 @@ function DownloadActions({ member, registrations, downloaded, onDownload, onDown
   const btn =
     "flex min-h-10 w-full items-center justify-center gap-2 rounded-full px-3 py-2 font-display text-sm font-semibold transition-transform hover:scale-[1.02] active:scale-[0.98] sm:min-h-11 sm:px-4";
   return (
-    <div className="relative mt-3 w-full sm:mt-4">
+    <div className="relative mt-2 w-full sm:mt-3">
       <div className={`grid w-full gap-2 ${registrations.length > 1 ? "sm:grid-cols-2" : "sm:grid-cols-1"}`}>
         <button
           type="button"
@@ -243,9 +231,17 @@ function SuccessPage() {
                       initial={{ opacity: 0, x: 30 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -30 }}
-                      className={`min-w-0 ${registrations.length === 1 ? "col-span-3" : ""}`}
+                      className={`min-w-0 text-center ${registrations.length === 1 ? "col-span-3" : ""}`}
                     >
-                      <EntryPassCard member={member} />
+                      <div className="mx-auto w-fit rounded-2xl bg-background p-3 shadow-warm ring-2 ring-primary/40 sm:rounded-3xl sm:p-4">
+                        <QrSvg value={member.signedPayload} size={170} />
+                      </div>
+                      <div className="mt-3 break-words font-display text-lg sm:mt-4 sm:text-2xl">
+                        {member.fullName}
+                      </div>
+                      <div className="text-[10px] tracking-[0.15em] text-muted-foreground uppercase sm:text-xs sm:tracking-[0.2em]">
+                        Entry pass · {member.entryCode}
+                      </div>
                     </motion.div>
                   </AnimatePresence>
 
@@ -262,7 +258,7 @@ function SuccessPage() {
                 </div>
 
                 {registrations.length > 1 && (
-                  <div className="relative mt-3 flex items-center justify-center gap-1.5">
+                  <div className="relative mt-2 flex items-center justify-center gap-1.5 sm:mt-3">
                     {registrations.map((m, i) => (
                       <button
                         key={m.id}
@@ -279,6 +275,8 @@ function SuccessPage() {
                     </span>
                   </div>
                 )}
+
+                <GiftCard name={member.fullName} />
 
                 <DownloadActions
                   member={member}
@@ -308,28 +306,28 @@ function SuccessPage() {
           </Reveal>
 
           {primary.wantsReferral && primary.referralCode && referralLink && (
-            <Reveal delay={0.1} className="mt-8 sm:mt-10">
+            <Reveal delay={0.1} className="mt-10">
               <div className="rounded-[2rem] bg-gradient-peacock p-[3px] shadow-warm">
-                <div className="relative overflow-hidden rounded-[calc(2rem-2px)] bg-gradient-cream p-5 sm:p-9">
+                <div className="relative overflow-hidden rounded-[calc(2rem-2px)] bg-gradient-cream p-6 sm:p-9">
                   <PatternBackdrop variant="diya" className="text-secondary opacity-[0.07]" />
                   <Lotus className="pointer-events-none absolute -bottom-8 -left-8 h-36 w-36 opacity-25" />
 
-                  <div className="relative grid items-center gap-6 md:grid-cols-[auto_minmax(0,1fr)] md:gap-8">
+                  <div className="relative grid items-center gap-8 md:grid-cols-[auto_minmax(0,1fr)]">
                     <div className="mx-auto rounded-3xl bg-background p-4 shadow-warm ring-2 ring-secondary/35">
                       <QrSvg value={referralLink} size={170} />
                     </div>
 
-                    <div className="min-w-0 text-center md:text-left">
-                      <h3 className="font-display text-2xl sm:text-3xl">Share your Krishna code</h3>
-                      <Flourish className="mx-auto mt-3 h-5 w-48 md:mx-0" />
-                      <p className="mt-3 font-display text-2xl tracking-[0.12em] text-secondary sm:text-3xl">
+                    <div className="min-w-0">
+                      <h3 className="font-display text-3xl">Share your Krishna code</h3>
+                      <Flourish className="mt-3 h-5 w-48" />
+                      <p className="mt-3 font-display text-2xl tracking-[0.15em] text-secondary">
                         {primary.referralCode}
                       </p>
-                      <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+                      <p className="mt-2 text-muted-foreground">
                         Every bhakta who registers with your code lifts you up the leaderboard.
                       </p>
 
-                      <div className="mt-5 flex flex-wrap justify-center gap-2.5 md:justify-start">
+                      <div className="mt-5 flex flex-wrap gap-3">
                         <button
                           type="button"
                           onClick={downloadReferral}

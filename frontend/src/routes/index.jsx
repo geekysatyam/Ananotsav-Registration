@@ -34,23 +34,41 @@ export const Route = createFileRoute("/")({
 function useCountUp(target, duration = 1500) {
   const [value, setValue] = useState(0);
   const ref = useRef(null);
-  const started = useRef(false);
+  const startedFor = useRef(null);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver((entries) => {
-      if (!entries[0]?.isIntersecting || started.current) return;
-      started.current = true;
+    if (target == null || target <= 0) {
+      setValue(0);
+      startedFor.current = target;
+      return;
+    }
+
+    const run = () => {
+      if (startedFor.current === target) return;
+      startedFor.current = target;
       const start = performance.now();
+      const from = 0;
       const tick = (now) => {
         const p = Math.min(1, (now - start) / duration);
-        setValue(Math.floor(target * (1 - Math.pow(1 - p, 3))));
+        setValue(Math.floor(from + (target - from) * (1 - Math.pow(1 - p, 3))));
         if (p < 1) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
-    }, { threshold: 0.5 });
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) run();
+      },
+      { threshold: 0.15 },
+    );
     io.observe(el);
+
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) run();
+
     return () => io.disconnect();
   }, [target, duration]);
 
@@ -101,15 +119,15 @@ function HomeLeaderboardPreview({ rows }) {
 }
 
 function Landing() {
-  const [registrantCount, setRegistrantCount] = useState(0);
+  const [registrantCount, setRegistrantCount] = useState(null);
   const [previewRows, setPreviewRows] = useState([]);
 
   useEffect(() => {
-    api.getStatsCount().then((d) => setRegistrantCount(d.totalRegistrants)).catch(() => undefined);
+    api.getStatsCount().then((d) => setRegistrantCount(d.totalRegistrants ?? 0)).catch(() => setRegistrantCount(0));
     api.getLeaderboard().then((rows) => setPreviewRows(rows.slice(0, 5))).catch(() => undefined);
   }, []);
 
-  const counter = useCountUp(registrantCount, 1500);
+  const counter = useCountUp(registrantCount ?? 0, 1500);
 
   return (
     <SiteShell>
@@ -300,7 +318,7 @@ function Landing() {
                   ref={counter.ref}
                   className="mt-2 font-display text-5xl font-bold text-[#F7D98A] tabular-nums sm:text-6xl"
                 >
-                  {counter.value.toLocaleString("en-IN")}
+                  {registrantCount == null ? "—" : counter.value.toLocaleString("en-IN")}
                 </div>
                 <div className="mt-2 text-sm text-white/80">and counting...</div>
               </div>
