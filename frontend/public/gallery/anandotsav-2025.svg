@@ -1,12 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="none">
   <defs>
-    <linearGradient id="bg" x1="400" y1="0" x2="400" y2="600" gradientUnits="userSpaceOnUse">
+    <linearGradient id="g25" x1="800" y1="0" x2="800" y2="900" gradientUnits="userSpaceOnUse">
       <stop stop-color="#D89B24"/>
       <stop offset="1" stop-color="#08495B"/>
     </linearGradient>
   </defs>
-  <rect width="800" height="600" fill="url(#bg)"/>
-  <circle cx="400" cy="290" r="110" fill="rgba(255,255,255,0.1)"/>
-  <path d="M400 195c32 40 32 70 0 98-32-28-32-58 0-98Z" fill="#F7D98A"/>
-  <path d="M330 320c24-18 52-18 76 0M394 320c24-18 52-18 76 0" stroke="rgba(255,255,255,0.45)" stroke-width="5" stroke-linecap="round"/>
+  <rect width="1600" height="900" fill="url(#g25)"/>
+  <circle cx="800" cy="420" r="160" fill="rgba(255,255,255,0.12)"/>
+  <path d="M800 280c48 60 48 105 0 148-48-43-48-88 0-148Z" fill="#F7D98A"/>
+  <text x="800" y="640" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="42" font-weight="700">Anandotsav 2025</text>
+  <text x="800" y="700" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-family="system-ui, sans-serif" font-size="22">1600 × 900 landscape · replace with photo</text>
 </svg>

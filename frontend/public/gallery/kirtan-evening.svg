@@ -1,12 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="none">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="800" y2="600" gradientUnits="userSpaceOnUse">
+    <linearGradient id="gk" x1="800" y1="0" x2="800" y2="900" gradientUnits="userSpaceOnUse">
       <stop stop-color="#126B82"/>
       <stop offset="1" stop-color="#083F54"/>
     </linearGradient>
   </defs>
-  <rect width="800" height="600" fill="url(#bg)"/>
-  <rect x="280" y="200" width="240" height="160" rx="16" fill="rgba(247,217,138,0.12)" stroke="rgba(247,217,138,0.35)" stroke-width="3"/>
-  <path d="M320 360h160M360 300v120M440 300v120" stroke="#F7D98A" stroke-width="6" stroke-linecap="round"/>
-  <circle cx="400" cy="255" r="14" fill="#F7D98A"/>
+  <rect width="1600" height="900" fill="url(#gk)"/>
+  <text x="800" y="430" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="48" font-weight="700">Kirtan evening</text>
+  <text x="800" y="500" text-anchor="middle" fill="#F7D98A" font-family="system-ui, sans-serif" font-size="22">Soulful chanting at Anandotsav</text>
+  <text x="800" y="820" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="system-ui, sans-serif" font-size="20">1600 × 900 landscape · replace with photo</text>
 </svg>

@@ -1,9 +1,9 @@
 /**
- * One-time seed for the first super_admin.
- * Does nothing if any super_admin already exists.
+ * Create the first super_admin, or reset an existing super_admin password.
  *
  * Usage:
  *   npm run seed:super-admin -- <username> <password>
+ *   npm run seed:super-admin -- <username> <password> --reset-password
  */
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
@@ -13,11 +13,14 @@ import Admin from '../src/models/Admin.model.js';
 dotenv.config();
 
 async function main() {
-  const username = process.argv[2];
-  const password = process.argv[3];
+  const args = process.argv.slice(2).filter((a) => a !== '--');
+  const resetPassword = args.includes('--reset-password');
+  const positional = args.filter((a) => a !== '--reset-password');
+  const username = positional[0];
+  const password = positional[1];
 
   if (!username || !password) {
-    console.error('Usage: npm run seed:super-admin -- <username> <password>');
+    console.error('Usage: npm run seed:super-admin -- <username> <password> [--reset-password]');
     process.exit(1);
   }
   if (password.length < 8) {
@@ -32,23 +35,41 @@ async function main() {
   }
 
   await mongoose.connect(uri);
+  const normalized = username.trim().toLowerCase();
+  const passwordHash = await bcrypt.hash(password, 10);
 
   const existingSuper = await Admin.findOne({ role: 'super_admin' });
+
   if (existingSuper) {
-    console.log(`Super admin already exists (username: ${existingSuper.username}). No changes made.`);
+    if (!resetPassword) {
+      console.log(
+        `Super admin already exists (username: ${existingSuper.username}). No changes made.`,
+      );
+      console.log(
+        'To set a new password: npm run seed:super-admin -- <username> <password> --reset-password',
+      );
+      await mongoose.disconnect();
+      process.exit(0);
+    }
+
+    existingSuper.username = normalized;
+    existingSuper.passwordHash = passwordHash;
+    existingSuper.isActive = true;
+    existingSuper.tokenVersion = (existingSuper.tokenVersion ?? 0) + 1;
+    await existingSuper.save();
+
+    console.log(`Updated super_admin password for: ${existingSuper.username}`);
     await mongoose.disconnect();
     process.exit(0);
   }
 
-  const normalized = username.trim().toLowerCase();
   const taken = await Admin.findOne({ username: normalized });
   if (taken) {
-    console.error(`Username "${normalized}" is already taken`);
+    console.error(`Username "${normalized}" is already taken by a non-super-admin account`);
     await mongoose.disconnect();
     process.exit(1);
   }
 
-  const passwordHash = await bcrypt.hash(password, 10);
   const doc = await Admin.create({
     username: normalized,
     passwordHash,

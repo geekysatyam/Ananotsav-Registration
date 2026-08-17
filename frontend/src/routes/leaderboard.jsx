@@ -55,7 +55,7 @@ function LeaderboardPage() {
   const match = debouncedQuery ? rows[0] : undefined;
   return /*#__PURE__*/_jsx(SiteShell, {
     children: /*#__PURE__*/_jsxs("section", {
-      className: "relative overflow-hidden bg-gradient-festive py-16",
+      className: "relative overflow-hidden bg-gradient-festive py-10 sm:py-16",
       children: [/*#__PURE__*/_jsx(GradientMesh, {}), /*#__PURE__*/_jsx(PatternBackdrop, {
         variant: "mandala",
         className: "text-secondary opacity-[0.07]"

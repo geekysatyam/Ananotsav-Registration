@@ -22,7 +22,7 @@ function PosterSlide({ competition }) {
       hash={competition.id}
       className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D89B24] focus-visible:ring-offset-2"
     >
-      <figure className="group relative aspect-[3/4] overflow-hidden rounded-2xl bg-[#08495B]/10 shadow-[0_16px_48px_-16px_rgba(8,73,91,0.45)] ring-1 ring-white/30">
+      <figure className="group relative aspect-[2/3] overflow-hidden rounded-2xl bg-[#08495B]/10 shadow-[0_16px_48px_-16px_rgba(8,73,91,0.45)] ring-1 ring-white/30">
         {failed ? (
           <div
             className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center"
@@ -37,6 +37,8 @@ function PosterSlide({ competition }) {
           <img
             src={competition.poster}
             alt=""
+            width={1024}
+            height={1536}
             loading="lazy"
             draggable={false}
             onError={() => setFailed(true)}
@@ -118,7 +120,7 @@ export function CompetitionsCarousel() {
               {competitions.map((competition, index) => (
                 <CarouselItem
                   key={competition.id}
-                  className="basis-[78%] pl-3 sm:basis-[45%] sm:pl-4 lg:basis-[32%]"
+                  className="basis-[72%] pl-3 sm:basis-[42%] sm:pl-4 lg:basis-[30%]"
                 >
                   <div
                     className={cn(

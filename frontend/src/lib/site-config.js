@@ -73,8 +73,7 @@ export const siteConfig = {
 
     /**
      * Previous Anandotsav photo carousel (home page, after hero).
-     * Put images in frontend/public/gallery/ and update src paths below.
-     * Supported: .jpg, .jpeg, .png, .webp, .svg
+     * Landscape 16:9 — 1600 × 900 px. See frontend/MEDIA_GUIDE.md
      */
     gallery: {
       title: "Memories from Anandotsav",
@@ -175,8 +174,8 @@ export const siteConfig = {
       },
     ],
 
-    /** Official poster asset (public/) */
-    posterSrc: "/anandotsav-2026-poster.png",
+    /** Official poster — 1024 × 1536. Replace SVG placeholder via MEDIA_GUIDE.md */
+    posterSrc: "/anandotsav-2026-poster.svg",
 
     // ── Festival highlights ──────────────────────────────────────────────
     highlights: [
@@ -288,8 +287,9 @@ export const siteConfig = {
 
   // ── Competitions (home carousel + /competitions page) ───────────────────
   /**
-   * Replace poster paths with real JPEG/PNG/WebP when ready.
-   * Place files in frontend/public/competitions/
+   * Competition posters: 1024 × 1536 px (portrait).
+   * Past-year gallery photos: 1600 × 900 px (landscape 16:9).
+   * See frontend/MEDIA_GUIDE.md
    */
   competitions: [
     {
@@ -338,6 +338,7 @@ export const siteConfig = {
         "Arrive in costume on Anandotsav day.",
         "Report to the kids desk before the fancy dress segment begins.",
       ],
+      venue: "Kids desk · event day",
       primaryCta: { label: "Register your family", to: "/register" },
       secondaryCta: { label: "Event details", to: "/event-details" },
     },
@@ -349,13 +350,15 @@ export const siteConfig = {
       description:
         "Bring your Laddu Gopal and offer festive shringar — flowers, clothes, and ornaments — in a spirit of devotion and celebration.",
       audience: "Families & devotees",
-      timing: "Event day — 6 September 2026",
+      timing: "Event day — 6 September 2026 · Utsav Mandapam",
       poster: "/competitions/laddu-gopal.svg",
       theme: { from: "#126B82", to: "#F7D98A" },
+      venue: "Utsav Mandapam",
+      note: "Please bring your Laddu Gopal before 6:00 PM. Entry for the competition closes after that.",
       howTo: [
         "Bring your Laddu Gopal murti pre-shringar or decorated from your house.",
-        "Check in at the Seva Desk on arrival.",
-        "Place your Laddu Gopal at the designated segment.",
+        "Arrive at Utsav Mandapam before 6:00 PM — no competition entry after that.",
+        "Check in at the Seva Desk and place your Laddu Gopal at the designated segment.",
       ],
       primaryCta: { label: "Event details", to: "/event-details" },
       secondaryCta: { label: "Register to attend", to: "/register" },

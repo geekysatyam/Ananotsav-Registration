@@ -133,7 +133,7 @@ export function DobPicker({
             className="fixed inset-0 z-40 cursor-default"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute z-50 mt-2 w-full min-w-[280px] rounded-2xl border border-primary/20 bg-card p-3 shadow-lg ring-1 ring-primary/10 sm:w-[320px]">
+          <div className="absolute z-50 mt-2 w-full min-w-0 max-w-[min(320px,calc(100vw-2.5rem))] rounded-2xl border border-primary/20 bg-card p-3 shadow-lg ring-1 ring-primary/10">
             <div className="mb-3 flex items-center gap-2">
               <button
                 type="button"

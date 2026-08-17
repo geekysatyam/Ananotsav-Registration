@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536" fill="none">
+  <defs>
+    <linearGradient id="pbg" x1="512" y1="0" x2="512" y2="1536" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8E7"/>
+      <stop offset="0.45" stop-color="#EEF9F8"/>
+      <stop offset="1" stop-color="#08495B"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1536" fill="url(#pbg)"/>
+  <rect x="48" y="48" width="928" height="1440" rx="24" fill="none" stroke="#D89B24" stroke-width="4"/>
+  <text x="512" y="280" text-anchor="middle" fill="#8B2942" font-family="Georgia, serif" font-size="28" font-weight="700">SRI KRISHNA JANMASHTAMI</text>
+  <text x="512" y="420" text-anchor="middle" fill="#08495B" font-family="Georgia, serif" font-size="88" font-weight="700">Anandotsav</text>
+  <text x="512" y="520" text-anchor="middle" fill="#08495B" font-family="Georgia, serif" font-size="72" font-weight="700">2026</text>
+  <rect x="362" y="580" width="300" height="5" rx="2" fill="#D89B24"/>
+  <text x="512" y="700" text-anchor="middle" fill="#126B82" font-family="system-ui, sans-serif" font-size="32">Sunday, 6 September 2026</text>
+  <text x="512" y="760" text-anchor="middle" fill="#126B82" font-family="system-ui, sans-serif" font-size="28">5:00 PM onwards</text>
+  <text x="512" y="900" text-anchor="middle" fill="#08495B" font-family="Georgia, serif" font-size="36" font-weight="700">Sri Gokul Gaushala</text>
+  <text x="512" y="960" text-anchor="middle" fill="#08495B" font-family="system-ui, sans-serif" font-size="26">Amritsar</text>
+  <text x="512" y="1380" text-anchor="middle" fill="rgba(8,73,91,0.55)" font-family="system-ui, sans-serif" font-size="22">1024 x 1536 · replace with official poster</text>
+  <text x="512" y="1440" text-anchor="middle" fill="rgba(8,73,91,0.5)" font-family="system-ui, sans-serif" font-size="20">See frontend/MEDIA_GUIDE.md</text>
+</svg>

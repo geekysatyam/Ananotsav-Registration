@@ -57,7 +57,8 @@ export function Navbar() {
             onClick={() => setOpen(false)}
             className="inline-flex min-h-8 shrink-0 items-center rounded-lg bg-gradient-gold px-2.5 py-1.5 text-[11px] font-bold text-white shadow-md transition hover:-translate-y-0.5 sm:px-3.5 sm:text-[13px]"
           >
-            <span className="lg:hidden">Register for Free !!</span>
+            <span className="sm:hidden">Register</span>
+            <span className="hidden sm:inline lg:hidden">Register for Free !!</span>
             <span className="hidden lg:inline">Register for Free !! →</span>
           </Link>
           <button

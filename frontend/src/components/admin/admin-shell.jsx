@@ -243,10 +243,12 @@ export function AdminShell() {
         <header className="flex items-center gap-3 border-b border-primary/20 bg-card/90 px-3 py-3 backdrop-blur md:hidden">
           <span className="shrink-0 font-display text-lg">Admin</span>
           <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto pb-0.5">
-            {navItems.map(({ to, icon: Icon }) => (
+            {navItems.map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}
                 to={to}
+                aria-label={label}
+                title={label}
                 className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/10 text-secondary [&.active]:bg-secondary/20"
                 activeProps={{ className: "active" }}
               >

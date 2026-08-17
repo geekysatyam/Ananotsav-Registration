@@ -801,8 +801,8 @@ function RegisterPage() {
                         }}
                       >
                         <p className="mb-2 text-xs leading-snug text-muted-foreground">
-                          Bring your Laddu Gopal pre-shringar from home and make him part of the
-                          joyous evening of bhaktas.
+                          Bring your Laddu Gopal pre-shringar from home to Utsav Mandapam. Kindly
+                          arrive before 6:00 PM so he can join the joyous evening of bhaktas.
                         </p>
                         <label className="block">
                           <span className="mb-1 block text-xs font-bold text-secondary">
@@ -814,11 +814,11 @@ function RegisterPage() {
                             required={wantsLadduGopal}
                             value={ladduGopalSize}
                             onChange={(e) => setLadduGopalSize(e.target.value)}
-                            placeholder="e.g. 6 inch, 8 cm, medium…"
+                            placeholder="e.g. 6 inch — please bring before 6 PM"
                             className="min-h-10 w-full rounded-xl border-2 border-primary/30 bg-background px-3 text-sm outline-none focus:border-primary"
                           />
                           <p className="mt-1 text-[11px] text-muted-foreground">
-                            Enter height, size or any detail that helps the seva desk.
+                            Staging is at Utsav Mandapam. Entry for the competition closes after 6:00 PM.
                           </p>
                         </label>
                       </CompactToggleRow>

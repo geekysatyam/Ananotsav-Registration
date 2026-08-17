@@ -29,7 +29,7 @@ export function EventDetailsSection() {
               <p className="mt-3 text-xs font-bold tracking-[0.28em] text-[#8B2942] uppercase sm:text-sm">
                 Sri Krishna Janmashtami
               </p>
-              <h1 className="mt-2 font-display text-[clamp(2.75rem,8vw,4.5rem)] leading-[0.95] font-bold text-[#08495B]">
+              <h1 className="mt-2 font-display text-[clamp(2.15rem,9vw,4.5rem)] leading-[1.02] font-bold text-[#08495B]">
                 {siteConfig.brand.shortName}
               </h1>
               <div className="mt-4 flex items-center justify-center gap-3 lg:justify-start">
@@ -43,7 +43,7 @@ export function EventDetailsSection() {
               <p className="mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
                 {event.invitation.body}
               </p>
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+              <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
                 <Link
                   to="/register"
                   className="jh-pulse-glow inline-flex items-center justify-center gap-2 rounded-xl bg-secondary px-6 py-3 text-sm font-extrabold text-white shadow-lg transition hover:bg-[#08495B]"
@@ -66,9 +66,9 @@ export function EventDetailsSection() {
                 <img
                   src={event.posterSrc}
                   alt="Anandotsav 2026 official invitation poster"
-                  className="w-full rounded-xl object-cover"
-                  width={800}
-                  height={1200}
+                  className="aspect-[2/3] w-full rounded-xl object-cover"
+                  width={1024}
+                  height={1536}
                   loading="eager"
                 />
               </div>
@@ -108,8 +108,8 @@ export function EventDetailsSection() {
       <section className="relative overflow-hidden py-14 sm:py-16">
         <div className="jh-pattern opacity-[0.12]" />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mx-auto max-w-3xl rounded-full bg-[#8B2942] px-6 py-3 text-center shadow-md">
-            <p className="text-xs font-bold tracking-[0.22em] text-[#F7D98A] uppercase sm:text-sm">
+          <div className="mx-auto max-w-3xl rounded-2xl bg-[#8B2942] px-4 py-3 text-center shadow-md sm:rounded-full sm:px-6">
+            <p className="text-[11px] font-bold tracking-[0.14em] text-[#F7D98A] uppercase sm:text-sm sm:tracking-[0.22em]">
               A divine celebration featuring
             </p>
           </div>
@@ -154,6 +154,64 @@ export function EventDetailsSection() {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Competitions — short details */}
+      <section className="relative border-b border-[#D89B24]/15 bg-[#FFFDF7] py-14 sm:py-16">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <p className="text-xs font-bold tracking-[0.24em] text-[#D89B24] uppercase">Competitions</p>
+              <h2 className="mt-2 font-display text-2xl font-bold text-[#08495B] sm:text-4xl">
+                Join in the celebration
+              </h2>
+              <Flourish className="mt-4 h-5 w-40" />
+            </div>
+            <Link
+              to="/competitions"
+              className="inline-flex items-center justify-center rounded-xl border border-secondary/20 bg-white px-4 py-2.5 text-sm font-bold text-secondary shadow-sm transition hover:bg-[#EEF9F8]"
+            >
+              View all competitions →
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            {siteConfig.competitions.map((c) => (
+              <Link
+                key={c.id}
+                to="/competitions"
+                hash={c.id}
+                className="block rounded-2xl border border-[#D89B24]/20 bg-white p-5 shadow-[0_10px_32px_rgba(8,73,91,0.06)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_36px_rgba(8,73,91,0.1)]"
+              >
+                <h3 className="font-display text-xl font-bold text-[#08495B]">{c.title}</h3>
+                <p className="mt-1 text-sm text-[#126B82]">{c.tagline}</p>
+                {c.description ? (
+                  <p className="mt-3 line-clamp-3 text-xs leading-relaxed text-slate-600">
+                    {c.description}
+                  </p>
+                ) : null}
+                <p className="mt-3 text-xs leading-relaxed text-slate-600">{c.timing}</p>
+                {c.venue ? (
+                  <p className="mt-1 text-xs text-slate-500">{c.venue}</p>
+                ) : null}
+                {c.categories?.length ? (
+                  <ul className="mt-3 space-y-1 text-xs text-slate-600">
+                    {c.categories.map((cat) => (
+                      <li key={cat.label}>
+                        <span className="font-semibold text-[#08495B]">{cat.label}</span>
+                        {cat.detail ? ` — ${cat.detail}` : ""}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                {c.note ? (
+                  <p className="mt-3 rounded-lg bg-[#FFF8E7] px-2.5 py-2 text-xs leading-relaxed text-[#08495B] ring-1 ring-[#D89B24]/20">
+                    {c.note}
+                  </p>
+                ) : null}
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -210,7 +268,7 @@ export function EventDetailsSection() {
               )}
               <a href={contact.emailHref} className="flex items-center gap-3 text-slate-700 transition hover:text-secondary">
                 <Mail className="h-5 w-5 shrink-0 text-secondary" />
-                <span>{contact.email}</span>
+                <span className="min-w-0 break-all">{contact.email}</span>
               </a>
             </div>
           </div>

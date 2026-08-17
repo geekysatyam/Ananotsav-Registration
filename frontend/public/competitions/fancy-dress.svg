@@ -1,17 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536" viewBox="0 0 1024 1536" fill="none">
   <defs>
-    <linearGradient id="fbg" x1="300" y1="0" x2="300" y2="800" gradientUnits="userSpaceOnUse">
+    <linearGradient id="fbg" x1="512" y1="0" x2="512" y2="1536" gradientUnits="userSpaceOnUse">
       <stop stop-color="#D89B24"/>
       <stop offset="1" stop-color="#08495B"/>
     </linearGradient>
   </defs>
-  <rect width="600" height="800" fill="url(#fbg)"/>
-  <circle cx="300" cy="280" r="120" fill="rgba(255,255,255,0.12)"/>
-  <text x="300" y="200" text-anchor="middle" fill="#FFF8E7" font-family="Georgia, serif" font-size="28" font-weight="700">ANANDOTSAV 2026</text>
-  <text x="300" y="300" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="40" font-weight="700">Fancy Dress</text>
-  <text x="300" y="350" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="40" font-weight="700">for Kids</text>
-  <text x="300" y="420" text-anchor="middle" fill="#F7D98A" font-family="system-ui, sans-serif" font-size="18">Krishna · Radha · Gokul</text>
-  <rect x="180" y="480" width="240" height="4" rx="2" fill="#F7D98A"/>
-  <text x="300" y="540" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="system-ui, sans-serif" font-size="16">Event day costume celebration</text>
-  <text x="300" y="700" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-family="system-ui, sans-serif" font-size="14">Sri Gokul Gaushala, Amritsar</text>
+  <rect width="1024" height="1536" fill="url(#fbg)"/>
+  <circle cx="512" cy="520" r="210" fill="rgba(255,255,255,0.12)"/>
+  <text x="512" y="380" text-anchor="middle" fill="#FFF8E7" font-family="Georgia, serif" font-size="36" font-weight="700">ANANDOTSAV 2026</text>
+  <text x="512" y="560" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="68" font-weight="700">Fancy Dress</text>
+  <text x="512" y="650" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="68" font-weight="700">for Kids</text>
+  <text x="512" y="780" text-anchor="middle" fill="#F7D98A" font-family="system-ui, sans-serif" font-size="28">Krishna · Radha · Gokul</text>
+  <rect x="362" y="860" width="300" height="5" rx="2" fill="#F7D98A"/>
+  <text x="512" y="960" text-anchor="middle" fill="rgba(255,255,255,0.85)" font-family="system-ui, sans-serif" font-size="24">Event day costume celebration</text>
+  <text x="512" y="1380" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-family="system-ui, sans-serif" font-size="22">1024 x 1536 · replace with poster</text>
+  <text x="512" y="1440" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="system-ui, sans-serif" font-size="20">Sri Gokul Gaushala, Amritsar</text>
 </svg>

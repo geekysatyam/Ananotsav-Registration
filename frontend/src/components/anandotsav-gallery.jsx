@@ -31,7 +31,7 @@ function GalleryPhoto({ photo }) {
 
   return (
     <div className="h-full pb-1">
-      <figure className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-[#08495B]/5 shadow-[0_10px_40px_-12px_rgba(8,73,91,0.35)] ring-1 ring-white/40">
+      <figure className="group relative aspect-[16/9] overflow-hidden rounded-2xl bg-[#08495B]/5 shadow-[0_10px_40px_-12px_rgba(8,73,91,0.35)] ring-1 ring-white/40">
         {failed ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-[#EEF9F8] via-[#FFF8E7] to-[#126B82]/25 px-6 text-center">
             <div className="grid h-12 w-12 place-items-center rounded-full bg-white/80 font-display text-lg font-bold text-[#08495B] shadow-sm">
@@ -43,6 +43,8 @@ function GalleryPhoto({ photo }) {
           <img
             src={photo.src}
             alt=""
+            width={1600}
+            height={900}
             loading="lazy"
             draggable={false}
             onError={() => setFailed(true)}

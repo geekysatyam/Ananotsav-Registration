@@ -443,11 +443,15 @@ function AdminRegisterPage() {
               if (!v) setLadduGopalSize("");
             }}
           >
+            <p className="mb-2 text-xs leading-relaxed text-muted-foreground">
+              Staging at Utsav Mandapam. Please bring Laddu Gopal before 6:00 PM — no competition
+              entry after that.
+            </p>
             <input
               type="text"
               value={ladduGopalSize}
               onChange={(e) => setLadduGopalSize(e.target.value)}
-              placeholder="e.g. 6 inch, 8 cm, medium…"
+              placeholder="e.g. 6 inch — please bring before 6 PM"
               className="min-h-10 w-full rounded-xl border-2 border-primary/30 bg-background px-3 text-sm outline-none focus:border-primary"
             />
           </DeskToggle>

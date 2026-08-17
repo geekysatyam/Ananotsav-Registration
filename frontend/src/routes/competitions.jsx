@@ -33,7 +33,7 @@ function PosterImage({ competition }) {
   if (failed) {
     return (
       <div
-        className="flex aspect-[3/4] w-full flex-col items-center justify-center gap-3 rounded-2xl px-6 text-center"
+        className="flex aspect-[2/3] w-full flex-col items-center justify-center gap-3 rounded-2xl px-6 text-center"
         style={{ background: `linear-gradient(160deg, ${theme.from}, ${theme.to})` }}
       >
         <p className="font-display text-2xl font-bold text-white">{competition.title}</p>
@@ -46,9 +46,11 @@ function PosterImage({ competition }) {
     <img
       src={competition.poster}
       alt={`${competition.title} poster`}
+      width={1024}
+      height={1536}
       loading="lazy"
       onError={() => setFailed(true)}
-      className="aspect-[3/4] w-full rounded-2xl object-cover shadow-[0_20px_50px_-20px_rgba(8,73,91,0.45)] ring-1 ring-[#08495B]/10"
+      className="aspect-[2/3] w-full rounded-2xl object-cover shadow-[0_20px_50px_-20px_rgba(8,73,91,0.45)] ring-1 ring-[#08495B]/10"
     />
   );
 }
@@ -108,7 +110,19 @@ function CompetitionBlock({ competition, reverse = false }) {
                 )}
               </dd>
             </div>
+            {competition.venue ? (
+              <div className="flex gap-2">
+                <dt className="shrink-0 font-bold text-[#08495B]">Where:</dt>
+                <dd className="text-slate-600">{competition.venue}</dd>
+              </div>
+            ) : null}
           </dl>
+
+          {competition.note ? (
+            <p className="mt-4 rounded-xl bg-[#FFF8E7] px-3 py-2.5 text-sm leading-relaxed text-[#08495B] ring-1 ring-[#D89B24]/25">
+              {competition.note}
+            </p>
+          ) : null}
 
           {competition.id === "referral" && endsAt ? (
             <div className="mt-6 max-w-md rounded-2xl border border-[#D89B24]/20 bg-[#FFF8E7]/60 p-4">
@@ -174,12 +188,12 @@ function CompetitionsPage() {
         <GradientMesh />
         <FloatingMotifs />
 
-        <header className="relative border-b border-[#D89B24]/15 bg-gradient-to-b from-[#EEF9F8] to-white py-16 sm:py-20">
+        <header className="relative border-b border-[#D89B24]/15 bg-gradient-to-b from-[#EEF9F8] to-white py-10 sm:py-20">
           <div className="relative z-10 mx-auto max-w-3xl px-5 text-center sm:px-8">
             <p className="text-xs font-bold tracking-[0.22em] text-[#D89B24] uppercase">
               {siteConfig.brand.name}
             </p>
-            <h1 className="mt-3 font-display text-4xl font-bold text-[#08495B] sm:text-5xl">
+            <h1 className="mt-3 font-display text-3xl font-bold text-[#08495B] sm:text-5xl">
               Competitions
             </h1>
             <Flourish className="mx-auto mt-4 h-5 w-40" />

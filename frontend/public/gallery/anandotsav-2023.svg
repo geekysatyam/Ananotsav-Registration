@@ -1,13 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="none">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="800" y2="600" gradientUnits="userSpaceOnUse">
+    <linearGradient id="g23" x1="800" y1="0" x2="800" y2="900" gradientUnits="userSpaceOnUse">
       <stop stop-color="#08495B"/>
-      <stop offset="0.55" stop-color="#126B82"/>
       <stop offset="1" stop-color="#D89B24"/>
     </linearGradient>
   </defs>
-  <rect width="800" height="600" fill="url(#bg)"/>
-  <circle cx="400" cy="280" r="120" fill="rgba(255,255,255,0.08)"/>
-  <circle cx="400" cy="280" r="72" fill="rgba(247,217,138,0.22)"/>
-  <path d="M400 210c28 36 28 64 0 88-28-24-28-52 0-88Z" fill="#F7D98A" opacity="0.9"/>
+  <rect width="1600" height="900" fill="url(#g23)"/>
+  <text x="800" y="430" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="48" font-weight="700">Anandotsav 2023</text>
+  <text x="800" y="500" text-anchor="middle" fill="#F7D98A" font-family="system-ui, sans-serif" font-size="22">Janmashtami utsav</text>
+  <text x="800" y="820" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-family="system-ui, sans-serif" font-size="20">1600 × 900 landscape · replace with photo</text>
 </svg>

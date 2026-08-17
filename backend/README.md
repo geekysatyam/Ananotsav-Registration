@@ -6,10 +6,14 @@ Node.js / Express / MongoDB API for the Janmashtami Bhakta Registration Platform
 
 1. Copy `.env.example` to `.env` and fill in all values.
 2. `npm install`
-3. Create the first super admin (one-time only; does nothing if one already exists):
+3. Create or reset the super admin:
 
 ```bash
+# First time
 npm run seed:super-admin -- yourUsername yourSecurePassword
+
+# If user already exists but login fails — reset password
+npm run seed:super-admin -- yourUsername yourSecurePassword --reset-password
 ```
 
 4. Start: `npm run dev` (or `npm start` in production)

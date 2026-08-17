@@ -98,7 +98,7 @@ export function AdminOptInList({ kind, title, subtitle, columns, filename }) {
 
       {error && <p className="mt-3 text-sm font-semibold text-destructive">{error}</p>}
 
-      <div className="mt-4 overflow-hidden rounded-2xl ring-1 ring-primary/20">
+      <div className="mt-4 overflow-x-auto rounded-2xl ring-1 ring-primary/20">
         <Table>
           <TableHeader>
             <TableRow>

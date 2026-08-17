@@ -80,7 +80,7 @@ function HomeLeaderboardPreview({ rows }) {
       {rows.slice(0, 5).map((r, i) => (
         <div
           key={`${r.rank}-${r.fullName}`}
-          className={`flex items-center gap-4 px-6 py-5 ${i === 0 ? "jh-rank-glow" : ""}`}
+          className={`flex items-center gap-3 px-4 py-4 sm:gap-4 sm:px-6 sm:py-5 ${i === 0 ? "jh-rank-glow" : ""}`}
         >
           <div
             className={`grid h-11 w-11 shrink-0 place-items-center rounded-full font-black ${rankBg[i] ?? rankBg[4]}`}
@@ -125,7 +125,7 @@ function Landing() {
         {/* Hero — one viewport; event details + countdown sit under the illustration */}
         <section
           id="home"
-          className="jh-hero-bg relative flex h-[calc(100dvh-3.75rem)] items-center overflow-x-clip py-4 sm:py-5 lg:py-6"
+          className="jh-hero-bg relative flex min-h-[calc(100dvh-3.75rem)] items-center overflow-x-clip py-5 sm:py-6 lg:h-[calc(100dvh-3.75rem)] lg:py-6"
         >
           <div className="jh-pattern" />
           <div className="jh-mandala absolute top-1/2 right-[-80px] hidden -translate-y-1/2 opacity-60 lg:block" />
@@ -282,7 +282,7 @@ function Landing() {
                 <div className="inline-flex items-center gap-2 text-sm font-bold text-[#F7D98A]">
                   <span>🔥</span> THE FESTIVE CHALLENGE
                 </div>
-                <h2 className="mt-3 font-display text-4xl font-bold sm:text-5xl">
+                <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl lg:text-5xl">
                   The more you share,
                   <br />
                   <span className="text-[#F7D98A]">the more you inspire.</span>
@@ -292,9 +292,9 @@ function Landing() {
                   adds to your count and moves you closer to the top of the leaderboard.
                 </p>
               </div>
-              <div className="jh-glass min-w-[230px] rounded-3xl border-white/10 bg-white/10 px-10 py-7 text-center">
-                <div className="text-sm font-bold tracking-[0.18em] text-white/65 uppercase">Bhaktas Registered</div>
-                <div ref={counter.ref} className="mt-2 font-display text-6xl font-bold text-[#F7D98A] tabular-nums">
+              <div className="jh-glass mx-auto w-full max-w-sm rounded-3xl border-white/10 bg-white/10 px-6 py-6 text-center sm:px-10 sm:py-7 md:mx-0 md:min-w-[240px]">
+                <div className="text-[11px] font-bold tracking-[0.18em] text-white/65 uppercase sm:text-sm">Bhaktas Registered</div>
+                <div ref={counter.ref} className="mt-2 font-display text-5xl font-bold text-[#F7D98A] tabular-nums sm:text-6xl">
                   {counter.value.toLocaleString("en-IN")}
                 </div>
                 <div className="mt-2 text-sm text-white/60">and counting...</div>
@@ -304,7 +304,7 @@ function Landing() {
         </section>
 
         {/* Divine Gifts */}
-        <section className="jh-section-gold relative overflow-hidden py-20">
+        <section className="jh-section-gold relative overflow-hidden py-14 sm:py-20">
           <div className="jh-pattern opacity-[0.09]" />
           <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
             <div className="grid items-center gap-12 lg:grid-cols-[0.8fr_1.2fr]">
@@ -316,10 +316,10 @@ function Landing() {
                 </div>
               </div>
               <div>
-                <div className="inline-flex rounded-full bg-[#D89B24]/10 px-4 py-2 text-sm font-extrabold text-[#D89B24]">
+                <div className="inline-flex max-w-full rounded-full bg-[#D89B24]/10 px-3 py-2 text-xs font-extrabold text-[#D89B24] sm:px-4 sm:text-sm">
                   🎁 A little blessing for every Bhakta
                 </div>
-                <h2 className="mt-4 font-display text-4xl font-bold text-[#08495B] sm:text-5xl">
+                <h2 className="mt-4 font-display text-3xl font-bold text-[#08495B] sm:text-4xl lg:text-5xl">
                   Every Bhakta Gets <span className="text-[#D89B24]">Divine Gifts</span> 🎁
                 </h2>
                 <Flourish className="mt-4 h-5 w-40" />
@@ -349,7 +349,7 @@ function Landing() {
           <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
             <div className="mx-auto max-w-2xl text-center">
               <div className="text-xs font-bold tracking-[0.2em] text-[#D89B24] uppercase">Come celebrate with us</div>
-              <h2 className="mt-3 font-display text-4xl font-bold text-[#08495B] sm:text-5xl">
+              <h2 className="mt-3 font-display text-3xl font-bold text-[#08495B] sm:text-4xl lg:text-5xl">
                 A night filled with <span className="text-[#D89B24]">divine joy</span>
               </h2>
               <Flourish className="mx-auto h-5 w-40" />
@@ -379,8 +379,8 @@ function Landing() {
 
               {/* Celebration features */}
               <div className="p-5 sm:p-6">
-                <div className="rounded-full bg-[#8B2942] px-4 py-2 text-center">
-                  <p className="text-[10px] font-bold tracking-[0.18em] text-[#F7D98A] uppercase sm:text-xs">
+                <div className="rounded-2xl bg-[#8B2942] px-3 py-2 text-center sm:rounded-full sm:px-4">
+                  <p className="text-[10px] font-bold tracking-[0.12em] text-[#F7D98A] uppercase sm:text-xs sm:tracking-[0.18em]">
                     A divine celebration featuring
                   </p>
                 </div>
@@ -421,12 +421,12 @@ function Landing() {
         <CompetitionsCarousel />
 
         {/* Leaderboard */}
-        <section id="leaderboard" className="jh-section-wash relative overflow-hidden py-20">
+        <section id="leaderboard" className="jh-section-wash relative overflow-hidden py-14 sm:py-20">
           <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
             <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
               <div>
                 <div className="text-xs font-bold tracking-[0.2em] text-[#D89B24] uppercase">Who is leading?</div>
-                <h2 className="mt-3 font-display text-4xl font-bold text-[#08495B] sm:text-5xl">
+                <h2 className="mt-3 font-display text-3xl font-bold text-[#08495B] sm:text-4xl lg:text-5xl">
                   Bhakta <span className="text-[#D89B24]">Leaderboard</span>
                 </h2>
                 <Flourish className="mt-4 h-5 w-40" />
@@ -449,12 +449,12 @@ function Landing() {
                 <HomeLeaderboardPreview rows={previewRows} />
               </div>
 
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-peacock p-8 text-white">
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-peacock p-5 text-white sm:p-8">
                 <div className="absolute -top-16 -right-16 h-52 w-52 rounded-full border border-white/10" />
                 <div className="jh-float absolute top-6 right-6 text-5xl">🪶</div>
                 <div className="relative z-10">
                   <div className="text-xs font-bold tracking-[0.18em] text-[#F7D98A] uppercase">Want your name here?</div>
-                  <h3 className="mt-3 font-display text-3xl font-bold">Your next referral could change the board.</h3>
+                  <h3 className="mt-3 font-display text-2xl font-bold sm:text-3xl">Your next referral could change the board.</h3>
                   <p className="mt-4 leading-7 text-white/70">
                     Register, opt into the referral challenge and start inviting your people.
                   </p>
@@ -478,12 +478,12 @@ function Landing() {
         </section>
 
         {/* Register CTA */}
-        <section id="register" className="jh-hero-bg relative overflow-hidden py-24">
+        <section id="register" className="jh-hero-bg relative overflow-hidden py-16 sm:py-24">
           <div className="jh-pattern" />
           <div className="relative z-10 mx-auto max-w-5xl px-5 text-center sm:px-8">
             <div className="jh-float mb-5 text-6xl">🪷</div>
             <div className="text-xs font-bold tracking-[0.25em] text-[#D89B24] uppercase">Your celebration starts here</div>
-            <h2 className="mt-3 font-display text-5xl font-bold text-[#08495B] sm:text-6xl">
+            <h2 className="mt-3 font-display text-3xl font-bold text-[#08495B] sm:text-5xl lg:text-6xl">
               Ready to become a <span className="text-[#D89B24]">Bhakta?</span>
             </h2>
             <div className="jh-flourish justify-center">
@@ -495,16 +495,16 @@ function Landing() {
               {siteConfig.event.invitation.body} Every Bhakta receives a personal Entry QR and Divine
               Gifts. Opt into the referral challenge to invite friends and climb the leaderboard.
             </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="mt-8 flex w-full flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
               <Link
                 to="/register"
-                className="jh-pulse-glow inline-flex rounded-2xl bg-gradient-peacock px-8 py-4 text-lg font-extrabold text-white shadow-2xl transition hover:-translate-y-1"
+                className="jh-pulse-glow inline-flex items-center justify-center rounded-2xl bg-gradient-peacock px-6 py-3.5 text-base font-extrabold text-white shadow-2xl transition hover:-translate-y-1 sm:px-8 sm:py-4 sm:text-lg"
               >
                 Register for Free !! · It&apos;s Free
               </Link>
               <Link
                 to="/event-details"
-                className="inline-flex rounded-2xl border border-secondary/20 bg-white/80 px-8 py-4 text-lg font-bold text-secondary shadow-sm transition hover:bg-white"
+                className="inline-flex items-center justify-center rounded-2xl border border-secondary/20 bg-white/80 px-6 py-3.5 text-base font-bold text-secondary shadow-sm transition hover:bg-white sm:px-8 sm:py-4 sm:text-lg"
               >
                 Explore event details
               </Link>

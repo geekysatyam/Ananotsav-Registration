@@ -1,13 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" fill="none">
   <defs>
-    <linearGradient id="bg" x1="0" y1="600" x2="800" y2="0" gradientUnits="userSpaceOnUse">
+    <linearGradient id="g24" x1="800" y1="0" x2="800" y2="900" gradientUnits="userSpaceOnUse">
       <stop stop-color="#FFF8E7"/>
-      <stop offset="0.5" stop-color="#EEF9F8"/>
       <stop offset="1" stop-color="#126B82"/>
     </linearGradient>
   </defs>
-  <rect width="800" height="600" fill="url(#bg)"/>
-  <ellipse cx="400" cy="290" rx="140" ry="95" fill="rgba(216,155,36,0.18)"/>
-  <path d="M290 290c55-42 165-42 220 0-55 42-165 42-220 0Z" fill="#D89B24" opacity="0.4"/>
-  <circle cx="400" cy="290" r="22" fill="#08495B" opacity="0.85"/>
+  <rect width="1600" height="900" fill="url(#g24)"/>
+  <circle cx="800" cy="400" r="150" fill="rgba(8,73,91,0.12)"/>
+  <text x="800" y="430" text-anchor="middle" fill="#08495B" font-family="Georgia, serif" font-size="48" font-weight="700">Anandotsav 2024</text>
+  <text x="800" y="500" text-anchor="middle" fill="#126B82" font-family="system-ui, sans-serif" font-size="22">Kirtan &amp; celebrations</text>
+  <text x="800" y="820" text-anchor="middle" fill="rgba(8,73,91,0.55)" font-family="system-ui, sans-serif" font-size="20">1600 × 900 landscape · replace with photo</text>
 </svg>

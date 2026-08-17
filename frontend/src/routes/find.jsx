@@ -44,7 +44,7 @@ function FindPage() {
 
   return (
     <SiteShell>
-      <section className="relative overflow-hidden bg-gradient-festive py-20">
+      <section className="relative overflow-hidden bg-gradient-festive py-10 sm:py-20">
         <GradientMesh />
         <PatternBackdrop variant="mandala" className="text-secondary opacity-[0.07]" />
         <FloatingMotifs count={8} />

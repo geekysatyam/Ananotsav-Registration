@@ -64,7 +64,7 @@ export function Footer() {
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/25 text-primary">
                 <Mail className="h-5 w-5" />
               </span>
-              <a href={contact.emailHref} className="hover:underline">
+              <a href={contact.emailHref} className="min-w-0 break-all hover:underline">
                 {contact.email}
               </a>
             </li>
