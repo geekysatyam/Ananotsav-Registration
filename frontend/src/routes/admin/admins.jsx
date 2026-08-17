@@ -1,4 +1,4 @@
-import { createFileRoute, useOutletContext } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   Baby,
@@ -104,8 +104,7 @@ function RoleCard({ value, selected, title, description, onSelect }) {
 }
 
 function AdminsPage() {
-  const ctx = useOutletContext() ?? {};
-  const token = ctx.token ?? loadAdminSession()?.token;
+  const token = loadAdminSession()?.token;
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
