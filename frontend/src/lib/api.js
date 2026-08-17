@@ -222,9 +222,11 @@ export const api = {
   },
 };
 
-export const LADDU_GOPAL_SIZES = ["Small", "Medium", "Large", "Other"];
 export function normalizePhone(phone) {
-  return phone.replace(/\D/g, "");
+  let d = String(phone ?? "").replace(/\D/g, "");
+  if (d.length === 12 && d.startsWith("91")) d = d.slice(2);
+  if (d.length === 11 && d.startsWith("0")) d = d.slice(1);
+  return d;
 }
 
 /** Turn API errors into clear registration messages (duplicate user, validation, etc.) */

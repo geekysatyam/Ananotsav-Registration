@@ -17,13 +17,22 @@ import { SiteShell } from "@/components/site-shell";
 import { GoldButton, SectionHeading } from "@/components/festive";
 import { FloatingMotifs, GradientMesh } from "@/components/ambient";
 import { Flourish, Lotus, PatternBackdrop, PeacockFeather, TempleSilhouette } from "@/components/motifs";
-import { api, formatRegistrationError, normalizePhone, saveRegistrationResult, LADDU_GOPAL_SIZES } from "@/lib/api";
+import { api, formatRegistrationError, normalizePhone, saveRegistrationResult } from "@/lib/api";
+import { DobPicker } from "@/components/dob-picker";
+import {
+  phoneValidationMessage,
+  optionalPhoneValidationMessage,
+  dobValidationMessage,
+} from "@/lib/validators";
 
 const FORM_STORAGE_KEY = "janmashtami_register_draft";
 
-function Field({ label, icon, hint, children, className = "", ...props }) {
+function Field({ label, icon, hint, error, children, className = "", ...props }) {
   const inputClass =
-    "min-h-10 w-full rounded-xl border-2 border-primary/30 bg-background px-3 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/20 sm:min-h-11 sm:rounded-2xl sm:px-4 sm:focus:ring-4";
+    "min-h-10 w-full rounded-xl border-2 bg-background px-3 text-base text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:ring-2 sm:min-h-11 sm:rounded-2xl sm:px-4 sm:focus:ring-4";
+  const borderClass = error
+    ? "border-destructive/60 focus:border-destructive focus:ring-destructive/20"
+    : "border-primary/30 focus:border-primary focus:ring-primary/20";
   return (
     <label className="block">
       <span className="mb-1 flex items-center gap-1.5 text-xs font-bold tracking-wide text-secondary sm:mb-1.5 sm:gap-2 sm:text-sm">
@@ -34,10 +43,14 @@ function Field({ label, icon, hint, children, className = "", ...props }) {
         <input
           {...props}
           suppressHydrationWarning
-          className={`${inputClass} ${className}`.trim()}
+          className={`${inputClass} ${borderClass} ${className}`.trim()}
         />
       )}
-      {hint && <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>}
+      {error ? (
+        <p className="mt-1.5 text-xs font-semibold text-destructive">{error}</p>
+      ) : hint ? (
+        <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>
+      ) : null}
     </label>
   );
 }
@@ -162,11 +175,15 @@ function RegisterPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [duplicateNames, setDuplicateNames] = useState([]);
+  const [touched, setTouched] = useState({ phone: false, dob: false });
   // Track whether we are past the first render so the draft-save effect
   // does not fire immediately on mount (which would overwrite a valid draft
   // with the values just read from it).
   const mountedRef = useRef(false);
   useEffect(() => { mountedRef.current = true; }, []);
+
+  const phoneError = touched.phone ? phoneValidationMessage(phone) : null;
+  const dobError = touched.dob ? dobValidationMessage(dob) : null;
 
   // Apply ?ref= query param on mount (overrides any saved draft)
   useEffect(() => {
@@ -254,16 +271,50 @@ function RegisterPage() {
         return;
       }
 
+      setTouched({ phone: true, dob: true });
+      const pErr = phoneValidationMessage(phone);
+      const dErr = dobValidationMessage(dob);
+      if (pErr || dErr) {
+        setError(pErr || dErr);
+        return;
+      }
+
+      for (const m of family) {
+        if (!m.name.trim() && !m.dob && !m.phone?.trim()) continue;
+        if (m.name.trim() || m.dob || m.phone?.trim()) {
+          const memberDobErr = dobValidationMessage(m.dob, { label: `${m.name.trim() || "Family member"} DOB` });
+          if (memberDobErr) {
+            setError(memberDobErr);
+            return;
+          }
+          const memberPhoneErr = optionalPhoneValidationMessage(m.phone);
+          if (memberPhoneErr) {
+            setError(`Family member phone: ${memberPhoneErr}`);
+            return;
+          }
+        }
+      }
+
       if (wantsFancyDress) {
         const validKids = fancyDressEntries.filter((e) => e.childName?.trim() && e.childDob);
         if (validKids.length === 0) {
           setError("Add at least one child for fancy dress, or choose No.");
           return;
         }
+        for (const e of validKids) {
+          const childDobErr = dobValidationMessage(e.childDob, {
+            label: `${e.childName.trim()} DOB`,
+            maxAgeYears: 18,
+          });
+          if (childDobErr) {
+            setError(childDobErr);
+            return;
+          }
+        }
       }
 
       if (wantsLadduGopal && !ladduGopalSize.trim()) {
-        setError("Please select Laddu Gopal size, or choose No.");
+        setError("Please enter Laddu Gopal size, or choose No.");
         return;
       }
 
@@ -380,18 +431,35 @@ function RegisterPage() {
                     icon={<Phone className="h-4 w-4 sm:h-5 sm:w-5" />}
                     required
                     type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel"
+                    maxLength={13}
                     placeholder="9876543210"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    error={phoneError}
+                    hint={!phoneError ? "10-digit Indian mobile" : undefined}
+                    onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
+                    onChange={(e) => {
+                      const next = e.target.value.replace(/[^\d+\s-]/g, "").slice(0, 16);
+                      setPhone(next);
+                      setTouched((t) => ({ ...t, phone: true }));
+                    }}
                   />
                   <Field
                     label="Date of Birth"
                     icon={<Cake className="h-4 w-4 sm:h-5 sm:w-5" />}
-                    required
-                    type="date"
-                    value={dob}
-                    onChange={(e) => setDob(e.target.value)}
-                  />
+                    error={dobError}
+                    hint={!dobError ? "Tap to open calendar" : undefined}
+                  >
+                    <DobPicker
+                      value={dob}
+                      error={Boolean(dobError)}
+                      onChange={(iso) => {
+                        setDob(iso);
+                        setTouched((t) => ({ ...t, dob: true }));
+                      }}
+                    />
+                  </Field>
                 </div>
 
                 <Field
@@ -536,30 +604,32 @@ function RegisterPage() {
                             }
                             className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary sm:min-h-10 sm:rounded-xl sm:px-3"
                           />
-                          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-2.5">
-                            <input
-                              type="date"
-                              suppressHydrationWarning
-                              value={m.dob}
-                              onChange={(e) =>
-                                setFamily((f) =>
-                                  f.map((x) => (x.id === m.id ? { ...x, dob: e.target.value } : x)),
-                                )
-                              }
-                              className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary sm:min-h-10 sm:rounded-xl sm:px-3"
-                            />
-                            <input
-                              placeholder="Phone (optional)"
-                              suppressHydrationWarning
-                              value={m.phone ?? ""}
-                              onChange={(e) =>
-                                setFamily((f) =>
-                                  f.map((x) => (x.id === m.id ? { ...x, phone: e.target.value } : x)),
-                                )
-                              }
-                              className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary sm:min-h-10 sm:rounded-xl sm:px-3"
-                            />
-                          </div>
+                          <DobPicker
+                            value={m.dob}
+                            onChange={(iso) =>
+                              setFamily((f) =>
+                                f.map((x) => (x.id === m.id ? { ...x, dob: iso } : x)),
+                              )
+                            }
+                          />
+                          <input
+                            placeholder="Phone (optional)"
+                            type="tel"
+                            inputMode="numeric"
+                            maxLength={13}
+                            suppressHydrationWarning
+                            value={m.phone ?? ""}
+                            onChange={(e) =>
+                              setFamily((f) =>
+                                f.map((x) =>
+                                  x.id === m.id
+                                    ? { ...x, phone: e.target.value.replace(/[^\d+\s-]/g, "").slice(0, 16) }
+                                    : x,
+                                ),
+                              )
+                            }
+                            className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary sm:min-h-10 sm:rounded-xl sm:px-3"
+                          />
                         </div>
                       </motion.div>
                     ))}
@@ -579,29 +649,42 @@ function RegisterPage() {
 
                   <div className="space-y-3">
                     <CompactToggleRow
-                      title="Youth volunteer?"
+                      title="Become a Youth Volunteer?"
                       value={wantsVolunteer}
                       onChange={setWantsVolunteer}
                     >
-                      <div className="rounded-xl bg-[#FFF8E7]/80 px-3 py-2.5 text-xs leading-relaxed text-[#08495B] ring-1 ring-[#D89B24]/25">
-                        <p className="font-semibold text-[#D89B24]">Serve before the big day 🙏</p>
-                        <p className="mt-1">
-                          If you opt in, please reach the venue <strong>2 days prior</strong> and stay
-                          at the venue for Anandotsav preparation.
+                      <div className="rounded-xl bg-gradient-to-br from-[#EEF9F8] to-[#FFF8E7] px-3 py-2.5 text-xs leading-relaxed text-[#08495B] ring-1 ring-[#126B82]/20">
+                        <p className="font-display text-sm font-semibold text-[#126B82]">
+                          Be the hands behind Anandotsav ✨
+                        </p>
+                        <p className="mt-1.5">
+                          Join the youth seva team — decorate, welcome bhaktas, and help the utsav
+                          shine. You’ll prepare the sacred space with love and leave with memories
+                          that last.
+                        </p>
+                        <p className="mt-2 rounded-lg bg-white/70 px-2.5 py-2 font-medium text-[#08495B] ring-1 ring-[#D89B24]/25">
+                          Please reach the venue <strong>2 days prior</strong> and stay for
+                          Anandotsav preparation.
                         </p>
                       </div>
                     </CompactToggleRow>
 
                     <div className="border-t border-secondary/10 pt-3">
                       <CompactToggleRow
-                        title="Divya Panchamrit Abhishek?"
+                        title="Join Divya Panchamrit Abhishek?"
                         value={wantsPanchamrit}
                         onChange={setWantsPanchamrit}
                       >
-                        <p className="text-xs leading-snug text-muted-foreground">
-                          Register free for Divya Panchamrit Abhishek of Nitai–Nimai — a sacred
-                          offering of devotion at Sri Gokul Gaushala.
-                        </p>
+                        <div className="rounded-xl bg-gradient-to-br from-[#FFF8E7] to-[#EEF9F8] px-3 py-2.5 text-xs leading-relaxed text-[#08495B] ring-1 ring-[#D89B24]/25">
+                          <p className="font-display text-sm font-semibold text-[#D89B24]">
+                            Bathe Nitai–Nimai in divine nectar 🪷
+                          </p>
+                          <p className="mt-1.5">
+                            Register free for the Divya Panchamrit Abhishek of Nitai–Nimai — milk,
+                            curd, ghee, honey and sugar offered with devotion. A rare chance to
+                            serve the Lord and receive His blessings at Sri Gokul Gaushala.
+                          </p>
+                        </div>
                       </CompactToggleRow>
                     </div>
 
@@ -662,18 +745,15 @@ function RegisterPage() {
                                   }
                                   className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary"
                                 />
-                                <input
-                                  type="date"
-                                  required={wantsFancyDress}
+                                <DobPicker
                                   value={e.childDob}
-                                  onChange={(ev) =>
+                                  onChange={(iso) =>
                                     setFancyDressEntries((list) =>
                                       list.map((x) =>
-                                        x.id === e.id ? { ...x, childDob: ev.target.value } : x,
+                                        x.id === e.id ? { ...x, childDob: iso } : x,
                                       ),
                                     )
                                   }
-                                  className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary"
                                 />
                                 <input
                                   placeholder="Getup / costume (optional)"
@@ -728,19 +808,18 @@ function RegisterPage() {
                           <span className="mb-1 block text-xs font-bold text-secondary">
                             Size of Laddu Gopal
                           </span>
-                          <select
+                          <input
+                            type="text"
+                            inputMode="text"
                             required={wantsLadduGopal}
                             value={ladduGopalSize}
                             onChange={(e) => setLadduGopalSize(e.target.value)}
+                            placeholder="e.g. 6 inch, 8 cm, medium…"
                             className="min-h-10 w-full rounded-xl border-2 border-primary/30 bg-background px-3 text-sm outline-none focus:border-primary"
-                          >
-                            <option value="">Select size…</option>
-                            {LADDU_GOPAL_SIZES.map((s) => (
-                              <option key={s} value={s}>
-                                {s}
-                              </option>
-                            ))}
-                          </select>
+                          />
+                          <p className="mt-1 text-[11px] text-muted-foreground">
+                            Enter height, size or any detail that helps the seva desk.
+                          </p>
                         </label>
                       </CompactToggleRow>
                     </div>
@@ -767,7 +846,7 @@ function RegisterPage() {
                       glow
                       type="submit"
                       disabled={submitting}
-                      className="w-full justify-center px-6 py-3 text-base sm:w-auto sm:px-8 sm:py-4 sm:text-lg"
+                      className="w-full justify-center px-6 py-3 text-base sm:px-8 sm:py-4 sm:text-lg"
                     >
                       {submitting ? (
                         <>

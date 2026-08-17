@@ -1,11 +1,51 @@
 import { z } from 'zod';
 
-const dobSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date of birth must be in YYYY-MM-DD format');
+const dobSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date of birth must be in YYYY-MM-DD format')
+  .refine((value) => {
+    const [y, m, d] = value.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date > today) return false;
+    if (y < 1920) return false;
+    return true;
+  }, 'Enter a valid date of birth (not in the future)');
+
+const indianPhoneSchema = z
+  .string()
+  .trim()
+  .transform((v) => {
+    let d = v.replace(/\D/g, '');
+    if (d.length === 12 && d.startsWith('91')) d = d.slice(2);
+    if (d.length === 11 && d.startsWith('0')) d = d.slice(1);
+    return d;
+  })
+  .refine((d) => /^[6-9]\d{9}$/.test(d), {
+    message: 'Enter a valid 10-digit Indian mobile number',
+  });
+
+const optionalIndianPhoneSchema = z
+  .string()
+  .trim()
+  .optional()
+  .transform((v) => {
+    if (!v) return undefined;
+    let d = v.replace(/\D/g, '');
+    if (d.length === 12 && d.startsWith('91')) d = d.slice(2);
+    if (d.length === 11 && d.startsWith('0')) d = d.slice(1);
+    return d || undefined;
+  })
+  .refine((d) => d === undefined || /^[6-9]\d{9}$/.test(d), {
+    message: 'Enter a valid 10-digit Indian mobile number',
+  });
 
 const memberSchema = z.object({
   fullName: z.string().trim().min(1, 'Member full name is required'),
   dob: dobSchema,
-  phone: z.string().trim().optional(),
+  phone: optionalIndianPhoneSchema,
 });
 
 const fancyDressEntrySchema = z.object({
@@ -14,13 +54,13 @@ const fancyDressEntrySchema = z.object({
   getupDetail: z.string().trim().optional().default(''),
 });
 
-const LADDU_GOPAL_SIZES = ['Small', 'Medium', 'Large', 'Other'];
+const LADDU_GOPAL_SIZES = []; // free-text size on form; kept for any legacy imports
 
 export const registrationSchema = z
   .object({
     primary: z.object({
       fullName: z.string().trim().min(1, 'Full name is required'),
-      phone: z.string().trim().min(1, 'Phone is required'),
+      phone: indianPhoneSchema,
       dob: dobSchema,
       city: z.string().trim().min(1, 'City is required'),
       wantsReferral: z.boolean(),
@@ -55,10 +95,10 @@ export const registrationSchema = z
           message: 'Laddu Gopal size is required',
           path: ['primary', 'ladduGopalSize'],
         });
-      } else if (!LADDU_GOPAL_SIZES.includes(size) && size.length < 1) {
+      } else if (size.length > 80) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Invalid Laddu Gopal size',
+          message: 'Laddu Gopal size is too long',
           path: ['primary', 'ladduGopalSize'],
         });
       }

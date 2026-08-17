@@ -19,8 +19,13 @@ import {
   adminTokenStore,
   formatRegistrationError,
   normalizePhone,
-  LADDU_GOPAL_SIZES,
 } from "@/lib/api";
+import { DobPicker } from "@/components/dob-picker";
+import {
+  phoneValidationMessage,
+  optionalPhoneValidationMessage,
+  dobValidationMessage,
+} from "@/lib/validators";
 
 export const Route = createFileRoute("/admin/register")({
   head: () => ({ meta: [{ title: "Desk Register — Admin" }] }),
@@ -99,15 +104,50 @@ function AdminRegisterPage() {
     if (!token) return;
     setError(null);
 
+    const pErr = phoneValidationMessage(phone);
+    const dErr = dobValidationMessage(dob);
+    if (pErr || dErr) {
+      setError(pErr || dErr);
+      return;
+    }
+
+    for (const m of family) {
+      if (!m.name.trim() && !m.dob && !m.phone?.trim()) continue;
+      if (m.name.trim() || m.dob) {
+        const memberDobErr = dobValidationMessage(m.dob, {
+          label: `${m.name.trim() || "Family member"} DOB`,
+        });
+        if (memberDobErr) {
+          setError(memberDobErr);
+          return;
+        }
+        const memberPhoneErr = optionalPhoneValidationMessage(m.phone);
+        if (memberPhoneErr) {
+          setError(`Family member phone: ${memberPhoneErr}`);
+          return;
+        }
+      }
+    }
+
     if (wantsFancyDress) {
       const validKids = fancyDressEntries.filter((x) => x.childName?.trim() && x.childDob);
       if (validKids.length === 0) {
         setError("Add at least one child for fancy dress, or uncheck it.");
         return;
       }
+      for (const entry of validKids) {
+        const childDobErr = dobValidationMessage(entry.childDob, {
+          label: `${entry.childName.trim()} DOB`,
+          maxAgeYears: 18,
+        });
+        if (childDobErr) {
+          setError(childDobErr);
+          return;
+        }
+      }
     }
     if (wantsLadduGopal && !ladduGopalSize.trim()) {
-      setError("Select Laddu Gopal size, or uncheck it.");
+      setError("Enter Laddu Gopal size, or uncheck it.");
       return;
     }
 
@@ -212,18 +252,19 @@ function AdminRegisterPage() {
             icon={<Phone className="h-4 w-4" />}
             required
             type="tel"
+            inputMode="numeric"
+            maxLength={13}
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => setPhone(e.target.value.replace(/[^\d+\s-]/g, "").slice(0, 16))}
             placeholder="9876543210"
           />
-          <Field
-            label="Date of Birth"
-            icon={<Cake className="h-4 w-4" />}
-            required
-            type="date"
-            value={dob}
-            onChange={(e) => setDob(e.target.value)}
-          />
+          <label className="block">
+            <span className="mb-1.5 flex items-center gap-2 text-sm font-bold text-secondary">
+              <Cake className="h-4 w-4" />
+              Date of Birth
+            </span>
+            <DobPicker value={dob} onChange={setDob} />
+          </label>
         </div>
         <Field
           label="City"
@@ -267,28 +308,33 @@ function AdminRegisterPage() {
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
-                <div className="grid gap-2 sm:grid-cols-3">
+                <div className="grid gap-2 sm:grid-cols-2">
                   <input
                     placeholder="Name"
                     value={m.name}
                     onChange={(e) =>
                       setFamily((f) => f.map((x, idx) => (idx === i ? { ...x, name: e.target.value } : x)))
                     }
-                    className="min-h-10 rounded-lg border-2 border-primary/25 px-3 text-sm outline-none focus:border-primary sm:col-span-1"
+                    className="min-h-10 rounded-lg border-2 border-primary/25 px-3 text-sm outline-none focus:border-primary sm:col-span-2"
                   />
-                  <input
-                    type="date"
+                  <DobPicker
                     value={m.dob}
-                    onChange={(e) =>
-                      setFamily((f) => f.map((x, idx) => (idx === i ? { ...x, dob: e.target.value } : x)))
+                    onChange={(iso) =>
+                      setFamily((f) => f.map((x, idx) => (idx === i ? { ...x, dob: iso } : x)))
                     }
-                    className="min-h-10 rounded-lg border-2 border-primary/25 px-3 text-sm outline-none focus:border-primary"
                   />
                   <input
                     placeholder="Phone (optional)"
+                    type="tel"
                     value={m.phone ?? ""}
                     onChange={(e) =>
-                      setFamily((f) => f.map((x, idx) => (idx === i ? { ...x, phone: e.target.value } : x)))
+                      setFamily((f) =>
+                        f.map((x, idx) =>
+                          idx === i
+                            ? { ...x, phone: e.target.value.replace(/[^\d+\s-]/g, "").slice(0, 16) }
+                            : x,
+                        ),
+                      )
                     }
                     className="min-h-10 rounded-lg border-2 border-primary/25 px-3 text-sm outline-none focus:border-primary"
                   />
@@ -300,16 +346,26 @@ function AdminRegisterPage() {
 
         <div className="space-y-2 rounded-xl bg-secondary/5 p-4 ring-1 ring-secondary/15">
           <h3 className="text-sm font-display font-semibold text-secondary">Seva & celebrations (optional)</h3>
-          <DeskToggle title="Youth volunteer" value={wantsVolunteer} onChange={setWantsVolunteer}>
-            <p className="text-xs text-muted-foreground">
-              Reach venue 2 days prior and stay for Anandotsav preparation.
+          <DeskToggle
+            title="Become a Youth Volunteer?"
+            value={wantsVolunteer}
+            onChange={setWantsVolunteer}
+          >
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Be the hands behind Anandotsav — decorate, welcome bhaktas, and help the utsav shine.
+              Please reach the venue <strong>2 days prior</strong> and stay for preparation.
             </p>
           </DeskToggle>
           <DeskToggle
-            title="Divya Panchamrit Abhishek"
+            title="Join Divya Panchamrit Abhishek?"
             value={wantsPanchamrit}
             onChange={setWantsPanchamrit}
-          />
+          >
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Free Divya Panchamrit Abhishek of Nitai–Nimai — milk, curd, ghee, honey and sugar
+              offered with devotion. A sacred blessing at Sri Gokul Gaushala.
+            </p>
+          </DeskToggle>
           <DeskToggle
             title="Fancy dress for kids"
             value={wantsFancyDress}
@@ -323,7 +379,7 @@ function AdminRegisterPage() {
           >
             <div className="space-y-2">
               {fancyDressEntries.map((entry, i) => (
-                <div key={i} className="grid gap-2 rounded-lg bg-card p-2 ring-1 ring-primary/15 sm:grid-cols-3">
+                <div key={i} className="grid gap-2 rounded-lg bg-card p-2 ring-1 ring-primary/15">
                   <input
                     placeholder="Child name"
                     value={entry.childName}
@@ -334,15 +390,13 @@ function AdminRegisterPage() {
                     }
                     className="min-h-9 rounded-lg border-2 border-primary/25 px-2 text-sm outline-none focus:border-primary"
                   />
-                  <input
-                    type="date"
+                  <DobPicker
                     value={entry.childDob}
-                    onChange={(e) =>
+                    onChange={(iso) =>
                       setFancyDressEntries((list) =>
-                        list.map((x, idx) => (idx === i ? { ...x, childDob: e.target.value } : x)),
+                        list.map((x, idx) => (idx === i ? { ...x, childDob: iso } : x)),
                       )
                     }
-                    className="min-h-9 rounded-lg border-2 border-primary/25 px-2 text-sm outline-none focus:border-primary"
                   />
                   <div className="flex gap-1">
                     <input
@@ -389,18 +443,13 @@ function AdminRegisterPage() {
               if (!v) setLadduGopalSize("");
             }}
           >
-            <select
+            <input
+              type="text"
               value={ladduGopalSize}
               onChange={(e) => setLadduGopalSize(e.target.value)}
+              placeholder="e.g. 6 inch, 8 cm, medium…"
               className="min-h-10 w-full rounded-xl border-2 border-primary/30 bg-background px-3 text-sm outline-none focus:border-primary"
-            >
-              <option value="">Select size…</option>
-              {LADDU_GOPAL_SIZES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
+            />
           </DeskToggle>
         </div>
 
