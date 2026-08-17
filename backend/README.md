@@ -1,46 +1,102 @@
-# Janmashtami Bhakta Registration — Backend
+# Anandotsav 2026 — Backend
 
-Node.js / Express / MongoDB API for the Janmashtami Bhakta Registration Platform.
+Node.js / Express / MongoDB API for Bhakta registration, referral codes, QR check-in, and the staff admin panel.
+
+---
 
 ## Setup
 
-1. Copy `.env.example` to `.env` and fill in all values.
-2. `npm install`
-3. Create or reset the super admin:
+```bash
+cp .env.example .env   # fill HMAC_SECRET, JWT_SECRET, MONGO_URI, CORS_ORIGIN, …
+npm install
+npm run seed:super-admin -- yourUsername yourSecurePassword
+npm run dev            # http://localhost:5000  (watch mode)
+```
+
+Reset an existing super-admin password:
 
 ```bash
-# First time
-npm run seed:super-admin -- yourUsername yourSecurePassword
-
-# If user already exists but login fails — reset password
 npm run seed:super-admin -- yourUsername yourSecurePassword --reset-password
 ```
 
-4. Start: `npm run dev` (or `npm start` in production)
+Then sign in at the frontend `/admin` and create desk / admin users under **Team access**.
 
-Then sign in at `/admin` and create desk / admin users under **Admins**.
+`GET /health` → `{ "ok": true }`
 
-## Environment variables
+---
+
+## Environment
 
 | Variable | Notes |
-|----------|--------|
-| `PORT`, `NODE_ENV`, `MONGO_URI`, `CORS_ORIGIN` | Required |
-| `HMAC_SECRET`, `JWT_SECRET`, `JWT_EXPIRY` | Required (`JWT_EXPIRY` recommended `2h`) |
-| `EVENT_YEAR` | Required |
-| `TRUST_PROXY` | Optional; only if behind a reverse proxy and `NODE_ENV` is not `production` |
+| --- | --- |
+| `PORT`, `NODE_ENV`, `MONGO_URI`, `CORS_ORIGIN` | Required. `CORS_ORIGIN` is comma-separated. |
+| `HMAC_SECRET` | Signs entry QR payloads. Do not rotate mid-event. |
+| `JWT_SECRET`, `JWT_EXPIRY` | Required. Use `2h`. |
+| `EVENT_YEAR` | Used in entry codes (`JN2026-00001`). |
+| `TRUST_PROXY` | Optional; only behind a reverse proxy when `NODE_ENV` is not `production`. |
 
-**Removed from env:** `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` — admins live in MongoDB.
+**Not in env:** `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH`. Admins live in the MongoDB `Admin` collection.
+
+In development, CORS also allows any `http://localhost:<port>` origin (Vite may use 5173, 8082, …).
+
+---
 
 ## Roles
 
 | Role | Access |
-|------|--------|
+| --- | --- |
 | `super_admin` | All pages + manage users |
-| `admin` | Only assigned pages |
+| `admin` | Only assigned pages (cannot include `admins`) |
 | `desk` | Scanner + desk register only |
 
-## API (summary)
+Page keys: `scanner`, `register`, `registrations`, `volunteers`, `abhishek`, `fancy-dress`, `laddu-gopal`, `leaderboard`, `admins`.
 
-Public: register, find-registration, leaderboard (name+count), stats, validate-referral.  
-Staff: `/api/admin/*` and `/api/scan/*` (JWT + page permissions).  
-Removed: `GET /api/registration/:id`.
+JWT includes `role`, `pages`, and `tokenVersion`. Disabling a user or changing their password bumps `tokenVersion` and invalidates old tokens.
+
+---
+
+## API
+
+Envelope: `{ success: true, data }` or `{ success: false, error: { code, message } }`.
+
+**Public**
+
+| Method | Path | |
+| --- | --- | --- |
+| POST | `/api/register` | Family registration (rate limit 10/min) |
+| GET | `/api/validate-referral/:code` | Live code check (30/min) |
+| GET | `/api/leaderboard` | Top 50: name + count only |
+| GET | `/api/stats/count` | `{ totalRegistrants }` |
+| POST | `/api/find-registration` | Phone + primary DOB (20/min) |
+
+**Staff** (`Authorization: Bearer <jwt>`)
+
+| Method | Path | |
+| --- | --- | --- |
+| POST | `/api/admin/login` | 5/min |
+| GET | `/api/admin/me` | Current role + pages |
+| GET/POST/PATCH | `/api/admin/users` | Super admin only |
+| POST | `/api/admin/register` | Desk walk-in |
+| GET | `/api/admin/registrations` (+ `/export`) | Page-gated |
+| GET | `/api/admin/volunteers\|abhishek\|fancy-dress\|laddu-gopal\|leaderboard` (+ `/export`) | Page-gated |
+| POST | `/api/scan/checkin` | `{ signedPayload }` |
+| POST | `/api/scan/checkin/override` | `{ entryCode, reason }` |
+
+Removed: `GET /api/registration/:id` (unauthenticated QR leak).
+
+JSON body limit: 64kb.
+
+---
+
+## Scripts
+
+| Command | |
+| --- | --- |
+| `npm run dev` | `node --watch src/server.js` |
+| `npm start` | Production |
+| `npm run seed:super-admin -- user pass` | Create first super admin |
+| `npm run seed:super-admin -- user pass --reset-password` | Reset password + bump tokenVersion |
+
+---
+
+Full platform docs: [../PROJECT_DOCUMENTATION.txt](../PROJECT_DOCUMENTATION.txt) and [../README.md](../README.md).
