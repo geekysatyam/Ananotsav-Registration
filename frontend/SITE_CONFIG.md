@@ -40,7 +40,7 @@ contact: {
 
 **Gift note on downloaded pass** — use `{name}` for the bhakta's name:
 ```js
-giftDeskNote: "Show this pass at the Registration Desk to collect {name}'s free Krishna keychain.",
+giftDeskNote: "Show this pass at the Registration Desk to collect {name}'s Divine Gift.",
 ```
 
 **Add social link:**

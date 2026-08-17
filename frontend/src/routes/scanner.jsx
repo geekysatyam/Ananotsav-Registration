@@ -23,7 +23,7 @@ export const Route = createFileRoute("/scanner")({
       content: "Desk Scanner — Janmashtami Utsav Staff"
     }, {
       property: "og:description",
-      content: "Check in bhaktas and mark keychain claims at the desk."
+      content: "Check in bhaktas and mark Divine Gift claims at the desk."
     }]
   }),
   component: ScannerPage
@@ -55,7 +55,7 @@ function ScannerPage() {
       setResult({
         kind: "ok",
         name: data.fullName,
-        note: `This person checked in · keychain issued · ${formatTime(data.checkInTime)}`
+        note: `This person checked in · Divine Gift issued · ${formatTime(data.checkInTime)}`
       });
     } catch (err) {
       if (err instanceof ApiError) {
@@ -114,7 +114,7 @@ function ScannerPage() {
       setResult({
         kind: "ok",
         name: data.fullName,
-        note: `This person checked in · keychain issued · ${formatTime(data.checkInTime)}`
+        note: `This person checked in · Divine Gift issued · ${formatTime(data.checkInTime)}`
       });
     } catch (err) {
       if (err instanceof ApiError) {

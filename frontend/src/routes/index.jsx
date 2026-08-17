@@ -239,7 +239,7 @@ function Landing() {
 
                 <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] font-semibold text-slate-600 lg:mt-3 lg:justify-start lg:gap-x-4 sm:text-xs lg:text-sm">
                   <span className="whitespace-nowrap">🔐 Secure QR Entry</span>
-                  <span className="whitespace-nowrap">🎁 Free Keychain</span>
+                  <span className="whitespace-nowrap">🎁 Divine Gifts</span>
                   <span className="whitespace-nowrap">🪶 Referral Rewards</span>
                 </div>
               </div>
@@ -250,9 +250,9 @@ function Landing() {
                   <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-br from-[#D89B24]/12 via-transparent to-secondary/10 blur-3xl" />
 
                   <div className="jh-float2 jh-glass absolute top-6 right-2 z-20 hidden items-center gap-2 rounded-xl border border-[#D89B24]/15 px-3 py-2 lg:flex lg:top-10 lg:right-6">
-                    <div className="grid h-9 w-9 place-items-center rounded-full bg-[#D89B24]/15 text-lg">🔑</div>
+                    <div className="grid h-9 w-9 place-items-center rounded-full bg-[#D89B24]/15 text-lg">🎁</div>
                     <div>
-                      <div className="text-xs font-bold text-[#08495B]">Free Krishna Keychain</div>
+                      <div className="text-xs font-bold text-[#08495B]">Divine Gifts</div>
                       <div className="text-[10px] text-slate-500">Every registered Bhakta</div>
                     </div>
                   </div>
@@ -355,7 +355,7 @@ function Landing() {
           </div>
         </section>
 
-        {/* Keychain */}
+        {/* Divine Gifts */}
         <section className="jh-section-gold relative overflow-hidden py-20">
           <div className="jh-pattern opacity-[0.09]" />
           <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
@@ -372,11 +372,11 @@ function Landing() {
                   🎁 A little blessing for every Bhakta
                 </div>
                 <h2 className="mt-4 font-display text-4xl font-bold text-[#08495B] sm:text-5xl">
-                  Every Bhakta Gets a <span className="text-[#D89B24]">Free Krishna Keychain</span> 🔑
+                  Every Bhakta Gets <span className="text-[#D89B24]">Divine Gifts</span> 🎁
                 </h2>
                 <Flourish className="mt-4 h-5 w-40" />
                 <p className="max-w-2xl leading-8 text-slate-600">
-                  Register online, save your Entry QR and collect your Krishna keychain at the Registration
+                  Register online, save your Entry QR and collect your Divine Gifts at the Registration
                   Desk on {eventInfo.date}. One QR per bhakta — including every family member you add.
                 </p>
                 <div className="mt-7 grid gap-3 sm:grid-cols-2">
@@ -388,7 +388,7 @@ function Landing() {
                   <div className="jh-card rounded-2xl p-5">
                     <div className="grid h-12 w-12 place-items-center rounded-2xl bg-secondary/10 text-2xl">🎁</div>
                     <div className="mt-3 font-bold">Receive your gift</div>
-                    <div className="mt-1 text-sm text-slate-500">Your free Krishna keychain is yours to keep.</div>
+                    <div className="mt-1 text-sm text-slate-500">Your Divine Gift is yours to keep.</div>
                   </div>
                 </div>
               </div>
@@ -613,8 +613,8 @@ function Landing() {
               <span />
             </div>
             <p className="mx-auto max-w-2xl leading-8 text-slate-600">
-              {siteConfig.event.invitation.body} Every Bhakta receives a personal Entry QR and a free Krishna
-              keychain. Opt into the referral challenge to invite friends and climb the leaderboard.
+              {siteConfig.event.invitation.body} Every Bhakta receives a personal Entry QR and Divine
+              Gifts. Opt into the referral challenge to invite friends and climb the leaderboard.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link

@@ -4,6 +4,7 @@ export {
   Diya,
   Lotus,
   Flute,
+  Gift,
   Keychain,
   Cushion,
   Krishna,

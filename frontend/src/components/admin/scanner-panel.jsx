@@ -26,7 +26,7 @@ export function ScannerPanel({ token }) {
         setResult({
           kind: "ok",
           name: data.fullName,
-          note: `This person checked in · keychain issued · ${formatTime(data.checkInTime)}`,
+          note: `This person checked in · Divine Gift issued · ${formatTime(data.checkInTime)}`,
         });
       } catch (err) {
         if (err instanceof ApiError) {
@@ -76,7 +76,7 @@ export function ScannerPanel({ token }) {
       setResult({
         kind: "ok",
         name: data.fullName,
-        note: `This person checked in · keychain issued · ${formatTime(data.checkInTime)}`,
+        note: `This person checked in · Divine Gift issued · ${formatTime(data.checkInTime)}`,
       });
     } catch (err) {
       if (err instanceof ApiError) {
@@ -131,7 +131,7 @@ export function ScannerPanel({ token }) {
   return (
     <div className="mx-auto max-w-3xl">
       <h2 className="font-display text-2xl">Entry Scanner</h2>
-      <p className="mt-1 text-sm text-muted-foreground">Scan QR codes to check in bhaktas and issue keychains.</p>
+      <p className="mt-1 text-sm text-muted-foreground">Scan QR codes to check in bhaktas and issue Divine Gifts.</p>
 
       <div id="admin-qr-reader" className={QR_READER_CLASS} />
 

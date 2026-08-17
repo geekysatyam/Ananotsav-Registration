@@ -334,7 +334,7 @@ export function buildCalendarEventDescription(registrations = []) {
   const lines = [
     `Janmashtami Anandotsav — ${timing}.`,
     "",
-    "Bring your entry QR at the gate. Collect your Krishna keychain at the registration desk.",
+    "Bring your entry QR at the gate. Collect your Divine Gifts at the registration desk.",
   ];
 
   if (registrations.length > 0) {

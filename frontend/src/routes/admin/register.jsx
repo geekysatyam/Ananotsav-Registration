@@ -135,7 +135,7 @@ function AdminRegisterPage() {
           <div className="flex items-center justify-between gap-2">
             <div>
               <h3 className="text-sm font-display font-semibold">Family members</h3>
-              <p className="text-xs text-muted-foreground">Each gets their own QR & keychain</p>
+              <p className="text-xs text-muted-foreground">Each gets their own QR & Divine Gift</p>
             </div>
             <button
               type="button"

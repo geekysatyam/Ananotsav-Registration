@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, Download, MessageCircle, Instagram, Send, Pa
 import { SiteShell } from "@/components/site-shell";
 import { GoldButton, Reveal, SectionHeading, FestiveIcon } from "@/components/festive";
 import { FloatingMotifs, GradientMesh } from "@/components/ambient";
-import { Flourish, Keychain, PatternBackdrop, PeacockFeather, Lotus } from "@/components/motifs";
+import { Flourish, Gift, PatternBackdrop, PeacockFeather, Lotus } from "@/components/motifs";
 import { QrSvg, downloadEntryPass } from "@/components/qr";
 import { eventInfo, REFERRAL_LINK_BASE, getGoogleCalendarEventUrl } from "@/lib/event-info";
 import { loadRegistrationResult } from "@/lib/api";
@@ -16,13 +16,13 @@ export const Route = createFileRoute("/success")({
       title: "Registration Confirmed — Janmashtami Utsav 2026"
     }, {
       name: "description",
-      content: "Your Janmashtami Utsav entry QR codes are ready. Download them, share your referral code and claim a free Krishna keychain at the desk."
+      content: "Your Janmashtami Utsav entry QR codes are ready. Download them, share your referral code and claim Divine Gifts at the desk."
     }, {
       property: "og:title",
       content: "Registration Confirmed — Janmashtami Utsav 2026"
     }, {
       property: "og:description",
-      content: "Entry QR codes for every family member, plus your free Krishna keychain pass."
+      content: "Entry QR codes for every family member, plus your Divine Gift pass."
     }]
   }),
   component: SuccessPage
@@ -65,7 +65,7 @@ function displayFirstName(name) {
   const part = name.trim().split(/\s+/)[0] || name;
   return part.length > 14 ? `${part.slice(0, 14)}…` : part;
 }
-function KeychainCard({
+function GiftCard({
   name
 }) {
   const first = displayFirstName(name);
@@ -73,20 +73,20 @@ function KeychainCard({
     className: "mt-2 rounded-xl bg-gradient-gold p-[2px] sm:mt-3",
     children: /*#__PURE__*/_jsxs("div", {
       className: "flex items-start gap-2.5 rounded-[calc(0.75rem-1px)] bg-card p-2.5 sm:items-center sm:gap-3 sm:p-3",
-      children: [/*#__PURE__*/_jsx(Keychain, {
+      children: [/*#__PURE__*/_jsx(Gift, {
         className: "h-10 w-10 shrink-0 sm:h-12 sm:w-12"
       }), /*#__PURE__*/_jsxs("div", {
         className: "min-w-0 flex-1",
         children: [/*#__PURE__*/_jsx("div", {
           className: "font-display text-sm sm:text-base",
-          children: "Your Free Gift"
+          children: "Your Divine Gift"
         }), /*#__PURE__*/_jsxs("p", {
           className: "text-xs leading-snug text-muted-foreground",
           children: ["Show at the Registration Desk for ", /*#__PURE__*/_jsx("span", {
             className: "break-all font-semibold text-foreground",
             title: name,
             children: first
-          }), "'s Krishna keychain."]
+          }), "'s Divine Gift."]
         })]
       })]
     })
@@ -249,7 +249,7 @@ function SuccessPage() {
                   className: "ml-3 text-xs font-bold tracking-[0.15em] text-muted-foreground uppercase",
                   children: [safeIndex + 1, " / ", registrations.length]
                 })]
-              }), /*#__PURE__*/_jsx(KeychainCard, {
+              }), /*#__PURE__*/_jsx(GiftCard, {
                 name: member.fullName
               }), /*#__PURE__*/_jsx(DownloadActions, {
                 member: member,

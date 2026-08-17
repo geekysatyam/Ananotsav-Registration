@@ -110,7 +110,7 @@ export const Route = createFileRoute("/register")({
       {
         name: "description",
         content:
-          "Register yourself and your family for Janmashtami Utsav 2026 in under 60 seconds and reserve a free Krishna keychain each.",
+          "Register yourself and your family for Janmashtami Utsav 2026 in under 60 seconds and reserve Divine Gifts for each.",
       },
       { property: "og:title", content: "Register for Free !! — Janmashtami Utsav 2026" },
       {
@@ -210,7 +210,7 @@ function RegisterPage() {
 
   const socialLine =
     totalRegistrants !== null
-      ? `🎁 ${totalRegistrants.toLocaleString("en-IN")} keychains reserved so far`
+      ? `🎁 ${totalRegistrants.toLocaleString("en-IN")} Divine Gifts reserved so far`
       : "🔥 Bhaktas are registering right now";
 
   const handleSubmit = useCallback(
@@ -287,7 +287,7 @@ function RegisterPage() {
             compact
             eyebrow="Bhakta registration"
             title="Reserve your place at the utsav"
-            subtitle="One entry QR and one free Krishna keychain for every name you add."
+            subtitle="One entry QR and Divine Gifts for every name you add."
           />
 
           <motion.form
@@ -422,7 +422,7 @@ function RegisterPage() {
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
                       <h3 className="text-sm font-display font-semibold sm:text-base">Add family member</h3>
-                      <p className="text-xs text-muted-foreground">Each gets their own QR & keychain</p>
+                      <p className="text-xs text-muted-foreground">Each gets their own QR & Divine Gift</p>
                     </div>
                     <button
                       type="button"

@@ -4,7 +4,7 @@ import peacockFeatherRaw from "./peacock-feather.svg?raw";
 import diyaRaw from "./diya.svg?raw";
 import lotusRaw from "./lotus.svg?raw";
 import fluteRaw from "./flute.svg?raw";
-import keychainRaw from "./keychain.svg?raw";
+import giftRaw from "./gift.svg?raw";
 import cushionRaw from "./Cusiopn.svg?raw";
 import krishnaRaw from "./krishna.svg?raw";
 import templeSilhouetteRaw from "./temple-silhouette.svg?raw";
@@ -19,7 +19,9 @@ export const PeacockFeather = createSvgIcon(peacockFeatherRaw, "PeacockFeather")
 export const Diya = createSvgIcon(diyaRaw, "Diya");
 export const Lotus = createSvgIcon(lotusRaw, "Lotus");
 export const Flute = createSvgIcon(fluteRaw, "Flute");
-export const Keychain = createSvgIcon(keychainRaw, "Keychain");
+export const Gift = createSvgIcon(giftRaw, "Gift");
+/** @deprecated Use Gift — kept for backward compatibility */
+export const Keychain = Gift;
 export const Cushion = createSvgIcon(prepareIllustrationSvg(cushionRaw), "Cushion");
 export const Krishna = createSvgIcon(prepareIllustrationSvg(krishnaRaw), "Krishna");
 export const TempleSilhouette = createSvgIcon(templeSilhouetteRaw, "TempleSilhouette");
@@ -38,6 +40,7 @@ export const svgIcons = {
   Diya,
   Lotus,
   Flute,
+  Gift,
   Keychain,
   Cushion,
   Krishna,

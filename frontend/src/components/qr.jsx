@@ -236,7 +236,7 @@ export async function downloadEntryPass({
   ctx.textAlign = "left";
   ctx.fillStyle = "#08495B";
   ctx.font = "bold 24px Georgia, 'Times New Roman', serif";
-  ctx.fillText("Your Free Gift", pad + giftPad, y + 38);
+  ctx.fillText("Your Divine Gift", pad + giftPad, y + 38);
 
   ctx.fillStyle = "#17313A";
   ctx.font = "22px system-ui, sans-serif";

@@ -49,8 +49,8 @@ This platform is the FRONTEND WEBSITE for that event. It does three things:
   C) EVENT CHECK-IN (SCANNER)
      On the day of the event, staff at the registration desk use a special
      Scanner page (password protected) to scan each person's Entry QR code
-     and mark them as checked in. Each person also collects a free Krishna
-     keychain at this desk.
+     and mark them as checked in. Each person also collects Divine
+     Gifts at this desk.
 
 This is a FRONTEND-ONLY project. It talks to a separate backend server
 (API) for all data storage and business logic. The frontend never stores
@@ -70,7 +70,7 @@ There are three types of users:
   - Optionally join the referral competition
   - Share their referral code with friends
   - Check the leaderboard to see their rank
-  - On event day: show their QR at the desk to check in and get their keychain
+  - On event day: show their QR at the desk to check in and get their Divine Gift
 
   --- ORGANISERS ---
   - Monitor the leaderboard to see how many people have registered
@@ -212,9 +212,9 @@ There are three types of users:
     Shows a live count of how many bhaktas have registered so far.
     The number animates upward (count-up effect) when it scrolls into view.
 
-  · Keychain Section
-    Explains that every registered bhakta gets a free Krishna keychain
-    at the event desk. Shows an illustrated keychain graphic.
+  · Divine Gifts Section
+    Explains that every registered bhakta gets Divine Gifts
+    at the event desk. Shows an illustrated gift graphic.
 
   · Event Details Section
     Cards showing the Date, Venue, and Timing of the event.
@@ -324,8 +324,8 @@ There are three types of users:
           - "Download Pass" downloads the current member's pass
           - "Download All" downloads every member's pass one by one
 
-  Step 5: Keychain reminder card:
-          - Shown under each QR: "Show this at the desk for [Name]'s keychain"
+  Step 5: Divine Gift reminder card:
+          - Shown under each QR: "Show this at the desk for [Name]'s Divine Gift"
 
   Step 6: Referral section (only if they opted in for a referral code):
           - Their personal Krishna referral code is shown
@@ -424,7 +424,7 @@ ENTRY QR CODE:
   - The QR code itself
   - The person's full name
   - Their entry code (e.g. JN2026-00452)
-  - A "Your Free Gift" keychain reminder box
+  - A "Your Divine Gift" reminder box
   - Event date and venue at the bottom
 
 REFERRAL QR CODE:
@@ -476,7 +476,7 @@ public navigation menu.
 
   Step 3a: SUCCESS — Green card shown with:
            - Bhakta's full name (large text, readable from arm's length)
-           - "Checked in · keychain issued · [time]"
+           - "Checked in · Divine Gift issued · [time]"
 
   Step 3b: ALREADY CHECKED IN — Red card shown with:
            - "Already Checked In"
@@ -646,7 +646,7 @@ Without VITE_PUBLIC_URL, referral share links may be broken on SSR.
   downloadEntryPass (qr.jsx)
   ──────────────────────────
   Generates a full PNG entry pass card using HTML Canvas.
-  Draws: event header, QR code image, name, entry code, keychain note, footer.
+  Draws: event header, QR code image, name, entry code, Divine Gift note, footer.
   Triggers a browser download of the PNG file.
 
   LeaderboardList (leaderboard-list.jsx)

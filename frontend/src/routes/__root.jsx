@@ -81,7 +81,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Register for Janmashtami Utsav 2026 — entry QR codes, a free Krishna keychain for every bhakta and a live referral leaderboard.",
+          "Register for Janmashtami Utsav 2026 — entry QR codes, Divine Gifts for every bhakta and a live referral leaderboard.",
       },
       { name: "author", content: "Janmashtami Utsav Samiti" },
       { property: "og:title", content: "Janmashtami Utsav 2026 — Bhakta Registration" },

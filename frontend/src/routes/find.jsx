@@ -20,7 +20,7 @@ export const Route = createFileRoute("/find")({
       content: "Find My Registration — Janmashtami Utsav 2026"
     }, {
       property: "og:description",
-      content: "Retrieve your entry QR codes and keychain pass in seconds."
+      content: "Retrieve your entry QR codes and Divine Gift pass in seconds."
     }]
   }),
   component: FindPage
