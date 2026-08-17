@@ -256,7 +256,7 @@ function AdminRegisterPage() {
             maxLength={13}
             value={phone}
             onChange={(e) => setPhone(e.target.value.replace(/[^\d+\s-]/g, "").slice(0, 16))}
-            placeholder="9876543210"
+            placeholder="9XXXXXXXXX"
           />
           <label className="block">
             <span className="mb-1.5 flex items-center gap-2 text-sm font-bold text-secondary">
@@ -272,7 +272,7 @@ function AdminRegisterPage() {
           required
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          placeholder="Pune"
+          placeholder="Optional "
         />
 
         <div className="rounded-xl bg-primary/10 p-4 ring-1 ring-primary/20">

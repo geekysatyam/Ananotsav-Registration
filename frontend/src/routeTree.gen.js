@@ -27,6 +27,7 @@ import { Route as AdminAbhishekRouteImport } from './routes/admin/abhishek';
 import { Route as AdminFancyDressRouteImport } from './routes/admin/fancy-dress';
 import { Route as AdminLadduGopalRouteImport } from './routes/admin/laddu-gopal';
 import { Route as AdminLeaderboardRouteImport } from './routes/admin/leaderboard';
+import { Route as AdminAdminsRouteImport } from './routes/admin/admins';
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -118,6 +119,11 @@ const AdminLeaderboardRoute = AdminLeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => AdminRouteRoute,
 });
+const AdminAdminsRoute = AdminAdminsRouteImport.update({
+  id: '/admins',
+  path: '/admins',
+  getParentRoute: () => AdminRouteRoute,
+});
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren({
   AdminIndexRoute: AdminIndexRoute,
@@ -129,6 +135,7 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren({
   AdminFancyDressRoute: AdminFancyDressRoute,
   AdminLadduGopalRoute: AdminLadduGopalRoute,
   AdminLeaderboardRoute: AdminLeaderboardRoute,
+  AdminAdminsRoute: AdminAdminsRoute,
 });
 
 const rootRouteChildren = {

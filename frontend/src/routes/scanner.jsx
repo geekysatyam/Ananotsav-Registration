@@ -5,7 +5,7 @@ import { ScanLine, Lock, User, CheckCircle2, XCircle, Keyboard, LogOut, Loader2 
 import { GradientMesh } from "@/components/ambient";
 import { PatternBackdrop, PeacockFeather, Flourish } from "@/components/motifs";
 import { GoldButton } from "@/components/festive";
-import { api, ApiError, ADMIN_TOKEN_KEY, adminTokenStore } from "@/lib/api";
+import { api, ApiError, loadAdminSession, saveAdminSession, clearAdminSession, adminHasPage } from "@/lib/api";
 import { QR_READER_CLASS, SCANNER_CAMERA_CONFIG } from "@/lib/scanner-config";
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 export const Route = createFileRoute("/scanner")({
@@ -35,7 +35,7 @@ function formatTime(iso) {
   });
 }
 function ScannerPage() {
-  const [token, setToken] = useState(() => adminTokenStore.get(ADMIN_TOKEN_KEY));
+  const [token, setToken] = useState(() => loadAdminSession()?.token ?? null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState(null);
@@ -187,11 +187,13 @@ function ScannerPage() {
           setLoginError(null);
           setLoginLoading(true);
           try {
-            const {
-              token: jwt
-            } = await api.adminLogin(username, password);
-            adminTokenStore.set(ADMIN_TOKEN_KEY, jwt);
-            setToken(jwt);
+            const data = await api.adminLogin(username, password);
+            if (!adminHasPage(data.admin, "scanner")) {
+              setLoginError("This account does not have scanner access");
+              return;
+            }
+            saveAdminSession({ token: data.token, admin: data.admin });
+            setToken(data.token);
           } catch {
             setLoginError("Invalid username or password");
           } finally {
@@ -276,7 +278,7 @@ function ScannerPage() {
         })]
       }), /*#__PURE__*/_jsxs("button", {
         onClick: () => {
-          adminTokenStore.remove(ADMIN_TOKEN_KEY);
+          clearAdminSession();
           setToken(null);
         },
         className: "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full bg-secondary/15 px-4 text-sm font-bold text-secondary",

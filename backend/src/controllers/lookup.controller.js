@@ -1,18 +1,6 @@
-import mongoose from 'mongoose';
 import Registration from '../models/Registration.model.js';
-import { success, error } from '../utils/apiResponse.js';
+import { success } from '../utils/apiResponse.js';
 import { shapeRegistration } from '../utils/shapeRegistration.js';
-
-export async function getRegistrationById(req, res) {
-  if (!mongoose.isValidObjectId(req.params.id)) {
-    return error(res, 'NOT_FOUND', 'Registration not found', 404);
-  }
-  const doc = await Registration.findById(req.params.id);
-  if (!doc) {
-    return error(res, 'NOT_FOUND', 'Registration not found', 404);
-  }
-  return success(res, shapeRegistration(doc));
-}
 
 export async function findRegistration(req, res) {
   const { phone, dob } = req.validated;

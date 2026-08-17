@@ -20,6 +20,7 @@ import { Route as ScannerRouteImport } from './../routes/scanner'
 import { Route as SuccessRouteImport } from './../routes/success'
 import { Route as AdminIndexRouteImport } from './../routes/admin/index'
 import { Route as AdminAbhishekRouteImport } from './../routes/admin/abhishek'
+import { Route as AdminAdminsRouteImport } from './../routes/admin/admins'
 import { Route as AdminFancyDressRouteImport } from './../routes/admin/fancy-dress'
 import { Route as AdminLadduGopalRouteImport } from './../routes/admin/laddu-gopal'
 import { Route as AdminLeaderboardRouteImport } from './../routes/admin/leaderboard'
@@ -83,6 +84,11 @@ const AdminAbhishekRoute = AdminAbhishekRouteImport.update({
   path: '/abhishek',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminAdminsRoute = AdminAdminsRouteImport.update({
+  id: '/admins',
+  path: '/admins',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminFancyDressRoute = AdminFancyDressRouteImport.update({
   id: '/fancy-dress',
   path: '/fancy-dress',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/scanner': typeof ScannerRoute
   '/success': typeof SuccessRoute
   '/admin/abhishek': typeof AdminAbhishekRoute
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/fancy-dress': typeof AdminFancyDressRoute
   '/admin/laddu-gopal': typeof AdminLadduGopalRoute
   '/admin/leaderboard': typeof AdminLeaderboardRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/scanner': typeof ScannerRoute
   '/success': typeof SuccessRoute
   '/admin/abhishek': typeof AdminAbhishekRoute
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/fancy-dress': typeof AdminFancyDressRoute
   '/admin/laddu-gopal': typeof AdminLadduGopalRoute
   '/admin/leaderboard': typeof AdminLeaderboardRoute
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/scanner': typeof ScannerRoute
   '/success': typeof SuccessRoute
   '/admin/abhishek': typeof AdminAbhishekRoute
+  '/admin/admins': typeof AdminAdminsRoute
   '/admin/fancy-dress': typeof AdminFancyDressRoute
   '/admin/laddu-gopal': typeof AdminLadduGopalRoute
   '/admin/leaderboard': typeof AdminLeaderboardRoute
@@ -192,6 +201,7 @@ export interface FileRouteTypes {
     | '/scanner'
     | '/success'
     | '/admin/abhishek'
+    | '/admin/admins'
     | '/admin/fancy-dress'
     | '/admin/laddu-gopal'
     | '/admin/leaderboard'
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/scanner'
     | '/success'
     | '/admin/abhishek'
+    | '/admin/admins'
     | '/admin/fancy-dress'
     | '/admin/laddu-gopal'
     | '/admin/leaderboard'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/scanner'
     | '/success'
     | '/admin/abhishek'
+    | '/admin/admins'
     | '/admin/fancy-dress'
     | '/admin/laddu-gopal'
     | '/admin/leaderboard'
@@ -332,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAbhishekRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/admins': {
+      id: '/admin/admins'
+      path: '/admins'
+      fullPath: '/admin/admins'
+      preLoaderRoute: typeof AdminAdminsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/fancy-dress': {
       id: '/admin/fancy-dress'
       path: '/fancy-dress'
@@ -386,6 +405,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteRouteChildren {
   AdminAbhishekRoute: typeof AdminAbhishekRoute
+  AdminAdminsRoute: typeof AdminAdminsRoute
   AdminFancyDressRoute: typeof AdminFancyDressRoute
   AdminLadduGopalRoute: typeof AdminLadduGopalRoute
   AdminLeaderboardRoute: typeof AdminLeaderboardRoute
@@ -398,6 +418,7 @@ interface AdminRouteRouteChildren {
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminAbhishekRoute: AdminAbhishekRoute,
+  AdminAdminsRoute: AdminAdminsRoute,
   AdminFancyDressRoute: AdminFancyDressRoute,
   AdminLadduGopalRoute: AdminLadduGopalRoute,
   AdminLeaderboardRoute: AdminLeaderboardRoute,

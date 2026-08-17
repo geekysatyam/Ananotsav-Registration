@@ -56,11 +56,55 @@ export const REGISTRATION_STORAGE_KEY = "janmashtami_registration_result";
 // sessionStorage is cleared when the tab closes, limiting the exposure window
 // compared to localStorage which persists indefinitely across sessions.
 export const ADMIN_TOKEN_KEY = "janmashtami_admin_token";
+export const ADMIN_USER_KEY = "janmashtami_admin_user";
 export const adminTokenStore = {
   get: (key) => typeof window !== "undefined" ? sessionStorage.getItem(key) : null,
   set: (key, val) => sessionStorage.setItem(key, val),
   remove: (key) => sessionStorage.removeItem(key),
 };
+
+export function saveAdminSession({ token, admin }) {
+  adminTokenStore.set(ADMIN_TOKEN_KEY, token);
+  adminTokenStore.set(ADMIN_USER_KEY, JSON.stringify(admin));
+}
+
+export function loadAdminSession() {
+  const token = adminTokenStore.get(ADMIN_TOKEN_KEY);
+  const raw = adminTokenStore.get(ADMIN_USER_KEY);
+  if (!token) return null;
+  let admin = null;
+  if (raw) {
+    try {
+      admin = JSON.parse(raw);
+    } catch {
+      admin = null;
+    }
+  }
+  return { token, admin };
+}
+
+export function clearAdminSession() {
+  adminTokenStore.remove(ADMIN_TOKEN_KEY);
+  adminTokenStore.remove(ADMIN_USER_KEY);
+}
+
+export const ADMIN_PAGE_KEYS = [
+  "scanner",
+  "register",
+  "registrations",
+  "volunteers",
+  "abhishek",
+  "fancy-dress",
+  "laddu-gopal",
+  "leaderboard",
+  "admins",
+];
+
+export function adminHasPage(admin, page) {
+  if (!admin) return false;
+  if (admin.role === "super_admin") return true;
+  return Array.isArray(admin.pages) && admin.pages.includes(page);
+}
 async function request(path, options = {}) {
   let res;
   try {
@@ -130,9 +174,6 @@ export const api = {
       })
     });
   },
-  getRegistration(id) {
-    return request(`/api/registration/${id}`);
-  },
   adminLogin(username, password) {
     return request("/api/admin/login", {
       method: "POST",
@@ -140,6 +181,30 @@ export const api = {
         username,
         password
       })
+    });
+  },
+  adminMe(token) {
+    return request("/api/admin/me", {
+      headers: authHeaders(token),
+    });
+  },
+  listAdmins(token) {
+    return request("/api/admin/users", {
+      headers: authHeaders(token),
+    });
+  },
+  createAdmin(token, body) {
+    return request("/api/admin/users", {
+      method: "POST",
+      headers: authHeaders(token),
+      body: JSON.stringify(body),
+    });
+  },
+  updateAdmin(token, id, body) {
+    return request(`/api/admin/users/${id}`, {
+      method: "PATCH",
+      headers: authHeaders(token),
+      body: JSON.stringify(body),
     });
   },
   scanCheckin(token, signedPayload) {

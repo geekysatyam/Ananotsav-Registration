@@ -1,5 +1,5 @@
-import { Link, Outlet, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import {
   ClipboardList,
   LogOut,
@@ -15,36 +15,118 @@ import {
   Baby,
   Gift,
   Trophy,
+  Shield,
 } from "lucide-react";
-import { api, ApiError, ADMIN_TOKEN_KEY, adminTokenStore } from "@/lib/api";
+import {
+  api,
+  ApiError,
+  clearAdminSession,
+  loadAdminSession,
+  saveAdminSession,
+  adminHasPage,
+} from "@/lib/api";
 import { GoldButton } from "@/components/festive";
 import { PatternBackdrop } from "@/components/motifs";
 
 const NAV = [
-  { to: "/admin/scanner", label: "Scanner", icon: ScanLine },
-  { to: "/admin/register", label: "Desk Register", icon: UserPlus },
-  { to: "/admin/registrations", label: "Registrations", icon: ClipboardList },
-  { to: "/admin/volunteers", label: "Volunteers", icon: HandHeart },
-  { to: "/admin/abhishek", label: "Abhishek", icon: Sparkles },
-  { to: "/admin/fancy-dress", label: "Fancy Dress", icon: Baby },
-  { to: "/admin/laddu-gopal", label: "Laddu Gopal", icon: Gift },
-  { to: "/admin/leaderboard", label: "Leaderboard", icon: Trophy },
+  { to: "/admin/scanner", page: "scanner", label: "Scanner", icon: ScanLine },
+  { to: "/admin/register", page: "register", label: "Desk Register", icon: UserPlus },
+  { to: "/admin/registrations", page: "registrations", label: "Registrations", icon: ClipboardList },
+  { to: "/admin/volunteers", page: "volunteers", label: "Volunteers", icon: HandHeart },
+  { to: "/admin/abhishek", page: "abhishek", label: "Abhishek", icon: Sparkles },
+  { to: "/admin/fancy-dress", page: "fancy-dress", label: "Fancy Dress", icon: Baby },
+  { to: "/admin/laddu-gopal", page: "laddu-gopal", label: "Laddu Gopal", icon: Gift },
+  { to: "/admin/leaderboard", page: "leaderboard", label: "Leaderboard", icon: Trophy },
+  { to: "/admin/admins", page: "admins", label: "Admins", icon: Shield },
 ];
+
+const PAGE_BY_PATH = {
+  "/admin/scanner": "scanner",
+  "/admin/register": "register",
+  "/admin/registrations": "registrations",
+  "/admin/volunteers": "volunteers",
+  "/admin/abhishek": "abhishek",
+  "/admin/fancy-dress": "fancy-dress",
+  "/admin/laddu-gopal": "laddu-gopal",
+  "/admin/leaderboard": "leaderboard",
+  "/admin/admins": "admins",
+};
+
+function firstAllowedPath(admin) {
+  const hit = NAV.find((n) => adminHasPage(admin, n.page));
+  return hit?.to ?? "/admin/scanner";
+}
 
 export function AdminShell() {
   const navigate = useNavigate();
-  const [token, setToken] = useState(() => adminTokenStore.get(ADMIN_TOKEN_KEY));
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [session, setSession] = useState(() => loadAdminSession());
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState(null);
   const [loginLoading, setLoginLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [bootstrapping, setBootstrapping] = useState(() => Boolean(loadAdminSession()?.token));
+
+  const token = session?.token ?? null;
+  const admin = session?.admin ?? null;
+
+  const navItems = useMemo(
+    () => NAV.filter((n) => adminHasPage(admin, n.page)),
+    [admin],
+  );
+
+  useEffect(() => {
+    if (!token) {
+      setBootstrapping(false);
+      return;
+    }
+    let cancelled = false;
+    api
+      .adminMe(token)
+      .then((me) => {
+        if (cancelled) return;
+        saveAdminSession({ token, admin: me });
+        setSession({ token, admin: me });
+      })
+      .catch(() => {
+        if (cancelled) return;
+        clearAdminSession();
+        setSession(null);
+      })
+      .finally(() => {
+        if (!cancelled) setBootstrapping(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
+  useEffect(() => {
+    if (!admin || bootstrapping) return;
+    const page = PAGE_BY_PATH[pathname];
+    if (pathname === "/admin" || pathname === "/admin/") {
+      navigate({ to: firstAllowedPath(admin) });
+      return;
+    }
+    if (page && !adminHasPage(admin, page)) {
+      navigate({ to: firstAllowedPath(admin) });
+    }
+  }, [admin, bootstrapping, pathname, navigate]);
 
   const logout = () => {
-    adminTokenStore.remove(ADMIN_TOKEN_KEY);
-    setToken(null);
+    clearAdminSession();
+    setSession(null);
     navigate({ to: "/admin" });
   };
+
+  if (bootstrapping) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-gradient-festive">
+        <Loader2 className="h-8 w-8 animate-spin text-secondary" />
+      </div>
+    );
+  }
 
   if (!token) {
     return (
@@ -56,9 +138,10 @@ export function AdminShell() {
             setLoginError(null);
             setLoginLoading(true);
             try {
-              const { token: jwt } = await api.adminLogin(username.trim(), password);
-              adminTokenStore.set(ADMIN_TOKEN_KEY, jwt);
-              setToken(jwt);
+              const data = await api.adminLogin(username.trim(), password);
+              saveAdminSession({ token: data.token, admin: data.admin });
+              setSession({ token: data.token, admin: data.admin });
+              navigate({ to: firstAllowedPath(data.admin) });
             } catch (err) {
               if (err instanceof ApiError && err.code === "INVALID_CREDENTIALS") {
                 setLoginError("Invalid username or password");
@@ -130,10 +213,12 @@ export function AdminShell() {
       <aside className="hidden w-56 shrink-0 flex-col border-r border-primary/20 bg-card md:flex">
         <div className="border-b border-primary/15 p-5">
           <h1 className="font-display text-lg">Admin Panel</h1>
-          <p className="text-xs text-muted-foreground">Janmashtami Desk</p>
+          <p className="text-xs text-muted-foreground">
+            {admin?.username} · {admin?.role?.replace("_", " ")}
+          </p>
         </div>
         <nav className="flex-1 space-y-1 p-3">
-          {NAV.map(({ to, label, icon: Icon }) => (
+          {navItems.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}
               to={to}
@@ -158,7 +243,7 @@ export function AdminShell() {
         <header className="flex items-center gap-3 border-b border-primary/20 bg-card/90 px-3 py-3 backdrop-blur md:hidden">
           <span className="shrink-0 font-display text-lg">Admin</span>
           <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto pb-0.5">
-            {NAV.map(({ to, icon: Icon }) => (
+            {navItems.map(({ to, icon: Icon }) => (
               <Link
                 key={to}
                 to={to}
@@ -174,7 +259,7 @@ export function AdminShell() {
           </div>
         </header>
         <main className="flex-1 overflow-auto p-4 sm:p-6">
-          <Outlet context={{ token }} />
+          <Outlet context={{ token, admin }} />
         </main>
       </div>
     </div>
@@ -182,5 +267,5 @@ export function AdminShell() {
 }
 
 export function useAdminToken() {
-  return adminTokenStore.get(ADMIN_TOKEN_KEY);
+  return loadAdminSession()?.token ?? null;
 }

@@ -57,7 +57,6 @@ export async function createRegistrationBatch({
     if (primaryExisting) {
       duplicates.push({
         name: primary.fullName,
-        matchedRegistrationId: primaryExisting._id,
         suggestion: 'use-find-my-registration',
         kind: 'primary',
       });
@@ -94,7 +93,6 @@ export async function createRegistrationBatch({
       if (existing) {
         duplicates.push({
           name: m.fullName,
-          matchedRegistrationId: existing._id,
           suggestion: 'duplicate-member',
           kind: 'member',
         });
@@ -111,7 +109,6 @@ export async function createRegistrationBatch({
         if (phoneExisting) {
           duplicates.push({
             name: m.fullName,
-            matchedRegistrationId: phoneExisting._id,
             suggestion: 'duplicate-member',
             kind: 'member',
           });

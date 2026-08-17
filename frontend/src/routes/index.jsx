@@ -79,7 +79,7 @@ function HomeLeaderboardPreview({ rows }) {
     <div className="divide-y divide-slate-100">
       {rows.slice(0, 5).map((r, i) => (
         <div
-          key={r.referralCode}
+          key={`${r.rank}-${r.fullName}`}
           className={`flex items-center gap-4 px-6 py-5 ${i === 0 ? "jh-rank-glow" : ""}`}
         >
           <div
@@ -92,7 +92,6 @@ function HomeLeaderboardPreview({ rows }) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="truncate font-bold">{r.fullName}</div>
-            <div className="truncate text-xs text-slate-400">{r.referralCode}</div>
           </div>
           <div className="font-display text-2xl font-bold text-[#D89B24]">{r.referralCount}</div>
         </div>

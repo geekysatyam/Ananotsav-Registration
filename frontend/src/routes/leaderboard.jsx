@@ -15,7 +15,7 @@ export const Route = createFileRoute("/leaderboard")({
       title: "Referral Leaderboard — Janmashtami Utsav 2026"
     }, {
       name: "description",
-      content: "Live standings of the Janmashtami Utsav referral competition. Search by name or Krishna code and see your rank."
+      content: "Live standings of the Janmashtami Utsav referral competition. Search by name and see your rank."
     }, {
       property: "og:title",
       content: "Referral Leaderboard — Janmashtami Utsav 2026"
@@ -50,7 +50,7 @@ function LeaderboardPage() {
   }, [query]);
   const rows = useMemo(() => {
     if (!debouncedQuery) return leaderboard;
-    return leaderboard.filter(r => r.fullName.toLowerCase().includes(debouncedQuery) || r.referralCode.toLowerCase().includes(debouncedQuery));
+    return leaderboard.filter((r) => r.fullName.toLowerCase().includes(debouncedQuery));
   }, [debouncedQuery, leaderboard]);
   const match = debouncedQuery ? rows[0] : undefined;
   return /*#__PURE__*/_jsx(SiteShell, {

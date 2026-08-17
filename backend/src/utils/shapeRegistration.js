@@ -1,5 +1,16 @@
 import { buildSignedPayload } from '../services/hmac.service.js';
 
+/** Child first names only — no DOB / getup on public responses. */
+function shapeFancyDressPublic(entries) {
+  return (entries ?? []).map((e) => ({
+    childName: e.childName,
+  }));
+}
+
+/**
+ * Public shape after register / find-my-registration.
+ * Includes QR signedPayload; redacts minors' DOB and getup detail.
+ */
 export function shapeRegistration(doc) {
   return {
     id: doc._id.toString(),
@@ -17,11 +28,7 @@ export function shapeRegistration(doc) {
     wantsVolunteer: doc.wantsVolunteer ?? false,
     wantsPanchamritAbhishek: doc.wantsPanchamritAbhishek ?? false,
     wantsFancyDress: doc.wantsFancyDress ?? false,
-    fancyDressEntries: (doc.fancyDressEntries ?? []).map((e) => ({
-      childName: e.childName,
-      childDob: e.childDob,
-      getupDetail: e.getupDetail ?? '',
-    })),
+    fancyDressEntries: shapeFancyDressPublic(doc.fancyDressEntries),
     wantsLadduGopal: doc.wantsLadduGopal ?? false,
     ladduGopalSize: doc.ladduGopalSize ?? null,
   };

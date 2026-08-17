@@ -10,8 +10,6 @@ const required = [
   'HMAC_SECRET',
   'JWT_SECRET',
   'JWT_EXPIRY',
-  'ADMIN_USERNAME',
-  'ADMIN_PASSWORD_HASH',
   'EVENT_YEAR',
 ];
 
@@ -29,9 +27,8 @@ const config = {
   hmacSecret: process.env.HMAC_SECRET,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiry: process.env.JWT_EXPIRY,
-  adminUsername: process.env.ADMIN_USERNAME,
-  adminPasswordHash: process.env.ADMIN_PASSWORD_HASH,
   eventYear: Number(process.env.EVENT_YEAR),
+  trustProxy: process.env.TRUST_PROXY === 'true' || process.env.TRUST_PROXY === '1',
 };
 
 export default config;

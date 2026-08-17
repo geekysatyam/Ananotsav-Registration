@@ -466,7 +466,7 @@ function RegisterPage() {
                   label="City"
                   icon={<Building2 className="h-4 w-4 sm:h-5 sm:w-5" />}
                   required
-                  placeholder="Pune"
+                  placeholder="Optional"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                 />

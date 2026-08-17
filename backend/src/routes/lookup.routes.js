@@ -1,9 +1,8 @@
 import { Router } from 'express';
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { getRegistrationById } from '../controllers/lookup.controller.js';
 
 const router = Router();
 
-router.get('/:id', asyncHandler(getRegistrationById));
+// GET /api/registration/:id removed — unauthenticated IDOR returned signed QR payloads.
+// Use POST /api/find-registration (phone + DOB) or the response from POST /api/register.
 
 export default router;

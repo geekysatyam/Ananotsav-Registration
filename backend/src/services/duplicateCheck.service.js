@@ -14,7 +14,6 @@ export async function checkDuplicates(people) {
     if (existing) {
       duplicates.push({
         name: person.fullName || person.name,
-        matchedRegistrationId: existing._id,
         suggestion: 'use-find-my-registration',
       });
     }

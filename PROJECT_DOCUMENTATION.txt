@@ -61,7 +61,7 @@ any registration data permanently — it only displays and submits it.
 2. WHO USES IT AND HOW?
 ================================================================================
 
-There are three types of users:
+There are several types of users:
 
   --- BHAKTAS (General Public) ---
   - Visit the website on their phone or computer
@@ -69,18 +69,26 @@ There are three types of users:
   - Get a QR code for each person
   - Optionally join the referral competition
   - Share their referral code with friends
-  - Check the leaderboard to see their rank
+  - Check the leaderboard to see their rank (public board shows names + counts only)
   - On event day: show their QR at the desk to check in and get their Divine Gift
 
   --- ORGANISERS ---
   - Monitor the leaderboard to see how many people have registered
   - Use the stats counter on the home page to track total registrations
 
-  --- DESK STAFF (Event Day) ---
-  - Log in to the Scanner page using a username and password
-  - Use their phone/tablet camera to scan each bhakta's QR code
-  - The screen shows green (success) or red (error) instantly
-  - Can also type in an entry code manually if the QR is damaged
+  --- SUPER ADMIN ---
+  - First account is created once via `npm run seed:super-admin` (not from .env)
+  - Full access to every admin page
+  - Creates desk and admin users and assigns page permissions at /admin/admins
+
+  --- ADMIN (custom pages) ---
+  - Can only open the admin pages granted by super admin
+  - Examples: registrations list/export, volunteers, fancy dress, leaderboard
+
+  --- DESK STAFF ---
+  - Fixed access: Scanner + Desk Register only
+  - Log in at /scanner or /admin
+  - Scan Entry QR codes and register walk-ins at the desk
 
 
 ================================================================================
@@ -142,7 +150,13 @@ There are three types of users:
   │   │   ├── find.jsx         "Find My Registration" page
   │   │   ├── leaderboard.jsx  Full leaderboard page
   │   │   ├── event-details.jsx Event info page
-  │   │   └── scanner.jsx      Staff-only QR scanner page
+  │   │   ├── scanner.jsx      Staff-only QR scanner page
+  │   │   ├── competitions.jsx Competitions overview
+  │   │   └── admin/           Admin panel (RBAC: desk / admin / super_admin)
+  │   │       ├── route.jsx    Admin layout shell + login
+  │   │       ├── admins.jsx   Super-admin user management
+  │   │       ├── scanner.jsx / register.jsx / registrations.jsx
+  │   │       └── volunteers, abhishek, fancy-dress, laddu-gopal, leaderboard
   │   │
   │   ├── components/          Reusable UI components
   │   │   ├── ui/              shadcn/ui base components (button, card, etc.)
@@ -245,7 +259,7 @@ There are three types of users:
 
   --- LEADERBOARD PAGE  (/leaderboard) ---
   Full ranked list of all referral competition participants.
-  Has a search bar to find yourself by name or referral code.
+  Has a search bar to find yourself by name (referral codes are not shown publicly).
   Auto-refreshes every 60 seconds to stay live.
   Top 3 get gold/silver/bronze medal treatment.
 
@@ -255,8 +269,15 @@ There are three types of users:
 
   --- SCANNER PAGE  (/scanner) ---
   Staff-only page. Not in the public navigation.
-  Used on event day to check in bhaktas.
+  Used on event day to check in bhaktas. Requires an account with scanner access.
   See Section 9 for the full flow.
+
+  --- ADMIN PANEL  (/admin/...) ---
+  Shared login shell. Nav items are filtered by the user's role/pages.
+  · /admin/scanner, /admin/register — desk staff
+  · /admin/registrations, volunteers, abhishek, fancy-dress, laddu-gopal,
+    leaderboard — granted per admin user
+  · /admin/admins — super_admin only (create/disable users, assign pages)
 
 
 ================================================================================
@@ -358,10 +379,10 @@ There are three types of users:
   Step 1: User visits /leaderboard (from navbar or home page)
 
   Step 2: Full leaderboard loads from the API
-          - Shows rank, name, referral code, referral count
+          - Shows rank, name, referral count (no public referral codes)
           - Top 3 have medal icons and highlighted styling
 
-  Step 3: User can search by name or Krishna code
+  Step 3: User can search by name
           - Search is debounced (250ms) — filters after they stop typing
           - If their name matches, a sticky "Your Rank" card appears at the top
 
@@ -457,14 +478,20 @@ public navigation menu.
 
   Step 2: A login form is shown (username + password)
 
-  Step 3: Credentials are sent to the backend API (/api/admin/login)
+  Step 3: Credentials are sent to the backend API (/api/admin/login).
+          Accounts live in the MongoDB Admin collection (roles: super_admin,
+          admin, desk). There is no admin password in environment variables.
 
-  Step 4: If correct: a JWT (JSON Web Token) is returned and saved to
-          sessionStorage. The scanner view is shown.
+  Step 4: If correct: a JWT is returned with role + allowed pages, plus the
+          admin profile. Both token and profile are saved to sessionStorage.
+          The account must have the "scanner" page (desk, super_admin, or an
+          admin granted scanner). Otherwise login is rejected on this page.
           If wrong: "Invalid username or password" error is shown.
 
   Step 5: The token is used for all subsequent scanner API calls.
           It is stored in sessionStorage (cleared when the tab closes).
+          Default JWT expiry is 2 hours (JWT_EXPIRY). Changing password or
+          disabling a user bumps tokenVersion and invalidates old tokens.
 
 --- SCANNING ---
 
@@ -517,11 +544,16 @@ in the frontend — everything important lives in the backend database.
     Used by: the /success page to display QR codes
     Cleared: when the tab closes
 
-  · Admin JWT token for the scanner
+  · Admin JWT token for staff / scanner / admin panel
     Key: "janmashtami_admin_token"
     Contains: the JWT returned after staff login
-    Used by: the /scanner page for all API calls
-    Cleared: when the tab closes, or when staff clicks "Exit"
+    Used by: /scanner and /admin pages for API calls
+    Cleared: when the tab closes, or when staff clicks Exit / Log out
+
+  · Admin profile (role + pages) for nav filtering
+    Key: "janmashtami_admin_user"
+    Contains: JSON { id, username, role, pages }
+    Cleared: with the token on logout / tab close
 
   --- localStorage ---
   (Persists across sessions until manually cleared)
@@ -549,15 +581,24 @@ The base URL is set via the VITE_API_URL environment variable.
   ─────────────────────────────────────────────────────────────────────────────
   /api/register                     POST     register.jsx      Submit registration
   /api/validate-referral/:code      GET      register.jsx      Check if code exists
-  /api/leaderboard                  GET      leaderboard.jsx   Get full rankings
+  /api/leaderboard                  GET      leaderboard.jsx   Rankings (name + count only)
                                              index.jsx         Get top 5 preview
   /api/stats/count                  GET      register.jsx      Get total registrant count
                                              index.jsx         Get count for home page
   /api/find-registration            POST     find.jsx          Look up by phone + DOB
-  /api/registration/:id             GET      (available)       Get single registration
-  /api/admin/login                  POST     scanner.jsx       Staff login
-  /api/scan/checkin                 POST     scanner.jsx       Check in via QR payload
-  /api/scan/checkin/override        POST     scanner.jsx       Check in via entry code
+                                                           (QR payloads; child DOB omitted)
+  /api/admin/login                  POST     scanner / admin   Staff login (JWT + role/pages)
+  /api/admin/me                     GET      admin-shell       Refresh role/pages
+  /api/admin/users                  GET/POST/PATCH  admins.jsx Super-admin user management
+  /api/admin/register               POST     admin/register    Desk walk-in registration
+  /api/admin/registrations (+export) GET     admin pages       List/export (page-gated)
+  /api/admin/volunteers|abhishek|fancy-dress|laddu-gopal|leaderboard (+export)
+                                    GET      admin opt-in UIs  Page-permission gated
+  /api/scan/checkin                 POST     scanner           Check in via QR payload
+  /api/scan/checkin/override        POST     scanner           Check in via entry code
+
+  REMOVED: GET /api/registration/:id — previously returned signed QR payloads
+  without auth (IDOR). Use find-registration or the register response instead.
 
 ERROR HANDLING:
 
@@ -668,9 +709,23 @@ Without VITE_PUBLIC_URL, referral share links may be broken on SSR.
 ================================================================================
 
   · BACKEND REQUIRED
-    This is a frontend-only project. It will not work without a running
-    backend API server. The backend handles all data storage, QR signing,
-    referral validation, and check-in logic.
+    This project needs a running backend API. The backend handles all data
+    storage, QR signing (HMAC), referral validation, check-in, and admin RBAC.
+
+  · ADMIN BOOTSTRAP
+    Create the first super_admin once:
+      cd backend && npm run seed:super-admin -- <username> <password>
+    Then open /admin/admins to create desk (scanner + register) or admin users
+    with selected page permissions. Do not put admin passwords in .env.
+
+  · SECURITY NOTES (IMPLEMENTED)
+    - GET /api/registration/:id removed (was an unauthenticated QR leak).
+    - Duplicate errors no longer return Mongo ObjectIds.
+    - Public leaderboard returns name + referralCount only (no referral codes).
+    - Public registration shapes omit child DOB / getup detail.
+    - express.json body limited to 64kb; trust proxy only in production
+      (or TRUST_PROXY=true).
+    - Admin JWT includes role, pages, tokenVersion; expiry via JWT_EXPIRY (2h).
 
   · NO REAL-TIME UPDATES
     The leaderboard refreshes every 60 seconds. It is not a true real-time
@@ -716,7 +771,7 @@ Without VITE_PUBLIC_URL, referral share links may be broken on SSR.
 
 ================================================================================
   END OF DOCUMENT
-  Last updated: 2025
+  Last updated: August 2026
   Project: Anandotsav 2026 Registration Platform
   Organisation: Sri Gokul Gaushala, Amritsar
 ================================================================================

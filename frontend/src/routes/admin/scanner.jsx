@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ScannerPanel } from "@/components/admin/scanner-panel";
-import { ADMIN_TOKEN_KEY, adminTokenStore } from "@/lib/api";
+import { loadAdminSession } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/scanner")({
   head: () => ({ meta: [{ title: "Scanner — Admin" }] }),
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/admin/scanner")({
 });
 
 function AdminScannerPage() {
-  const token = adminTokenStore.get(ADMIN_TOKEN_KEY);
+  const token = loadAdminSession()?.token ?? null;
   if (!token) return null;
   return <ScannerPanel token={token} />;
 }

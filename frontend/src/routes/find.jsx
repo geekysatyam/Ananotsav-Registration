@@ -117,7 +117,7 @@ function FindPage() {
                       setNoMatch(false);
                       setError(null);
                     }}
-                    placeholder="9876543210"
+                    placeholder="9XXXXXXXXX"
                     className={cn(
                       "min-h-12 w-full rounded-2xl border-2 bg-background px-4 outline-none focus:ring-4",
                       phoneError

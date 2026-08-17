@@ -2,28 +2,135 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
 import config from '../config/env.js';
+import Admin from '../models/Admin.model.js';
 import Registration from '../models/Registration.model.js';
 import { success, error } from '../utils/apiResponse.js';
 import { createRegistrationBatch } from '../services/registration.service.js';
+import { pagesForRole, DESK_PAGES } from '../constants/adminPages.js';
+
+function shapeAdminUser(doc) {
+  const pages = pagesForRole(doc.role, doc.pages);
+  return {
+    id: doc._id.toString(),
+    username: doc.username,
+    role: doc.role,
+    pages,
+    isActive: doc.isActive,
+    createdAt: doc.createdAt,
+    updatedAt: doc.updatedAt,
+  };
+}
 
 export async function adminLogin(req, res) {
   const { username, password } = req.validated;
+  const normalized = username.trim().toLowerCase();
 
-  if (username !== config.adminUsername) {
+  const admin = await Admin.findOne({ username: normalized });
+  if (!admin || !admin.isActive) {
     return error(res, 'INVALID_CREDENTIALS', 'Invalid credentials', 401);
   }
 
-  const valid = await bcrypt.compare(password, config.adminPasswordHash);
+  const valid = await bcrypt.compare(password, admin.passwordHash);
   if (!valid) {
     return error(res, 'INVALID_CREDENTIALS', 'Invalid credentials', 401);
   }
 
+  const pages = pagesForRole(admin.role, admin.pages);
   const token = jwt.sign(
-    { sub: config.adminUsername, role: 'admin', jti: nanoid() },
+    {
+      sub: admin._id.toString(),
+      role: admin.role,
+      pages,
+      tokenVersion: admin.tokenVersion,
+      jti: nanoid(),
+    },
     config.jwtSecret,
     { expiresIn: config.jwtExpiry },
   );
-  return success(res, { token });
+
+  return success(res, {
+    token,
+    admin: {
+      id: admin._id.toString(),
+      username: admin.username,
+      role: admin.role,
+      pages,
+    },
+  });
+}
+
+export async function adminMe(req, res) {
+  return success(res, {
+    id: req.admin.id,
+    username: req.admin.username,
+    role: req.admin.role,
+    pages: req.admin.pages,
+  });
+}
+
+export async function listAdmins(req, res) {
+  const rows = await Admin.find().sort({ createdAt: 1 }).lean();
+  return success(res, { rows: rows.map(shapeAdminUser) });
+}
+
+export async function createAdmin(req, res) {
+  const { username, password, role, pages } = req.validated;
+  const normalized = username.trim().toLowerCase();
+
+  const existing = await Admin.findOne({ username: normalized });
+  if (existing) {
+    return error(res, 'USERNAME_TAKEN', 'Username already exists', 409);
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  const effectivePages = role === 'desk' ? DESK_PAGES : (pages ?? []).filter((p) => p !== 'admins');
+
+  const doc = await Admin.create({
+    username: normalized,
+    passwordHash,
+    role,
+    pages: role === 'admin' ? effectivePages : [],
+    createdBy: req.admin.id,
+  });
+
+  return success(res, shapeAdminUser(doc), 201);
+}
+
+export async function updateAdmin(req, res) {
+  const { id } = req.params;
+  const patch = req.validated;
+
+  const admin = await Admin.findById(id);
+  if (!admin) {
+    return error(res, 'NOT_FOUND', 'Admin not found', 404);
+  }
+  if (admin.role === 'super_admin') {
+    return error(res, 'FORBIDDEN', 'Cannot modify super_admin via this endpoint', 403);
+  }
+  if (admin._id.toString() === req.admin.id && patch.isActive === false) {
+    return error(res, 'FORBIDDEN', 'Cannot deactivate your own account', 403);
+  }
+
+  if (patch.role !== undefined) admin.role = patch.role;
+  if (patch.isActive !== undefined) admin.isActive = patch.isActive;
+
+  const nextRole = admin.role;
+  if (nextRole === 'desk') {
+    admin.pages = [];
+  } else if (patch.pages !== undefined) {
+    admin.pages = patch.pages.filter((p) => p !== 'admins');
+  }
+
+  if (patch.password) {
+    admin.passwordHash = await bcrypt.hash(patch.password, 10);
+    admin.tokenVersion += 1;
+  }
+  if (patch.isActive === false) {
+    admin.tokenVersion += 1;
+  }
+
+  await admin.save();
+  return success(res, shapeAdminUser(admin));
 }
 
 function formatDob(date) {

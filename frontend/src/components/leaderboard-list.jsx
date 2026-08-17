@@ -13,7 +13,7 @@ export const LeaderboardList = memo(function LeaderboardList({ rows }) {
     <div className="space-y-3">
       {rows.map((r, i) => (
         <div
-          key={r.referralCode}
+          key={`${r.rank}-${r.fullName}`}
           className={`rounded-2xl p-[2px] shadow-warm ${i < 3 ? `bg-gradient-to-r ${medal[i]} to-transparent` : "bg-primary/25"}`}
         >
           <div
@@ -29,9 +29,6 @@ export const LeaderboardList = memo(function LeaderboardList({ rows }) {
             </div>
             <div className="relative min-w-0">
               <div className="truncate font-display text-lg sm:text-xl">{r.fullName}</div>
-              <div className="truncate text-xs tracking-[0.15em] text-muted-foreground uppercase">
-                {r.referralCode}
-              </div>
             </div>
             <div className="relative text-right">
               <div className="font-display text-2xl text-secondary tabular-nums">{r.referralCount}</div>

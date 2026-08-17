@@ -5,12 +5,11 @@ export async function getLeaderboard(req, res) {
   const rows = await Registration.find({ wantsReferral: true })
     .sort({ referralCount: -1 })
     .limit(50)
-    .select('fullName referralCode referralCount');
+    .select('fullName referralCount');
 
   const data = rows.map((row, index) => ({
     rank: index + 1,
     fullName: row.fullName,
-    referralCode: row.referralCode,
     referralCount: row.referralCount,
   }));
 
