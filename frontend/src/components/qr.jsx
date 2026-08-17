@@ -115,6 +115,71 @@ export async function downloadQr(value, filename) {
   triggerDownload(dataUrl, filename);
 }
 
+function paintPassChrome(ctx, width, height, pad) {
+  const innerWidth = width - pad * 2;
+  const bg = ctx.createLinearGradient(0, 0, width, height);
+  bg.addColorStop(0, "#fffdf7");
+  bg.addColorStop(0.5, "#fff8e7");
+  bg.addColorStop(1, "#eef9f8");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, width, height);
+
+  drawRoundedRect(ctx, 28, 28, width - 56, height - 56, 36);
+  ctx.strokeStyle = "#D89B24";
+  ctx.lineWidth = 6;
+  ctx.stroke();
+
+  drawRoundedRect(ctx, pad - 12, pad - 12, innerWidth + 24, height - pad * 2 + 24, 28);
+  ctx.fillStyle = "rgba(255,255,255,0.92)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(216,155,36,0.45)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function paintQrFrame(ctx, img, x, y, qrSize) {
+  const frame = 28;
+  drawRoundedRect(ctx, x, y, qrSize + frame, qrSize + frame, 20);
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+  ctx.strokeStyle = "#126B82";
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  ctx.drawImage(img, x + frame / 2, y + frame / 2, qrSize, qrSize);
+}
+
+function paintNoteBox(ctx, x, y, w, h, title, lines) {
+  const inset = 32;
+  drawRoundedRect(ctx, x, y, w, h, 18);
+  ctx.fillStyle = "rgba(247,217,138,0.35)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(216,155,36,0.55)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#08495B";
+  ctx.font = "bold 24px Georgia, 'Times New Roman', serif";
+  ctx.fillText(title, x + inset, y + 40);
+
+  ctx.fillStyle = "#4a5560";
+  ctx.font = "22px system-ui, sans-serif";
+  let ty = y + 72;
+  for (const line of lines) {
+    ctx.fillText(line, x + inset, ty);
+    ty += 28;
+  }
+}
+
+function paintPassFooter(ctx, width, y) {
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#6b7a80";
+  ctx.font = "20px system-ui, sans-serif";
+  ctx.fillText(eventInfo.date, width / 2, y);
+  ctx.font = "18px system-ui, sans-serif";
+  ctx.fillText(eventInfo.venue, width / 2, y + 28);
+}
+
 /**
  * Download a full entry pass card: event header, QR, name, entry ID, gift note.
  */
@@ -125,9 +190,10 @@ export async function downloadEntryPass({
   filename,
 }) {
   const width = 1080;
-  const pad = 72;
+  const pad = 64;
   const innerWidth = width - pad * 2;
-  const qrSize = 480;
+  const qrSize = 460;
+  const qrFrame = 28;
 
   const qrDataUrl = await QRCode.toDataURL(signedPayload, {
     width: qrSize,
@@ -137,130 +203,150 @@ export async function downloadEntryPass({
   });
   const qrImg = await loadImage(qrDataUrl);
 
-  const measureCanvas = document.createElement("canvas");
-  measureCanvas.width = width;
-  const mctx = measureCanvas.getContext("2d");
-  mctx.font = "bold 52px Georgia, 'Times New Roman', serif";
-  const nameLines = wrapText(mctx, fullName, innerWidth - 40);
-  const giftNote = giftDeskMessage(fullName);
+  const measure = document.createElement("canvas").getContext("2d");
+  measure.font = "bold 48px Georgia, 'Times New Roman', serif";
+  const nameLines = wrapText(measure, fullName, innerWidth - 24);
+  measure.font = "22px system-ui, sans-serif";
+  const giftLines = wrapText(measure, giftDeskMessage(fullName), innerWidth - 64);
 
+  const giftBoxH = 36 + 28 + giftLines.length * 28 + 28;
   const height =
     pad +
-    120 +
-    60 +
-    qrSize +
-    48 +
-    nameLines.length * 62 +
-    80 +
-    120 +
-    140 +
+    86 +
+    28 +
+    (qrSize + qrFrame) +
+    36 +
+    nameLines.length * 54 +
+    36 +
+    28 +
+    giftBoxH +
+    28 +
+    52 +
     pad;
 
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext("2d");
+  paintPassChrome(ctx, width, height, pad);
 
-  // Background wash
-  const bg = ctx.createLinearGradient(0, 0, width, height);
-  bg.addColorStop(0, "#fffdf7");
-  bg.addColorStop(0.5, "#fff8e7");
-  bg.addColorStop(1, "#eef9f8");
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, width, height);
-
-  // Gold outer frame
-  drawRoundedRect(ctx, 28, 28, width - 56, height - 56, 36);
-  ctx.strokeStyle = "#D89B24";
-  ctx.lineWidth = 6;
-  ctx.stroke();
-
-  // Inner card
-  drawRoundedRect(ctx, pad - 12, pad - 12, innerWidth + 24, height - pad * 2 + 24, 28);
-  ctx.fillStyle = "rgba(255,255,255,0.92)";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(216,155,36,0.35)";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  let y = pad + 8;
-
-  // Event header
+  let y = pad + 4;
   ctx.textAlign = "center";
   ctx.fillStyle = "#08495B";
   ctx.font = "bold 42px Georgia, 'Times New Roman', serif";
   ctx.fillText(siteConfig.brand.name, width / 2, y + 42);
-  y += 58;
+  y += 54;
 
   ctx.fillStyle = "#D89B24";
-  ctx.font = "bold 22px system-ui, sans-serif";
+  ctx.font = "bold 20px system-ui, sans-serif";
   ctx.fillText("BHAKTA ENTRY PASS", width / 2, y + 22);
-  y += 44;
+  y += 50;
 
-  // QR frame
-  const qrX = (width - qrSize - 32) / 2;
-  drawRoundedRect(ctx, qrX, y, qrSize + 32, qrSize + 32, 20);
-  ctx.fillStyle = "#ffffff";
-  ctx.fill();
-  ctx.strokeStyle = "#126B82";
-  ctx.lineWidth = 4;
-  ctx.stroke();
-  ctx.drawImage(qrImg, qrX + 16, y + 16, qrSize, qrSize);
-  y += qrSize + 32 + 36;
+  const qrX = (width - qrSize - qrFrame) / 2;
+  paintQrFrame(ctx, qrImg, qrX, y, qrSize);
+  y += qrSize + qrFrame + 36;
 
-  // Name
   ctx.fillStyle = "#17313A";
-  ctx.font = "bold 52px Georgia, 'Times New Roman', serif";
+  ctx.font = "bold 48px Georgia, 'Times New Roman', serif";
   for (const line of nameLines) {
     ctx.fillText(line, width / 2, y);
-    y += 62;
+    y += 54;
   }
 
-  // Entry ID
-  y += 8;
   ctx.fillStyle = "#126B82";
-  ctx.font = "600 26px system-ui, sans-serif";
+  ctx.font = "600 24px system-ui, sans-serif";
   ctx.fillText(`ENTRY PASS · ${entryCode}`, width / 2, y);
-  y += 48;
+  y += 36;
 
-  // Gift note box
-  const giftPad = 36;
-  const giftBoxH = 120;
-  drawRoundedRect(ctx, pad, y, innerWidth, giftBoxH, 18);
-  ctx.fillStyle = "rgba(247,217,138,0.35)";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(216,155,36,0.55)";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  ctx.textAlign = "left";
-  ctx.fillStyle = "#08495B";
-  ctx.font = "bold 24px Georgia, 'Times New Roman', serif";
-  ctx.fillText("Your Divine Gift", pad + giftPad, y + 38);
-
-  ctx.fillStyle = "#17313A";
-  ctx.font = "22px system-ui, sans-serif";
-  const giftLines = wrapText(ctx, giftNote, innerWidth - giftPad * 2);
-  let gy = y + 72;
-  for (const line of giftLines) {
-    ctx.fillText(line, pad + giftPad, gy);
-    gy += 30;
-  }
-
-  y += giftBoxH + 28;
-
-  // Footer
-  ctx.textAlign = "center";
-  ctx.fillStyle = "#5a6b72";
-  ctx.font = "20px system-ui, sans-serif";
-  ctx.fillText(eventInfo.date, width / 2, y);
-  y += 30;
-  const venueLines = wrapText(ctx, eventInfo.venue, innerWidth);
-  ctx.font = "18px system-ui, sans-serif";
-  for (const line of venueLines) {
-    ctx.fillText(line, width / 2, y);
-    y += 26;
-  }
+  paintNoteBox(ctx, pad, y, innerWidth, giftBoxH, "Your Divine Gift", giftLines);
+  y += giftBoxH + 36;
+  paintPassFooter(ctx, width, y);
 
   triggerDownload(canvas.toDataURL("image/png"), filename ?? sanitizeFilename(fullName));
+}
+
+/**
+ * Download a referral QR card in the same pass style — header, QR, code, note.
+ */
+export async function downloadReferralPass({
+  referralLink,
+  referralCode,
+  filename,
+}) {
+  const width = 1080;
+  const pad = 64;
+  const innerWidth = width - pad * 2;
+  const qrSize = 460;
+  const qrFrame = 28;
+
+  const qrDataUrl = await QRCode.toDataURL(referralLink, {
+    width: qrSize,
+    margin: 2,
+    color: { dark: "#1c3f47", light: "#ffffff" },
+    errorCorrectionLevel: "M",
+  });
+  const qrImg = await loadImage(qrDataUrl);
+
+  const measure = document.createElement("canvas").getContext("2d");
+  measure.font = "22px system-ui, sans-serif";
+  const noteLines = wrapText(
+    measure,
+    "Every bhakta who registers with your Krishna code lifts you up the live leaderboard.",
+    innerWidth - 64,
+  );
+  const noteBoxH = 36 + 28 + noteLines.length * 28 + 28;
+  const height =
+    pad +
+    86 +
+    28 +
+    (qrSize + qrFrame) +
+    36 +
+    54 +
+    32 +
+    28 +
+    noteBoxH +
+    28 +
+    52 +
+    pad;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  paintPassChrome(ctx, width, height, pad);
+
+  let y = pad + 4;
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#08495B";
+  ctx.font = "bold 42px Georgia, 'Times New Roman', serif";
+  ctx.fillText(siteConfig.brand.name, width / 2, y + 42);
+  y += 54;
+
+  ctx.fillStyle = "#D89B24";
+  ctx.font = "bold 20px system-ui, sans-serif";
+  ctx.fillText("KRISHNA REFERRAL CODE", width / 2, y + 22);
+  y += 50;
+
+  const qrX = (width - qrSize - qrFrame) / 2;
+  paintQrFrame(ctx, qrImg, qrX, y, qrSize);
+  y += qrSize + qrFrame + 36;
+
+  ctx.fillStyle = "#08495B";
+  ctx.font = "bold 48px Georgia, 'Times New Roman', serif";
+  ctx.fillText(referralCode, width / 2, y);
+  y += 50;
+
+  ctx.fillStyle = "#126B82";
+  ctx.font = "600 22px system-ui, sans-serif";
+  ctx.fillText("Scan to register with this code", width / 2, y);
+  y += 36;
+
+  paintNoteBox(ctx, pad, y, innerWidth, noteBoxH, "Share & rise on the leaderboard", noteLines);
+  y += noteBoxH + 36;
+  paintPassFooter(ctx, width, y);
+
+  triggerDownload(
+    canvas.toDataURL("image/png"),
+    filename ?? `referral-${sanitizeFilename(referralCode)}`,
+  );
 }

@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DOB_MIN_YEAR, parseIsoDate, toIsoDate } from "@/lib/validators";
@@ -38,7 +39,8 @@ function sameDay(a, b) {
 }
 
 /**
- * DOB calendar with month/year dropdowns — easier than native date input for birth years.
+ * DOB calendar with month/year dropdowns.
+ * Renders the popover in a portal so overflow:hidden parents cannot clip it.
  */
 export function DobPicker({
   value,
@@ -48,15 +50,20 @@ export function DobPicker({
   id,
   maxDate = new Date(),
   minYear = DOB_MIN_YEAR,
+  defaultAgeYears = 18,
 }) {
   const selected = parseIsoDate(value);
   const max = maxDate instanceof Date ? maxDate : new Date();
   const maxYear = max.getFullYear();
 
-  const initialView = selected ?? new Date(maxYear - 18, 0, 1);
+  const fallbackView = new Date(maxYear - defaultAgeYears, 0, 1);
+  const initialView = selected ?? fallbackView;
   const [open, setOpen] = useState(false);
   const [viewYear, setViewYear] = useState(initialView.getFullYear());
   const [viewMonth, setViewMonth] = useState(initialView.getMonth());
+  const [coords, setCoords] = useState({ top: 0, left: 0, width: 280, maxHeight: 360 });
+
+  const triggerRef = useRef(null);
 
   const years = useMemo(() => {
     const list = [];
@@ -99,41 +106,58 @@ export function DobPicker({
     setViewMonth(next.getMonth());
   };
 
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        id={id}
-        disabled={disabled}
-        onClick={() => {
-          if (selected) {
-            setViewYear(selected.getFullYear());
-            setViewMonth(selected.getMonth());
-          }
-          setOpen((o) => !o);
-        }}
-        className={cn(
-          "flex min-h-10 w-full items-center justify-between gap-2 rounded-xl border-2 bg-background px-3 text-left text-base outline-none transition-colors sm:min-h-11 sm:rounded-2xl sm:px-4",
-          error
-            ? "border-destructive/60 focus:border-destructive focus:ring-2 focus:ring-destructive/20"
-            : "border-primary/30 focus:border-primary focus:ring-2 focus:ring-primary/20 sm:focus:ring-4",
-          !selected && "text-muted-foreground/70",
-          disabled && "opacity-60",
-        )}
-      >
-        <span className="truncate">{displayLabel}</span>
-        <CalendarDays className="h-4 w-4 shrink-0 text-secondary" />
-      </button>
+  useLayoutEffect(() => {
+    if (!open) return;
 
-      {open && (
+    const place = () => {
+      const el = triggerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const gap = 8;
+      const pad = 8;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const width = Math.min(Math.max(rect.width, 260), vw - pad * 2);
+      const left = Math.min(Math.max(pad, rect.left), vw - width - pad);
+      const spaceBelow = vh - rect.bottom - gap - pad;
+      const spaceAbove = rect.top - gap - pad;
+      const preferBelow = spaceBelow >= 260 || spaceBelow >= spaceAbove;
+      const maxHeight = Math.max(220, Math.min(380, preferBelow ? spaceBelow : spaceAbove));
+      const top = preferBelow
+        ? rect.bottom + gap
+        : Math.max(pad, rect.top - gap - maxHeight);
+      setCoords({ top, left, width, maxHeight });
+    };
+
+    place();
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [open]);
+
+  const calendar = open
+    ? createPortal(
         <>
           <button
             type="button"
             aria-label="Close calendar"
-            className="fixed inset-0 z-40 cursor-default"
+            className="fixed inset-0 z-[80] cursor-default bg-black/20"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute z-50 mt-2 w-full min-w-0 max-w-[min(320px,calc(100vw-2.5rem))] rounded-2xl border border-primary/20 bg-card p-3 shadow-lg ring-1 ring-primary/10">
+          <div
+            role="dialog"
+            aria-label="Choose date of birth"
+            style={{
+              top: coords.top,
+              left: coords.left,
+              width: coords.width,
+              maxHeight: coords.maxHeight,
+            }}
+            className="fixed z-[90] overflow-y-auto rounded-2xl border border-primary/20 bg-card p-3 shadow-xl ring-1 ring-primary/10"
+          >
             <div className="mb-3 flex items-center gap-2">
               <button
                 type="button"
@@ -212,8 +236,40 @@ export function DobPicker({
               })}
             </div>
           </div>
-        </>
-      )}
+        </>,
+        document.body,
+      )
+    : null;
+
+  return (
+    <div className="relative">
+      <button
+        ref={triggerRef}
+        type="button"
+        id={id}
+        disabled={disabled}
+        onClick={() => {
+          const next = !open;
+          if (next) {
+            const view = selected ?? new Date(maxYear - defaultAgeYears, 0, 1);
+            setViewYear(view.getFullYear());
+            setViewMonth(view.getMonth());
+          }
+          setOpen(next);
+        }}
+        className={cn(
+          "flex min-h-10 w-full items-center justify-between gap-2 rounded-xl border-2 bg-background px-3 text-left text-base outline-none transition-colors sm:min-h-11 sm:rounded-2xl sm:px-4",
+          error
+            ? "border-destructive/60 focus:border-destructive focus:ring-2 focus:ring-destructive/20"
+            : "border-primary/30 focus:border-primary focus:ring-2 focus:ring-primary/20 sm:focus:ring-4",
+          !selected && "text-muted-foreground/70",
+          disabled && "opacity-60",
+        )}
+      >
+        <span className="truncate">{displayLabel}</span>
+        <CalendarDays className="h-4 w-4 shrink-0 text-secondary" />
+      </button>
+      {calendar}
     </div>
   );
 }

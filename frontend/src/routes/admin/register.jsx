@@ -401,6 +401,8 @@ function AdminRegisterPage() {
                   />
                   <DobPicker
                     value={entry.childDob}
+                    defaultAgeYears={6}
+                    minYear={new Date().getFullYear() - 18}
                     onChange={(iso) =>
                       setFancyDressEntries((list) =>
                         list.map((x, idx) => (idx === i ? { ...x, childDob: iso } : x)),

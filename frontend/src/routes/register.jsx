@@ -721,7 +721,7 @@ function RegisterPage() {
                           {fancyDressEntries.map((e, i) => (
                             <div
                               key={e.id ?? i}
-                              className="rounded-xl bg-background p-2.5 ring-1 ring-primary/20"
+                              className="rounded-xl bg-background p-3 ring-1 ring-primary/20 sm:p-3.5"
                             >
                               <div className="mb-2 flex items-center justify-between">
                                 <span className="text-xs font-semibold text-secondary">
@@ -758,6 +758,8 @@ function RegisterPage() {
                                 />
                                 <DobPicker
                                   value={e.childDob}
+                                  defaultAgeYears={6}
+                                  minYear={new Date().getFullYear() - 18}
                                   onChange={(iso) =>
                                     setFancyDressEntries((list) =>
                                       list.map((x) =>
