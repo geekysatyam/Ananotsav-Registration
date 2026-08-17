@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/site-config";
 const links = [
   { to: "/", label: "Home" },
   { to: "/event-details", label: "Event Details" },
-  { to: "/", hash: "competition", label: "Competition" },
+  { to: "/competitions", label: "Competitions" },
   { to: "/leaderboard", label: "Leaderboard" },
   { to: "/find", label: "Find Registration" },
 ];

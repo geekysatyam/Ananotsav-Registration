@@ -196,7 +196,33 @@ export const api = {
       body: JSON.stringify(body),
     });
   },
+  listOptIn(token, kind, params = {}) {
+    const qs = new URLSearchParams();
+    if (params.search) qs.set("search", params.search);
+    if (params.page) qs.set("page", String(params.page));
+    if (params.limit) qs.set("limit", String(params.limit));
+    const query = qs.toString();
+    return request(`/api/admin/${kind}${query ? `?${query}` : ""}`, {
+      headers: authHeaders(token),
+    });
+  },
+  exportOptIn(token, kind, params = {}) {
+    const qs = new URLSearchParams();
+    if (params.search) qs.set("search", params.search);
+    const query = qs.toString();
+    return fetch(`${API_URL}/api/admin/${kind}/export${query ? `?${query}` : ""}`, {
+      headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    }).then((res) => {
+      if (!res.ok) throw new ApiError("EXPORT_FAILED", `Export failed (${res.status})`, res.status);
+      return res;
+    }).catch((err) => {
+      if (err instanceof ApiError) throw err;
+      throw new ApiError("NETWORK_ERROR", "Could not reach the server.", 0);
+    });
+  },
 };
+
+export const LADDU_GOPAL_SIZES = ["Small", "Medium", "Large", "Other"];
 export function normalizePhone(phone) {
   return phone.replace(/\D/g, "");
 }

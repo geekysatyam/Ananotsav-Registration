@@ -17,7 +17,7 @@ import { SiteShell } from "@/components/site-shell";
 import { GoldButton, SectionHeading } from "@/components/festive";
 import { FloatingMotifs, GradientMesh } from "@/components/ambient";
 import { Flourish, Lotus, PatternBackdrop, PeacockFeather, TempleSilhouette } from "@/components/motifs";
-import { api, formatRegistrationError, normalizePhone, saveRegistrationResult } from "@/lib/api";
+import { api, formatRegistrationError, normalizePhone, saveRegistrationResult, LADDU_GOPAL_SIZES } from "@/lib/api";
 
 const FORM_STORAGE_KEY = "janmashtami_register_draft";
 
@@ -145,6 +145,15 @@ function RegisterPage() {
   const [wantsOwnReferral, setWantsOwnReferral] = useState(() => readDraft().wantsOwnReferral ?? false);
   const [family, setFamily] = useState(() => readDraft().family ?? []);
 
+  const [wantsVolunteer, setWantsVolunteer] = useState(() => readDraft().wantsVolunteer ?? false);
+  const [wantsPanchamrit, setWantsPanchamrit] = useState(() => readDraft().wantsPanchamrit ?? false);
+  const [wantsFancyDress, setWantsFancyDress] = useState(() => readDraft().wantsFancyDress ?? false);
+  const [fancyDressEntries, setFancyDressEntries] = useState(
+    () => readDraft().fancyDressEntries ?? [],
+  );
+  const [wantsLadduGopal, setWantsLadduGopal] = useState(() => readDraft().wantsLadduGopal ?? false);
+  const [ladduGopalSize, setLadduGopalSize] = useState(() => readDraft().ladduGopalSize ?? "");
+
   // Someone referred this registrant (incoming code → referredBy)
   const [incomingValid, setIncomingValid] = useState(null);
   const [incomingChecking, setIncomingChecking] = useState(false);
@@ -181,11 +190,32 @@ function RegisterPage() {
           incomingReferral,
           wantsOwnReferral,
           family,
+          wantsVolunteer,
+          wantsPanchamrit,
+          wantsFancyDress,
+          fancyDressEntries,
+          wantsLadduGopal,
+          ladduGopalSize,
         }),
       );
     }, 500);
     return () => clearTimeout(t);
-  }, [fullName, phone, dob, city, hasIncomingCode, incomingReferral, wantsOwnReferral, family]);
+  }, [
+    fullName,
+    phone,
+    dob,
+    city,
+    hasIncomingCode,
+    incomingReferral,
+    wantsOwnReferral,
+    family,
+    wantsVolunteer,
+    wantsPanchamrit,
+    wantsFancyDress,
+    fancyDressEntries,
+    wantsLadduGopal,
+    ladduGopalSize,
+  ]);
 
   useEffect(() => {
     api.getStatsCount().then((d) => setTotalRegistrants(d.totalRegistrants)).catch(() => undefined);
@@ -224,6 +254,19 @@ function RegisterPage() {
         return;
       }
 
+      if (wantsFancyDress) {
+        const validKids = fancyDressEntries.filter((e) => e.childName?.trim() && e.childDob);
+        if (validKids.length === 0) {
+          setError("Add at least one child for fancy dress, or choose No.");
+          return;
+        }
+      }
+
+      if (wantsLadduGopal && !ladduGopalSize.trim()) {
+        setError("Please select Laddu Gopal size, or choose No.");
+        return;
+      }
+
       setSubmitting(true);
       try {
         const result = await api.register({
@@ -235,6 +278,20 @@ function RegisterPage() {
             wantsReferral: wantsOwnReferral,
             referredBy:
               hasIncomingCode && incomingReferral.trim() ? incomingReferral.trim() : null,
+            wantsVolunteer,
+            wantsPanchamritAbhishek: wantsPanchamrit,
+            wantsFancyDress,
+            fancyDressEntries: wantsFancyDress
+              ? fancyDressEntries
+                  .filter((e) => e.childName?.trim() && e.childDob)
+                  .map((e) => ({
+                    childName: e.childName.trim(),
+                    childDob: e.childDob,
+                    getupDetail: e.getupDetail?.trim() || "",
+                  }))
+              : [],
+            wantsLadduGopal,
+            ladduGopalSize: wantsLadduGopal ? ladduGopalSize.trim() : null,
           },
           members: family
             .filter((m) => m.name.trim() && m.dob)
@@ -260,13 +317,19 @@ function RegisterPage() {
       city,
       dob,
       family,
+      fancyDressEntries,
       fullName,
       hasIncomingCode,
       incomingReferral,
       incomingValid,
+      ladduGopalSize,
       navigate,
       phone,
+      wantsFancyDress,
+      wantsLadduGopal,
       wantsOwnReferral,
+      wantsPanchamrit,
+      wantsVolunteer,
     ],
   );
 
@@ -501,6 +564,187 @@ function RegisterPage() {
                       </motion.div>
                     ))}
                   </AnimatePresence>
+                </div>
+
+                {/* Optional seva & celebrations */}
+                <div className="rounded-xl bg-secondary/5 px-3 py-3 ring-1 ring-secondary/15 sm:rounded-2xl sm:p-4">
+                  <div className="mb-3">
+                    <h3 className="font-display text-sm font-semibold text-secondary sm:text-base">
+                      Seva & celebrations
+                    </h3>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      All free · leave on No to skip · ~1 minute
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <CompactToggleRow
+                      title="Youth volunteer?"
+                      value={wantsVolunteer}
+                      onChange={setWantsVolunteer}
+                    >
+                      <div className="rounded-xl bg-[#FFF8E7]/80 px-3 py-2.5 text-xs leading-relaxed text-[#08495B] ring-1 ring-[#D89B24]/25">
+                        <p className="font-semibold text-[#D89B24]">Serve before the big day 🙏</p>
+                        <p className="mt-1">
+                          If you opt in, please reach the venue <strong>2 days prior</strong> and stay
+                          at the venue for Anandotsav preparation.
+                        </p>
+                      </div>
+                    </CompactToggleRow>
+
+                    <div className="border-t border-secondary/10 pt-3">
+                      <CompactToggleRow
+                        title="Divya Panchamrit Abhishek?"
+                        value={wantsPanchamrit}
+                        onChange={setWantsPanchamrit}
+                      >
+                        <p className="text-xs leading-snug text-muted-foreground">
+                          Register free for Divya Panchamrit Abhishek of Nitai–Nimai — a sacred
+                          offering of devotion at Sri Gokul Gaushala.
+                        </p>
+                      </CompactToggleRow>
+                    </div>
+
+                    <div className="border-t border-secondary/10 pt-3">
+                      <CompactToggleRow
+                        title="Fancy dress for kids?"
+                        value={wantsFancyDress}
+                        onChange={(v) => {
+                          setWantsFancyDress(v);
+                          if (v && fancyDressEntries.length === 0) {
+                            setFancyDressEntries([
+                              { id: crypto.randomUUID(), childName: "", childDob: "", getupDetail: "" },
+                            ]);
+                          }
+                          if (!v) setFancyDressEntries([]);
+                        }}
+                      >
+                        <p className="mb-2 text-xs text-muted-foreground">
+                          Separate from family members above — add competition entrants here. Dress
+                          related to Sanatan Dharma (Krishna, Radha, Ram, Sita, or any bhakta).
+                        </p>
+                        <div className="space-y-2">
+                          {fancyDressEntries.map((e, i) => (
+                            <div
+                              key={e.id ?? i}
+                              className="rounded-xl bg-background p-2.5 ring-1 ring-primary/20"
+                            >
+                              <div className="mb-2 flex items-center justify-between">
+                                <span className="text-xs font-semibold text-secondary">
+                                  Child {i + 1}
+                                </span>
+                                {fancyDressEntries.length > 1 && (
+                                  <button
+                                    type="button"
+                                    aria-label="Remove child"
+                                    onClick={() =>
+                                      setFancyDressEntries((list) =>
+                                        list.filter((x) => x.id !== e.id),
+                                      )
+                                    }
+                                    className="grid h-7 w-7 place-items-center rounded-full bg-destructive/12 text-destructive"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                              <div className="grid gap-2">
+                                <input
+                                  placeholder="Child name"
+                                  required={wantsFancyDress}
+                                  value={e.childName}
+                                  onChange={(ev) =>
+                                    setFancyDressEntries((list) =>
+                                      list.map((x) =>
+                                        x.id === e.id ? { ...x, childName: ev.target.value } : x,
+                                      ),
+                                    )
+                                  }
+                                  className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary"
+                                />
+                                <input
+                                  type="date"
+                                  required={wantsFancyDress}
+                                  value={e.childDob}
+                                  onChange={(ev) =>
+                                    setFancyDressEntries((list) =>
+                                      list.map((x) =>
+                                        x.id === e.id ? { ...x, childDob: ev.target.value } : x,
+                                      ),
+                                    )
+                                  }
+                                  className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary"
+                                />
+                                <input
+                                  placeholder="Getup / costume (optional)"
+                                  value={e.getupDetail}
+                                  onChange={(ev) =>
+                                    setFancyDressEntries((list) =>
+                                      list.map((x) =>
+                                        x.id === e.id ? { ...x, getupDetail: ev.target.value } : x,
+                                      ),
+                                    )
+                                  }
+                                  className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary"
+                                />
+                              </div>
+                            </div>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFancyDressEntries((list) => [
+                                ...list,
+                                {
+                                  id: crypto.randomUUID(),
+                                  childName: "",
+                                  childDob: "",
+                                  getupDetail: "",
+                                },
+                              ])
+                            }
+                            className="inline-flex items-center gap-1 text-xs font-bold text-secondary"
+                          >
+                            <Plus className="h-3.5 w-3.5" /> Add another child
+                          </button>
+                        </div>
+                      </CompactToggleRow>
+                    </div>
+
+                    <div className="border-t border-secondary/10 pt-3">
+                      <CompactToggleRow
+                        title="Laddu Gopal shringar?"
+                        value={wantsLadduGopal}
+                        onChange={(v) => {
+                          setWantsLadduGopal(v);
+                          if (!v) setLadduGopalSize("");
+                        }}
+                      >
+                        <p className="mb-2 text-xs leading-snug text-muted-foreground">
+                          Bring your Laddu Gopal pre-shringar from home and make him part of the
+                          joyous evening of bhaktas.
+                        </p>
+                        <label className="block">
+                          <span className="mb-1 block text-xs font-bold text-secondary">
+                            Size of Laddu Gopal
+                          </span>
+                          <select
+                            required={wantsLadduGopal}
+                            value={ladduGopalSize}
+                            onChange={(e) => setLadduGopalSize(e.target.value)}
+                            className="min-h-10 w-full rounded-xl border-2 border-primary/30 bg-background px-3 text-sm outline-none focus:border-primary"
+                          >
+                            <option value="">Select size…</option>
+                            {LADDU_GOPAL_SIZES.map((s) => (
+                              <option key={s} value={s}>
+                                {s}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      </CompactToggleRow>
+                    </div>
+                  </div>
                 </div>
 
                 {error && (

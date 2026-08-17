@@ -1,5 +1,14 @@
 import mongoose from 'mongoose';
 
+const fancyDressEntrySchema = new mongoose.Schema(
+  {
+    childName: { type: String, required: true, trim: true },
+    childDob: { type: Date, required: true },
+    getupDetail: { type: String, trim: true, default: '' },
+  },
+  { _id: false },
+);
+
 const registrationSchema = new mongoose.Schema({
   fullName: { type: String, required: true, trim: true },
   phone: {
@@ -28,10 +37,24 @@ const registrationSchema = new mongoose.Schema({
     enum: ['web', 'referral-link', 'desk-manual'],
     default: 'web',
   },
+
+  /** Optional seva / celebration opt-ins (primary registrant only) */
+  wantsVolunteer: { type: Boolean, default: false },
+  wantsPanchamritAbhishek: { type: Boolean, default: false },
+  wantsFancyDress: { type: Boolean, default: false },
+  fancyDressEntries: { type: [fancyDressEntrySchema], default: [] },
+  wantsLadduGopal: { type: Boolean, default: false },
+  ladduGopalSize: { type: String, trim: true, default: null },
+
   createdAt: { type: Date, default: Date.now },
 });
 
 registrationSchema.index({ phone: 1, dob: 1 }, { unique: true, sparse: true });
+registrationSchema.index({ wantsVolunteer: 1, createdAt: -1 });
+registrationSchema.index({ wantsPanchamritAbhishek: 1, createdAt: -1 });
+registrationSchema.index({ wantsFancyDress: 1, createdAt: -1 });
+registrationSchema.index({ wantsLadduGopal: 1, createdAt: -1 });
+registrationSchema.index({ wantsReferral: 1, referralCount: -1 });
 
 const Registration = mongoose.model('Registration', registrationSchema);
 

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" fill="none">
+  <defs>
+    <linearGradient id="lbg" x1="300" y1="0" x2="300" y2="800" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#126B82"/>
+      <stop offset="1" stop-color="#083F54"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="800" fill="url(#lbg)"/>
+  <circle cx="300" cy="280" r="120" fill="rgba(216,155,36,0.18)"/>
+  <text x="300" y="200" text-anchor="middle" fill="#F7D98A" font-family="Georgia, serif" font-size="28" font-weight="700">ANANDOTSAV 2026</text>
+  <text x="300" y="295" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="36" font-weight="700">Laddu Gopal</text>
+  <text x="300" y="345" text-anchor="middle" fill="#FFFFFF" font-family="Georgia, serif" font-size="36" font-weight="700">Shringar</text>
+  <text x="300" y="420" text-anchor="middle" fill="#F7D98A" font-family="system-ui, sans-serif" font-size="18">Adorn with devotion</text>
+  <rect x="180" y="480" width="240" height="4" rx="2" fill="#D89B24"/>
+  <text x="300" y="540" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="system-ui, sans-serif" font-size="16">Festive shringar celebration</text>
+  <text x="300" y="700" text-anchor="middle" fill="rgba(247,217,138,0.55)" font-family="system-ui, sans-serif" font-size="14">Sri Gokul Gaushala, Amritsar</text>
+</svg>

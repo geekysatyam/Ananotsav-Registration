@@ -162,6 +162,20 @@ export async function createRegistrationBatch({
       wantsReferral: primary.wantsReferral,
       referredBy: referralResolution.finalReferredBy,
       registrationSource: source,
+      wantsVolunteer: Boolean(primary.wantsVolunteer),
+      wantsPanchamritAbhishek: Boolean(primary.wantsPanchamritAbhishek),
+      wantsFancyDress: Boolean(primary.wantsFancyDress),
+      fancyDressEntries: primary.wantsFancyDress
+        ? (primary.fancyDressEntries ?? []).map((e) => ({
+            childName: e.childName.trim(),
+            childDob: parseDob(e.childDob),
+            getupDetail: (e.getupDetail ?? '').trim(),
+          }))
+        : [],
+      wantsLadduGopal: Boolean(primary.wantsLadduGopal),
+      ladduGopalSize: primary.wantsLadduGopal
+        ? (primary.ladduGopalSize ?? '').trim() || null
+        : null,
       ...deskCheckInFields,
     };
     if (primaryReferralCode) {

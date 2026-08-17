@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root';
 import { Route as IndexRouteImport } from './routes/index';
+import { Route as CompetitionsRouteImport } from './routes/competitions';
 import { Route as EventDetailsRouteImport } from './routes/event-details';
 import { Route as FindRouteImport } from './routes/find';
 import { Route as LeaderboardRouteImport } from './routes/leaderboard';
@@ -21,10 +22,20 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index';
 import { Route as AdminScannerRouteImport } from './routes/admin/scanner';
 import { Route as AdminRegisterRouteImport } from './routes/admin/register';
 import { Route as AdminRegistrationsRouteImport } from './routes/admin/registrations';
+import { Route as AdminVolunteersRouteImport } from './routes/admin/volunteers';
+import { Route as AdminAbhishekRouteImport } from './routes/admin/abhishek';
+import { Route as AdminFancyDressRouteImport } from './routes/admin/fancy-dress';
+import { Route as AdminLadduGopalRouteImport } from './routes/admin/laddu-gopal';
+import { Route as AdminLeaderboardRouteImport } from './routes/admin/leaderboard';
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+});
+const CompetitionsRoute = CompetitionsRouteImport.update({
+  id: '/competitions',
+  path: '/competitions',
   getParentRoute: () => rootRouteImport,
 });
 const EventDetailsRoute = EventDetailsRouteImport.update({
@@ -82,16 +93,47 @@ const AdminRegistrationsRoute = AdminRegistrationsRouteImport.update({
   path: '/registrations',
   getParentRoute: () => AdminRouteRoute,
 });
+const AdminVolunteersRoute = AdminVolunteersRouteImport.update({
+  id: '/volunteers',
+  path: '/volunteers',
+  getParentRoute: () => AdminRouteRoute,
+});
+const AdminAbhishekRoute = AdminAbhishekRouteImport.update({
+  id: '/abhishek',
+  path: '/abhishek',
+  getParentRoute: () => AdminRouteRoute,
+});
+const AdminFancyDressRoute = AdminFancyDressRouteImport.update({
+  id: '/fancy-dress',
+  path: '/fancy-dress',
+  getParentRoute: () => AdminRouteRoute,
+});
+const AdminLadduGopalRoute = AdminLadduGopalRouteImport.update({
+  id: '/laddu-gopal',
+  path: '/laddu-gopal',
+  getParentRoute: () => AdminRouteRoute,
+});
+const AdminLeaderboardRoute = AdminLeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => AdminRouteRoute,
+});
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren({
   AdminIndexRoute: AdminIndexRoute,
   AdminScannerRoute: AdminScannerRoute,
   AdminRegisterRoute: AdminRegisterRoute,
   AdminRegistrationsRoute: AdminRegistrationsRoute,
+  AdminVolunteersRoute: AdminVolunteersRoute,
+  AdminAbhishekRoute: AdminAbhishekRoute,
+  AdminFancyDressRoute: AdminFancyDressRoute,
+  AdminLadduGopalRoute: AdminLadduGopalRoute,
+  AdminLeaderboardRoute: AdminLeaderboardRoute,
 });
 
 const rootRouteChildren = {
   IndexRoute: IndexRoute,
+  CompetitionsRoute: CompetitionsRoute,
   EventDetailsRoute: EventDetailsRoute,
   FindRoute: FindRoute,
   LeaderboardRoute: LeaderboardRoute,

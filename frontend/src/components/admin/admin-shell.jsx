@@ -10,6 +10,11 @@ import {
   Loader2,
   Eye,
   EyeOff,
+  HandHeart,
+  Sparkles,
+  Baby,
+  Gift,
+  Trophy,
 } from "lucide-react";
 import { api, ApiError, ADMIN_TOKEN_KEY, adminTokenStore } from "@/lib/api";
 import { GoldButton } from "@/components/festive";
@@ -19,6 +24,11 @@ const NAV = [
   { to: "/admin/scanner", label: "Scanner", icon: ScanLine },
   { to: "/admin/register", label: "Desk Register", icon: UserPlus },
   { to: "/admin/registrations", label: "Registrations", icon: ClipboardList },
+  { to: "/admin/volunteers", label: "Volunteers", icon: HandHeart },
+  { to: "/admin/abhishek", label: "Abhishek", icon: Sparkles },
+  { to: "/admin/fancy-dress", label: "Fancy Dress", icon: Baby },
+  { to: "/admin/laddu-gopal", label: "Laddu Gopal", icon: Gift },
+  { to: "/admin/leaderboard", label: "Leaderboard", icon: Trophy },
 ];
 
 export function AdminShell() {
@@ -145,21 +155,21 @@ export function AdminShell() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-3 border-b border-primary/20 bg-card/90 px-4 py-3 backdrop-blur md:hidden">
-          <span className="font-display text-lg">Admin</span>
-          <div className="flex items-center gap-2">
+        <header className="flex items-center gap-3 border-b border-primary/20 bg-card/90 px-3 py-3 backdrop-blur md:hidden">
+          <span className="shrink-0 font-display text-lg">Admin</span>
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto pb-0.5">
             {NAV.map(({ to, icon: Icon }) => (
               <Link
                 key={to}
                 to={to}
-                className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-secondary [&.active]:bg-secondary/20"
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary/10 text-secondary [&.active]:bg-secondary/20"
                 activeProps={{ className: "active" }}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className="h-4 w-4" />
               </Link>
             ))}
-            <button type="button" onClick={logout} className="grid h-10 w-10 place-items-center rounded-full bg-destructive/10 text-destructive">
-              <LogOut className="h-5 w-5" />
+            <button type="button" onClick={logout} className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-destructive/10 text-destructive">
+              <LogOut className="h-4 w-4" />
             </button>
           </div>
         </header>

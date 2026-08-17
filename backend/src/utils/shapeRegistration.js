@@ -14,5 +14,15 @@ export function shapeRegistration(doc) {
     checkedIn: doc.checkedIn,
     checkInTime: doc.checkInTime ?? null,
     freebieClaimed: doc.freebieClaimed,
+    wantsVolunteer: doc.wantsVolunteer ?? false,
+    wantsPanchamritAbhishek: doc.wantsPanchamritAbhishek ?? false,
+    wantsFancyDress: doc.wantsFancyDress ?? false,
+    fancyDressEntries: (doc.fancyDressEntries ?? []).map((e) => ({
+      childName: e.childName,
+      childDob: e.childDob,
+      getupDetail: e.getupDetail ?? '',
+    })),
+    wantsLadduGopal: doc.wantsLadduGopal ?? false,
+    ladduGopalSize: doc.ladduGopalSize ?? null,
   };
 }

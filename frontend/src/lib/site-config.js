@@ -286,6 +286,82 @@ export const siteConfig = {
    */
   prizes: [],
 
+  // ── Competitions (home carousel + /competitions page) ───────────────────
+  /**
+   * Replace poster paths with real JPEG/PNG/WebP when ready.
+   * Place files in frontend/public/competitions/
+   */
+  competitions: [
+    {
+      id: "referral",
+      title: "Referral Challenge",
+      shortTitle: "Referral",
+      tagline: "Register. Share. Spread the joy.",
+      description:
+        "Opt into a personal Krishna referral code when you register. Every friend who joins with your code lifts you up the live leaderboard.",
+      audience: "All registered bhaktas",
+      timing: "Ends 5 September 2026",
+      endsAt: "2026-09-05T23:59:59",
+      poster: "/competitions/referral.svg",
+      theme: { from: "#08495B", to: "#D89B24" },
+      howTo: [
+        "Complete Bhakta registration in under 60 seconds.",
+        "Choose Yes for your own Krishna referral code.",
+        "Share your code or QR — every verified registration moves you up.",
+      ],
+      primaryCta: { label: "Join the challenge", to: "/register" },
+      secondaryCta: { label: "View leaderboard", to: "/leaderboard" },
+    },
+    {
+      id: "fancy-dress",
+      title: "Fancy Dress for Kids",
+      shortTitle: "Fancy Dress",
+      tagline: "Little Krishnas, Radhas & Gokul friends",
+      description:
+        "A joyful costume competition for children. Dress should be related to Sanatan Dharma — Krishna, Radha, Ram, Sita, or any bhakta from our tradition.",
+      audience: "Children under 12 years",
+      timing: "Event day — 6 September 2026",
+      poster: "/competitions/fancy-dress.svg",
+      theme: { from: "#D89B24", to: "#126B82" },
+      categories: [
+        {
+          label: "Below 6 years",
+          detail: "Parents can accompany on the stage walk.",
+        },
+        {
+          label: "6–12 years",
+          detail: "1 minute on the ramp — walk the stage or perform something.",
+        },
+      ],
+      howTo: [
+        "Register your child when you register online.",
+        "Arrive in costume on Anandotsav day.",
+        "Report to the kids desk before the fancy dress segment begins.",
+      ],
+      primaryCta: { label: "Register your family", to: "/register" },
+      secondaryCta: { label: "Event details", to: "/event-details" },
+    },
+    {
+      id: "laddu-gopal",
+      title: "Laddu Gopal Shringar",
+      shortTitle: "Laddu Gopal",
+      tagline: "Adorn the Lord with love",
+      description:
+        "Bring your Laddu Gopal and offer festive shringar — flowers, clothes, and ornaments — in a spirit of devotion and celebration.",
+      audience: "Families & devotees",
+      timing: "Event day — 6 September 2026",
+      poster: "/competitions/laddu-gopal.svg",
+      theme: { from: "#126B82", to: "#F7D98A" },
+      howTo: [
+        "Bring your Laddu Gopal murti pre-shringar or decorated from your house.",
+        "Check in at the Seva Desk on arrival.",
+        "Place your Laddu Gopal at the designated segment.",
+      ],
+      primaryCta: { label: "Event details", to: "/event-details" },
+      secondaryCta: { label: "Register to attend", to: "/register" },
+    },
+  ],
+
   // ── SEO defaults ─────────────────────────────────────────────────────────
   seo: {
     siteTitle:

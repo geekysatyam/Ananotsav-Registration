@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './../routes/__root'
 import { Route as IndexRouteImport } from './../routes/index'
 import { Route as AdminRouteRouteImport } from './../routes/admin/route'
+import { Route as CompetitionsRouteImport } from './../routes/competitions'
 import { Route as EventDetailsRouteImport } from './../routes/event-details'
 import { Route as FindRouteImport } from './../routes/find'
 import { Route as LeaderboardRouteImport } from './../routes/leaderboard'
@@ -18,9 +19,14 @@ import { Route as RegisterRouteImport } from './../routes/register'
 import { Route as ScannerRouteImport } from './../routes/scanner'
 import { Route as SuccessRouteImport } from './../routes/success'
 import { Route as AdminIndexRouteImport } from './../routes/admin/index'
+import { Route as AdminAbhishekRouteImport } from './../routes/admin/abhishek'
+import { Route as AdminFancyDressRouteImport } from './../routes/admin/fancy-dress'
+import { Route as AdminLadduGopalRouteImport } from './../routes/admin/laddu-gopal'
+import { Route as AdminLeaderboardRouteImport } from './../routes/admin/leaderboard'
 import { Route as AdminRegisterRouteImport } from './../routes/admin/register'
 import { Route as AdminRegistrationsRouteImport } from './../routes/admin/registrations'
 import { Route as AdminScannerRouteImport } from './../routes/admin/scanner'
+import { Route as AdminVolunteersRouteImport } from './../routes/admin/volunteers'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,6 +36,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompetitionsRoute = CompetitionsRouteImport.update({
+  id: '/competitions',
+  path: '/competitions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EventDetailsRoute = EventDetailsRouteImport.update({
@@ -67,6 +78,26 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminAbhishekRoute = AdminAbhishekRouteImport.update({
+  id: '/abhishek',
+  path: '/abhishek',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminFancyDressRoute = AdminFancyDressRouteImport.update({
+  id: '/fancy-dress',
+  path: '/fancy-dress',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLadduGopalRoute = AdminLadduGopalRouteImport.update({
+  id: '/laddu-gopal',
+  path: '/laddu-gopal',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLeaderboardRoute = AdminLeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminRegisterRoute = AdminRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -82,47 +113,70 @@ const AdminScannerRoute = AdminScannerRouteImport.update({
   path: '/scanner',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminVolunteersRoute = AdminVolunteersRouteImport.update({
+  id: '/volunteers',
+  path: '/volunteers',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/competitions': typeof CompetitionsRoute
   '/event-details': typeof EventDetailsRoute
   '/find': typeof FindRoute
   '/leaderboard': typeof LeaderboardRoute
   '/register': typeof RegisterRoute
   '/scanner': typeof ScannerRoute
   '/success': typeof SuccessRoute
+  '/admin/abhishek': typeof AdminAbhishekRoute
+  '/admin/fancy-dress': typeof AdminFancyDressRoute
+  '/admin/laddu-gopal': typeof AdminLadduGopalRoute
+  '/admin/leaderboard': typeof AdminLeaderboardRoute
   '/admin/register': typeof AdminRegisterRoute
   '/admin/registrations': typeof AdminRegistrationsRoute
   '/admin/scanner': typeof AdminScannerRoute
+  '/admin/volunteers': typeof AdminVolunteersRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/competitions': typeof CompetitionsRoute
   '/event-details': typeof EventDetailsRoute
   '/find': typeof FindRoute
   '/leaderboard': typeof LeaderboardRoute
   '/register': typeof RegisterRoute
   '/scanner': typeof ScannerRoute
   '/success': typeof SuccessRoute
+  '/admin/abhishek': typeof AdminAbhishekRoute
+  '/admin/fancy-dress': typeof AdminFancyDressRoute
+  '/admin/laddu-gopal': typeof AdminLadduGopalRoute
+  '/admin/leaderboard': typeof AdminLeaderboardRoute
   '/admin/register': typeof AdminRegisterRoute
   '/admin/registrations': typeof AdminRegistrationsRoute
   '/admin/scanner': typeof AdminScannerRoute
+  '/admin/volunteers': typeof AdminVolunteersRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/competitions': typeof CompetitionsRoute
   '/event-details': typeof EventDetailsRoute
   '/find': typeof FindRoute
   '/leaderboard': typeof LeaderboardRoute
   '/register': typeof RegisterRoute
   '/scanner': typeof ScannerRoute
   '/success': typeof SuccessRoute
+  '/admin/abhishek': typeof AdminAbhishekRoute
+  '/admin/fancy-dress': typeof AdminFancyDressRoute
+  '/admin/laddu-gopal': typeof AdminLadduGopalRoute
+  '/admin/leaderboard': typeof AdminLeaderboardRoute
   '/admin/register': typeof AdminRegisterRoute
   '/admin/registrations': typeof AdminRegistrationsRoute
   '/admin/scanner': typeof AdminScannerRoute
+  '/admin/volunteers': typeof AdminVolunteersRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -130,48 +184,67 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/competitions'
     | '/event-details'
     | '/find'
     | '/leaderboard'
     | '/register'
     | '/scanner'
     | '/success'
+    | '/admin/abhishek'
+    | '/admin/fancy-dress'
+    | '/admin/laddu-gopal'
+    | '/admin/leaderboard'
     | '/admin/register'
     | '/admin/registrations'
     | '/admin/scanner'
+    | '/admin/volunteers'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/competitions'
     | '/event-details'
     | '/find'
     | '/leaderboard'
     | '/register'
     | '/scanner'
     | '/success'
+    | '/admin/abhishek'
+    | '/admin/fancy-dress'
+    | '/admin/laddu-gopal'
+    | '/admin/leaderboard'
     | '/admin/register'
     | '/admin/registrations'
     | '/admin/scanner'
+    | '/admin/volunteers'
     | '/admin'
   id:
     | '__root__'
     | '/'
     | '/admin'
+    | '/competitions'
     | '/event-details'
     | '/find'
     | '/leaderboard'
     | '/register'
     | '/scanner'
     | '/success'
+    | '/admin/abhishek'
+    | '/admin/fancy-dress'
+    | '/admin/laddu-gopal'
+    | '/admin/leaderboard'
     | '/admin/register'
     | '/admin/registrations'
     | '/admin/scanner'
+    | '/admin/volunteers'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  CompetitionsRoute: typeof CompetitionsRoute
   EventDetailsRoute: typeof EventDetailsRoute
   FindRoute: typeof FindRoute
   LeaderboardRoute: typeof LeaderboardRoute
@@ -194,6 +267,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/competitions': {
+      id: '/competitions'
+      path: '/competitions'
+      fullPath: '/competitions'
+      preLoaderRoute: typeof CompetitionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/event-details': {
@@ -245,6 +325,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/abhishek': {
+      id: '/admin/abhishek'
+      path: '/abhishek'
+      fullPath: '/admin/abhishek'
+      preLoaderRoute: typeof AdminAbhishekRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/fancy-dress': {
+      id: '/admin/fancy-dress'
+      path: '/fancy-dress'
+      fullPath: '/admin/fancy-dress'
+      preLoaderRoute: typeof AdminFancyDressRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/laddu-gopal': {
+      id: '/admin/laddu-gopal'
+      path: '/laddu-gopal'
+      fullPath: '/admin/laddu-gopal'
+      preLoaderRoute: typeof AdminLadduGopalRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/leaderboard': {
+      id: '/admin/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/admin/leaderboard'
+      preLoaderRoute: typeof AdminLeaderboardRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/register': {
       id: '/admin/register'
       path: '/register'
@@ -266,20 +374,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminScannerRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/volunteers': {
+      id: '/admin/volunteers'
+      path: '/volunteers'
+      fullPath: '/admin/volunteers'
+      preLoaderRoute: typeof AdminVolunteersRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
 interface AdminRouteRouteChildren {
+  AdminAbhishekRoute: typeof AdminAbhishekRoute
+  AdminFancyDressRoute: typeof AdminFancyDressRoute
+  AdminLadduGopalRoute: typeof AdminLadduGopalRoute
+  AdminLeaderboardRoute: typeof AdminLeaderboardRoute
   AdminRegisterRoute: typeof AdminRegisterRoute
   AdminRegistrationsRoute: typeof AdminRegistrationsRoute
   AdminScannerRoute: typeof AdminScannerRoute
+  AdminVolunteersRoute: typeof AdminVolunteersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminAbhishekRoute: AdminAbhishekRoute,
+  AdminFancyDressRoute: AdminFancyDressRoute,
+  AdminLadduGopalRoute: AdminLadduGopalRoute,
+  AdminLeaderboardRoute: AdminLeaderboardRoute,
   AdminRegisterRoute: AdminRegisterRoute,
   AdminRegistrationsRoute: AdminRegistrationsRoute,
   AdminScannerRoute: AdminScannerRoute,
+  AdminVolunteersRoute: AdminVolunteersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
@@ -290,6 +415,7 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
+  CompetitionsRoute: CompetitionsRoute,
   EventDetailsRoute: EventDetailsRoute,
   FindRoute: FindRoute,
   LeaderboardRoute: LeaderboardRoute,

@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { AnandotsavGallery } from "@/components/anandotsav-gallery";
+import { CompetitionsCarousel } from "@/components/competitions-carousel";
+import { Countdown } from "@/components/countdown";
 import { SiteShell } from "@/components/site-shell";
 import { Cushion, Flourish, Krishna, PeacockFeather } from "@/components/motifs";
 import { eventInfo } from "@/lib/event-info";
@@ -53,60 +55,6 @@ function useCountUp(target, duration = 1500) {
   }, [target, duration]);
 
   return { value, ref };
-}
-
-function Countdown({ to, variant = "dark", compact = false }) {
-  const [mounted, setMounted] = useState(false);
-  const [left, setLeft] = useState(0);
-
-  useEffect(() => {
-    setMounted(true);
-    setLeft(Math.max(0, +new Date(to) - Date.now()));
-  }, [to]);
-
-  useEffect(() => {
-    if (!mounted || left <= 0) return;
-    const id = setInterval(() => {
-      const remaining = Math.max(0, +new Date(to) - Date.now());
-      setLeft(remaining);
-      if (remaining <= 0) clearInterval(id);
-    }, 1000);
-    return () => clearInterval(id);
-  }, [to, mounted, left <= 0]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const units = [
-    { label: "Days", value: Math.floor(left / 86400000) },
-    { label: "Hours", value: Math.floor(left / 3600000) % 24 },
-    { label: "Mins", value: Math.floor(left / 60000) % 60 },
-  ];
-
-  const cellClass =
-    variant === "light"
-      ? compact
-        ? "jh-countdown-cell rounded-lg px-2 py-1.5 text-center sm:rounded-xl sm:px-2.5 sm:py-2 lg:px-3 lg:py-2"
-        : "jh-glass-gold rounded-xl px-3 py-2.5 text-center lg:rounded-2xl lg:px-4 lg:py-3"
-      : "rounded-2xl bg-white/10 p-4 text-center lg:p-5";
-
-  const valueClass = compact ? "text-lg sm:text-xl lg:text-2xl" : "text-2xl lg:text-3xl";
-  const labelClass =
-    variant === "light"
-      ? compact
-        ? "mt-0.5 text-[8px] font-bold tracking-wide text-[#D89B24] uppercase sm:text-[9px]"
-        : "mt-0.5 text-[9px] font-bold tracking-wide text-[#D89B24] uppercase sm:text-[10px] lg:text-xs"
-      : "mt-1 text-[10px] text-white/50 uppercase lg:text-xs";
-
-  return (
-    <div className={compact ? "mt-2 flex gap-1.5 sm:gap-2 lg:gap-2.5" : "mt-5 grid grid-cols-3 gap-3 lg:gap-4"}>
-      {units.map((u) => (
-        <div key={u.label} className={`${cellClass} ${compact ? "min-w-0 flex-1" : ""}`}>
-          <b className={valueClass} suppressHydrationWarning>
-            {mounted ? String(u.value).padStart(2, "0") : "--"}
-          </b>
-          <div className={labelClass}>{u.label}</div>
-        </div>
-      ))}
-    </div>
-  );
 }
 
 function HomeLeaderboardPreview({ rows }) {
@@ -229,12 +177,13 @@ function Landing() {
                   >
                     Register for Free !! <span>→</span>
                   </Link>
-                  <a
-                    href="#competition"
+                  <Link
+                    to="/competitions"
+                    hash="referral"
                     className="inline-flex items-center justify-center gap-2 rounded-xl border border-secondary/15 bg-white/80 px-4 py-2.5 text-sm font-bold text-secondary shadow-sm transition hover:bg-white sm:px-6 sm:py-3 lg:px-7 lg:py-3.5 lg:text-base"
                   >
                     See how referrals work
-                  </a>
+                  </Link>
                 </div>
 
                 <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] font-semibold text-slate-600 lg:mt-3 lg:justify-start lg:gap-x-4 sm:text-xs lg:text-sm">
@@ -470,76 +419,7 @@ function Landing() {
           </div>
         </section>
 
-        {/* Competition */}
-        <section id="competition" className="jh-section-blue relative overflow-hidden py-14 text-white sm:py-16">
-          <div className="jh-pattern opacity-[0.06]" />
-          <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
-            <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:text-left">
-              <div className="text-xs font-bold tracking-[0.2em] text-[#F7D98A] uppercase">Referral competition</div>
-              <h2 className="mt-2 font-display text-3xl font-bold sm:text-4xl lg:text-5xl">
-                Register. Share. <span className="text-[#F7D98A]">Spread the joy.</span>
-              </h2>
-              <p className="mt-3 text-sm leading-7 text-white/75 sm:text-base">
-                Join the referral challenge, get your Krishna code and shareable QR — every verified registration
-                through your link moves you up the leaderboard.
-              </p>
-            </div>
-
-            <div className="mt-8 overflow-hidden rounded-2xl border border-white/15 bg-white/10 backdrop-blur-sm">
-              <div className="flex flex-col gap-4 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl" aria-hidden>🏆</span>
-                  <div>
-                    <p className="text-[10px] font-bold tracking-[0.18em] text-white/55 uppercase">
-                      Competition ends in
-                    </p>
-                    <p className="font-display text-lg font-bold sm:text-xl">The countdown begins</p>
-                  </div>
-                </div>
-                <div className="w-full sm:max-w-md">
-                  <Countdown to={eventInfo.competitionEnds} compact />
-                </div>
-              </div>
-
-              <div className="grid divide-y sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-                {[
-                  { icon: "📝", step: "Step 01", title: "Register", copy: "Complete Bhakta registration in under 60 seconds." },
-                  { icon: "🪶", step: "Step 02", title: "Get Codes", copy: "Receive your Entry QR and Krishna referral code." },
-                  { icon: "📣", step: "Step 03", title: "Share", copy: "Invite friends — every referral moves you up the board." },
-                ].map((s, i) => (
-                  <div key={s.title} className="relative bg-white p-5 text-[#17313A] sm:p-6">
-                    <div className={`absolute top-0 right-0 left-0 h-1 ${i === 1 ? "bg-secondary" : "bg-[#D89B24]"}`} />
-                    <div className="flex items-start gap-3">
-                      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#D89B24]/12 text-xl">
-                        {s.icon}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-[10px] font-bold tracking-[0.16em] text-[#D89B24] uppercase">{s.step}</div>
-                        <h3 className="mt-0.5 font-display text-lg font-bold text-[#08495B]">{s.title}</h3>
-                        <p className="mt-1.5 text-xs leading-relaxed text-slate-500 sm:text-sm">{s.copy}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-col items-stretch gap-2 border-t border-white/10 bg-white/5 px-5 py-4 sm:flex-row sm:justify-center sm:gap-3 sm:px-6">
-                <Link
-                  to="/register"
-                  className="inline-flex items-center justify-center rounded-xl bg-[#F7D98A] px-5 py-2.5 text-sm font-extrabold text-[#08495B] transition hover:bg-white"
-                >
-                  Join the challenge →
-                </Link>
-                <Link
-                  to="/leaderboard"
-                  className="inline-flex items-center justify-center rounded-xl border border-white/25 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-white/10"
-                >
-                  View leaderboard
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
+        <CompetitionsCarousel />
 
         {/* Leaderboard */}
         <section id="leaderboard" className="jh-section-wash relative overflow-hidden py-20">

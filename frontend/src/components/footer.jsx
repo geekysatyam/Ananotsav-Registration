@@ -34,6 +34,9 @@ export function Footer() {
             <Link to="/register" className="opacity-90 hover:opacity-100">
               Register
             </Link>
+            <Link to="/competitions" className="opacity-90 hover:opacity-100">
+              Competitions
+            </Link>
             <Link to="/leaderboard" className="opacity-90 hover:opacity-100">
               Leaderboard
             </Link>
