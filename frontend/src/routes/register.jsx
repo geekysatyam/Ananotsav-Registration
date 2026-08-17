@@ -714,8 +714,9 @@ function RegisterPage() {
                         }}
                       >
                         <p className="mb-2 text-xs text-muted-foreground">
-                          Separate from family members above — add competition entrants here. Dress
-                          related to Sanatan Dharma (Krishna, Radha, Ram, Sita, or any bhakta).
+                          Each child also gets a general entry pass and Divine Gift — no need to add
+                          them again as family members. Dress related to Sanatan Dharma (Krishna,
+                          Radha, Ram, Sita, or any bhakta).
                         </p>
                         <div className="space-y-2">
                           {fancyDressEntries.map((e, i) => (

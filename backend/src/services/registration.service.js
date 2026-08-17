@@ -12,13 +12,35 @@ function parseDob(dobString) {
   return new Date(dobString);
 }
 
+/** Fancy-dress children also get a general entry pass unless already listed as family. */
+function membersWithFancyDressKids(primary, members) {
+  const list = [...(members ?? [])];
+  if (!primary.wantsFancyDress) return list;
+
+  const seen = new Set([
+    nameDobKey(primary.fullName, primary.dob),
+    ...list.map((m) => nameDobKey(m.fullName, m.dob)),
+  ]);
+
+  for (const entry of primary.fancyDressEntries ?? []) {
+    const fullName = String(entry.childName ?? '').trim();
+    const dob = entry.childDob;
+    if (!fullName || !dob) continue;
+    const key = nameDobKey(fullName, dob);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    list.push({ fullName, dob, phone: undefined });
+  }
+  return list;
+}
+
 export async function createRegistrationBatch({
   primary,
   members = [],
   registrationSourceOverride = null,
   ip = null,
 }) {
-  const memberList = members ?? [];
+  const memberList = membersWithFancyDressKids(primary, members);
   const familyGroupId = memberList.length > 0 ? nanoid(10) : null;
   const submissionId = nanoid();
   const memberCount = 1 + memberList.length;
