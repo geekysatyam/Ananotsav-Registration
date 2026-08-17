@@ -29,6 +29,7 @@ import { GoldButton } from "@/components/festive";
 import { PatternBackdrop } from "@/components/motifs";
 
 const NAV = [
+  { to: "/admin/admins", page: "admins", label: "Team access", icon: Shield },
   { to: "/admin/scanner", page: "scanner", label: "Scanner", icon: ScanLine },
   { to: "/admin/register", page: "register", label: "Desk Register", icon: UserPlus },
   { to: "/admin/registrations", page: "registrations", label: "Registrations", icon: ClipboardList },
@@ -37,10 +38,10 @@ const NAV = [
   { to: "/admin/fancy-dress", page: "fancy-dress", label: "Fancy Dress", icon: Baby },
   { to: "/admin/laddu-gopal", page: "laddu-gopal", label: "Laddu Gopal", icon: Gift },
   { to: "/admin/leaderboard", page: "leaderboard", label: "Leaderboard", icon: Trophy },
-  { to: "/admin/admins", page: "admins", label: "Admins", icon: Shield },
 ];
 
 const PAGE_BY_PATH = {
+  "/admin/admins": "admins",
   "/admin/scanner": "scanner",
   "/admin/register": "register",
   "/admin/registrations": "registrations",
@@ -49,10 +50,10 @@ const PAGE_BY_PATH = {
   "/admin/fancy-dress": "fancy-dress",
   "/admin/laddu-gopal": "laddu-gopal",
   "/admin/leaderboard": "leaderboard",
-  "/admin/admins": "admins",
 };
 
 function firstAllowedPath(admin) {
+  if (admin?.role === "super_admin") return "/admin/admins";
   const hit = NAV.find((n) => adminHasPage(admin, n.page));
   return hit?.to ?? "/admin/scanner";
 }
@@ -89,10 +90,13 @@ export function AdminShell() {
         saveAdminSession({ token, admin: me });
         setSession({ token, admin: me });
       })
-      .catch(() => {
+      .catch((err) => {
         if (cancelled) return;
-        clearAdminSession();
-        setSession(null);
+        // Only force logout on real auth failure. 404 = old backend without /me.
+        if (err instanceof ApiError && (err.status === 401 || err.code === "UNAUTHORIZED")) {
+          clearAdminSession();
+          setSession(null);
+        }
       })
       .finally(() => {
         if (!cancelled) setBootstrapping(false);
@@ -214,7 +218,15 @@ export function AdminShell() {
         <div className="border-b border-primary/15 p-5">
           <h1 className="font-display text-lg">Admin Panel</h1>
           <p className="text-xs text-muted-foreground">
-            {admin?.username} · {admin?.role?.replace("_", " ")}
+            {admin?.username ? (
+              <>
+                {admin.username}
+                <span className="mx-1 opacity-40">·</span>
+                <span className="capitalize">{admin.role?.replace("_", " ")}</span>
+              </>
+            ) : (
+              "Staff panel"
+            )}
           </p>
         </div>
         <nav className="flex-1 space-y-1 p-3">
