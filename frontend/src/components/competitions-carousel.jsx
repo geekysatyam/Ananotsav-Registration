@@ -8,8 +8,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 function PosterSlide({ competition }) {
@@ -72,9 +70,6 @@ function PosterSlide({ competition }) {
   );
 }
 
-const arrowClass =
-  "absolute z-10 top-1/2 hidden h-11 w-11 -translate-y-1/2 rounded-full border-2 border-[#F7D98A]/70 !bg-[#F7D98A] !text-[#08495B] shadow-lg hover:!bg-white hover:!border-white sm:flex";
-
 export function CompetitionsCarousel() {
   const competitions = siteConfig.competitions ?? [];
   const [api, setApi] = useState(null);
@@ -125,7 +120,7 @@ export function CompetitionsCarousel() {
           </p>
         </div>
 
-        <div className="relative mx-auto mt-10 max-w-5xl px-1 sm:px-12 lg:px-14">
+        <div className="relative mx-auto mt-10 max-w-5xl px-1">
           <Carousel
             key={isMobile ? "comp-mobile" : "comp-desktop"}
             setApi={setApi}
@@ -149,19 +144,6 @@ export function CompetitionsCarousel() {
                 </CarouselItem>
               ))}
             </CarouselContent>
-
-            <CarouselPrevious
-              variant="secondary"
-              size="icon"
-              disabled={false}
-              className={cn(arrowClass, "-left-1 lg:-left-4")}
-            />
-            <CarouselNext
-              variant="secondary"
-              size="icon"
-              disabled={false}
-              className={cn(arrowClass, "-right-1 lg:-right-4")}
-            />
           </Carousel>
 
           <div className="mt-6 flex flex-col items-center gap-4">

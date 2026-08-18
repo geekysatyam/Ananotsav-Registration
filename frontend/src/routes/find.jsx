@@ -23,7 +23,7 @@ export const Route = createFileRoute("/find")({
       { property: "og:title", content: "Find My Registration — Janmashtami Utsav 2026" },
       {
         property: "og:description",
-        content: "Retrieve your entry QR codes and Divine Gift pass in seconds.",
+        content: "Retrieve your entry QR codes for a divine evening in seconds.",
       },
     ],
   }),

@@ -129,7 +129,7 @@ export const Route = createFileRoute("/register")({
       {
         name: "description",
         content:
-          "Register yourself and your family for Janmashtami Utsav 2026 in under 60 seconds and reserve Divine Gifts for each.",
+          "Register yourself and your family for Janmashtami Utsav 2026 in under 60 seconds — a divine evening of memories awaits.",
       },
       { property: "og:title", content: "Register for Free !! — Janmashtami Utsav 2026" },
       {
@@ -412,7 +412,7 @@ function RegisterPage() {
             compact
             eyebrow="Bhakta registration"
             title="Reserve your place at the utsav"
-            subtitle="One entry QR and Divine Gifts for every name you add."
+            subtitle="Register for Divine Evening."
           />
 
           <motion.form
@@ -498,7 +498,7 @@ function RegisterPage() {
                   <div className="flex items-center justify-between gap-2">
                     <div className="min-w-0">
                       <h3 className="text-sm font-display font-semibold sm:text-base">Add family member</h3>
-                      <p className="text-xs text-muted-foreground">Each needs their own phone, QR & Divine Gift</p>
+                      <p className="text-xs text-muted-foreground">Each needs their own phone, QR and a seat at the divine evening</p>
                     </div>
                     <button
                       type="button"

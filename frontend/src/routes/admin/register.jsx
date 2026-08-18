@@ -285,7 +285,7 @@ function AdminRegisterPage() {
           <div className="flex items-center justify-between gap-2">
             <div>
               <h3 className="text-sm font-display font-semibold">Family members</h3>
-              <p className="text-xs text-muted-foreground">Each needs their own phone, QR & Divine Gift</p>
+              <p className="text-xs text-muted-foreground">Each needs their own phone, QR and a seat at the divine evening</p>
             </div>
             <button
               type="button"

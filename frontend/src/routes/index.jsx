@@ -207,7 +207,7 @@ function Landing() {
 
                 <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] font-semibold text-slate-600 lg:mt-3 lg:justify-start lg:gap-x-4 sm:text-xs lg:text-sm">
                   <span className="whitespace-nowrap">🔐 Secure QR Entry</span>
-                  <span className="whitespace-nowrap">🎁 Divine Gifts</span>
+                  <span className="whitespace-nowrap">🪔 Divine Evening</span>
                   {/* REFERRAL DISABLED
                   <span className="whitespace-nowrap">🪶 Referral Rewards</span>
                   */}
@@ -220,10 +220,10 @@ function Landing() {
                   <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-br from-[#D89B24]/12 via-transparent to-secondary/10 blur-3xl" />
 
                   <div className="jh-float2 jh-glass absolute top-6 right-2 z-20 hidden items-center gap-2 rounded-xl border border-[#D89B24]/15 px-3 py-2 lg:flex lg:top-10 lg:right-6">
-                    <div className="grid h-9 w-9 place-items-center rounded-full bg-[#D89B24]/15 text-lg">🎁</div>
+                    <div className="grid h-9 w-9 place-items-center rounded-full bg-[#D89B24]/15 text-lg">🪔</div>
                     <div>
-                      <div className="text-xs font-bold text-[#08495B]">Divine Gifts</div>
-                      <div className="text-[10px] text-slate-500">Every registered Bhakta</div>
+                      <div className="text-xs font-bold text-[#08495B]">Divine Evening</div>
+                      <div className="text-[10px] text-slate-500">Memories for every Bhakta</div>
                     </div>
                   </div>
 
@@ -332,7 +332,7 @@ function Landing() {
           </div>
         </section>
 
-        {/* Divine Gifts */}
+        {/* Divine Evening */}
         <section className="jh-section-gold relative overflow-hidden py-14 sm:py-20">
           <div className="jh-pattern opacity-[0.09]" />
           <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
@@ -346,15 +346,15 @@ function Landing() {
               </div>
               <div>
                 <div className="inline-flex max-w-full rounded-full bg-[#D89B24]/10 px-3 py-2 text-xs font-extrabold text-[#D89B24] sm:px-4 sm:text-sm">
-                  🎁 A little blessing for every Bhakta
+                  🪔 A divine evening for every Bhakta
                 </div>
                 <h2 className="mt-4 font-display text-3xl font-bold text-[#08495B] sm:text-4xl lg:text-5xl">
-                  Every Bhakta Gets <span className="text-[#D89B24]">Divine Gifts</span> 🎁
+                  Every Bhakta Gets a <span className="text-[#D89B24]">Divine Evening</span>
                 </h2>
                 <Flourish className="mt-4 h-5 w-40" />
                 <p className="max-w-2xl leading-8 text-slate-600">
-                  Register online, save your Entry QR and collect your Divine Gifts at the Registration
-                  Desk on {eventInfo.date}. One QR per bhakta — including every family member you add.
+                  Register online, save your Entry QR and come for a lot of memories and a divine evening
+                  on {eventInfo.date}. One QR per bhakta — including every family member you add.
                 </p>
                 <div className="mt-7 grid gap-3 sm:grid-cols-2">
                   <div className="jh-card rounded-2xl p-5">
@@ -363,9 +363,9 @@ function Landing() {
                     <div className="mt-1 text-sm text-slate-500">Your personal code is scanned at the desk.</div>
                   </div>
                   <div className="jh-card rounded-2xl p-5">
-                    <div className="grid h-12 w-12 place-items-center rounded-2xl bg-secondary/10 text-2xl">🎁</div>
-                    <div className="mt-3 font-bold">Receive your gift</div>
-                    <div className="mt-1 text-sm text-slate-500">Your Divine Gift is yours to keep.</div>
+                    <div className="grid h-12 w-12 place-items-center rounded-2xl bg-secondary/10 text-2xl">🪔</div>
+                    <div className="mt-3 font-bold">Attend the evening</div>
+                    <div className="mt-1 text-sm text-slate-500">A lot of memories and a divine evening await.</div>
                   </div>
                 </div>
               </div>
