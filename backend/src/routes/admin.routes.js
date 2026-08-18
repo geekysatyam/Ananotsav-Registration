@@ -23,8 +23,9 @@ import {
   exportLadduGopal,
   listFancyDress,
   exportFancyDress,
-  adminLeaderboard,
-  exportAdminLeaderboard,
+  // REFERRAL DISABLED
+  // adminLeaderboard,
+  // exportAdminLeaderboard,
 } from '../controllers/admin.controller.js';
 
 const router = Router();
@@ -125,20 +126,21 @@ router.get(
   asyncHandler(exportFancyDress),
 );
 
-router.get(
-  '/leaderboard',
-  adminAuth,
-  requirePage('leaderboard'),
-  validate(adminOptInQuerySchema, 'query'),
-  asyncHandler(adminLeaderboard),
-);
-router.get(
-  '/leaderboard/export',
-  adminAuth,
-  requirePage('leaderboard'),
-  validate(adminOptInQuerySchema, 'query'),
-  asyncHandler(exportAdminLeaderboard),
-);
+// REFERRAL DISABLED
+// router.get(
+//   '/leaderboard',
+//   adminAuth,
+//   requirePage('leaderboard'),
+//   validate(adminOptInQuerySchema, 'query'),
+//   asyncHandler(adminLeaderboard),
+// );
+// router.get(
+//   '/leaderboard/export',
+//   adminAuth,
+//   requirePage('leaderboard'),
+//   validate(adminOptInQuerySchema, 'query'),
+//   asyncHandler(exportAdminLeaderboard),
+// );
 
 router.post(
   '/register',

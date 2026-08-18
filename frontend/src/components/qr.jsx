@@ -264,7 +264,7 @@ export async function downloadEntryPass({
   ctx.fillText(`ENTRY PASS · ${entryCode}`, width / 2, y);
   y += 44;
 
-  paintNoteBox(ctx, pad, y, innerWidth, giftBoxH, "Your Divine Gift", giftLines);
+  paintNoteBox(ctx, pad, y, innerWidth, giftBoxH, "A divine evening awaits", giftLines);
   y += giftBoxH + 36;
   paintPassFooter(ctx, width, y);
 
@@ -273,12 +273,25 @@ export async function downloadEntryPass({
 
 /**
  * Download a referral QR card in the same pass style — header, QR, code, note.
+ * REFERRAL DISABLED — function body not used while referral is off.
  */
 export async function downloadReferralPass({
   referralLink,
   referralCode,
   filename,
 }) {
+  // REFERRAL DISABLED
+  return;
+  /*
+  const width = 1080;
+  ... original canvas pass lives in git; restore by uncommenting the previous implementation.
+  */
+  void referralLink;
+  void referralCode;
+  void filename;
+}
+
+/* REFERRAL DISABLED — original downloadReferralPass body
   const width = 1080;
   const pad = 64;
   const innerWidth = width - pad * 2;
@@ -360,3 +373,4 @@ export async function downloadReferralPass({
     filename ?? `referral-${sanitizeFilename(referralCode)}`,
   );
 }
+*/

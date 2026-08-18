@@ -5,18 +5,24 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
-  MessageCircle,
-  Copy,
-  Send,
-  PartyPopper,
+  // MessageCircle,
+  // Copy,
+  // Send,
+  // PartyPopper,
   CalendarDays,
 } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
-import { Reveal, SectionHeading, FestiveIcon } from "@/components/festive";
+import { Reveal, SectionHeading } from "@/components/festive";
+// REFERRAL DISABLED — restore FestiveIcon with Reveal, SectionHeading
+// import { FestiveIcon, Reveal, SectionHeading } from "@/components/festive";
 import { FloatingMotifs, GradientMesh } from "@/components/ambient";
-import { Flourish, Gift, PatternBackdrop, PeacockFeather, Lotus } from "@/components/motifs";
-import { QrSvg, downloadEntryPass, downloadReferralPass } from "@/components/qr";
-import { eventInfo, REFERRAL_LINK_BASE, getGoogleCalendarEventUrl } from "@/lib/event-info";
+import { Flourish, Gift, PatternBackdrop, PeacockFeather } from "@/components/motifs";
+// REFERRAL DISABLED — restore Lotus with the motifs import
+// import { Flourish, Gift, Lotus, PatternBackdrop, PeacockFeather } from "@/components/motifs";
+import { QrSvg, downloadEntryPass } from "@/components/qr";
+// import { downloadReferralPass } from "@/components/qr";
+import { eventInfo, getGoogleCalendarEventUrl, siteConfig } from "@/lib/event-info";
+// import { REFERRAL_LINK_BASE } from "@/lib/event-info";
 import { loadRegistrationResult } from "@/lib/api";
 
 export const Route = createFileRoute("/success")({
@@ -26,12 +32,12 @@ export const Route = createFileRoute("/success")({
       {
         name: "description",
         content:
-          "Your Janmashtami Utsav entry QR codes are ready. Download them, share your referral code and claim Divine Gifts at the desk.",
+          "Your Janmashtami Utsav entry QR codes are ready. Come for a lot of memories and a divine evening.",
       },
       { property: "og:title", content: "Registration Confirmed — Janmashtami Utsav 2026" },
       {
         property: "og:description",
-        content: "Entry QR codes for every family member, plus your Divine Gift pass.",
+        content: "Entry QR codes for every family member — attend for memories and a divine evening.",
       },
     ],
   }),
@@ -67,6 +73,65 @@ function displayFirstName(name) {
   return part.length > 14 ? `${part.slice(0, 14)}…` : part;
 }
 
+function CompetitionDetailsCard({ competition, extra }) {
+  if (!competition) return null;
+  return (
+    <Reveal delay={0.08} className="mt-6 sm:mt-8">
+      <div className="rounded-[1.5rem] bg-gradient-peacock p-[2px] shadow-warm sm:rounded-[2rem] sm:p-[3px]">
+        <div className="relative overflow-hidden rounded-[calc(1.5rem-2px)] bg-gradient-cream p-4 sm:rounded-[calc(2rem-2px)] sm:p-7">
+          <PatternBackdrop variant="diya" className="text-secondary opacity-[0.07]" />
+          <p className="text-xs font-bold tracking-[0.18em] text-secondary uppercase">
+            Competition details
+          </p>
+          <h3 className="mt-1 font-display text-2xl sm:text-3xl">{competition.title}</h3>
+          <Flourish className="mt-2 h-5 w-40" />
+          <p className="mt-2 text-sm font-semibold text-secondary">{competition.tagline}</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{competition.description}</p>
+          <p className="mt-3 text-sm font-semibold text-foreground">
+            {competition.timing}
+            {competition.venue ? ` · ${competition.venue}` : ""}
+          </p>
+          {extra ? <div className="mt-3">{extra}</div> : null}
+          {competition.categories?.length > 0 && (
+            <ul className="mt-4 space-y-2">
+              {competition.categories.map((cat) => (
+                <li
+                  key={cat.label}
+                  className="rounded-xl bg-background/70 px-3 py-2 text-sm ring-1 ring-primary/20"
+                >
+                  <span className="font-bold text-secondary">{cat.label}</span>
+                  {cat.detail ? (
+                    <span className="mt-0.5 block text-xs text-muted-foreground">{cat.detail}</span>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
+          {competition.howTo?.length > 0 && (
+            <ol className="mt-4 list-decimal space-y-1.5 pl-5 text-sm text-foreground">
+              {competition.howTo.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
+            </ol>
+          )}
+          {competition.note ? (
+            <p className="mt-4 rounded-xl bg-primary/10 px-3 py-2 text-sm font-semibold text-secondary ring-1 ring-primary/25">
+              {competition.note}
+            </p>
+          ) : null}
+          <Link
+            to="/competitions"
+            hash={competition.id}
+            className="mt-4 inline-flex min-h-10 items-center rounded-full bg-secondary/15 px-4 text-sm font-display font-semibold text-secondary ring-1 ring-secondary/35"
+          >
+            Full competition details
+          </Link>
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
 function GiftCard({ name }) {
   const first = displayFirstName(name);
   return (
@@ -74,13 +139,13 @@ function GiftCard({ name }) {
       <div className="flex items-start gap-2.5 rounded-[calc(0.75rem-1px)] bg-card p-2.5 sm:items-center sm:gap-3 sm:p-3">
         <Gift className="h-10 w-10 shrink-0 sm:h-12 sm:w-12" />
         <div className="min-w-0 flex-1">
-          <div className="font-display text-sm sm:text-base">Your Divine Gift</div>
+          <div className="font-display text-sm sm:text-base">A divine evening awaits</div>
           <p className="text-xs leading-snug text-muted-foreground">
-            Show at the Registration Desk for{" "}
+            Attend the event,{" "}
             <span className="break-all font-semibold text-foreground" title={name}>
               {first}
             </span>
-            &apos;s Divine Gift.
+            — a lot of memories and a divine evening.
           </p>
         </div>
       </div>
@@ -126,7 +191,8 @@ function SuccessPage() {
   const [familyGroupId, setFamilyGroupId] = useState(null);
   const [index, setIndex] = useState(0);
   const [downloaded, setDownloaded] = useState([]);
-  const [referralCopied, setReferralCopied] = useState(false);
+  // REFERRAL DISABLED
+  // const [referralCopied, setReferralCopied] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -163,31 +229,32 @@ function SuccessPage() {
     setDownloaded((d) => (d.includes(reg.id) ? d : [...d, reg.id]));
   };
 
-  const referralLink = primary.referralCode
-    ? `${REFERRAL_LINK_BASE}?ref=${encodeURIComponent(primary.referralCode)}`
-    : null;
+  // REFERRAL DISABLED
+  // const referralLink = primary.referralCode
+  //   ? `${REFERRAL_LINK_BASE}?ref=${encodeURIComponent(primary.referralCode)}`
+  //   : null;
 
   const googleCalendarUrl = getGoogleCalendarEventUrl(registrations);
 
-  const copyReferral = async () => {
-    if (!referralLink) return;
-    try {
-      await navigator.clipboard.writeText(referralLink);
-      setReferralCopied(true);
-      setTimeout(() => setReferralCopied(false), 2000);
-    } catch {
-      /* ignore */
-    }
-  };
-
-  const downloadReferral = async () => {
-    if (!referralLink || !primary.referralCode) return;
-    await downloadReferralPass({
-      referralLink,
-      referralCode: primary.referralCode,
-      filename: `referral-${primary.referralCode}`,
-    });
-  };
+  // const copyReferral = async () => {
+  //   if (!referralLink) return;
+  //   try {
+  //     await navigator.clipboard.writeText(referralLink);
+  //     setReferralCopied(true);
+  //     setTimeout(() => setReferralCopied(false), 2000);
+  //   } catch {
+  //     /* ignore */
+  //   }
+  // };
+  //
+  // const downloadReferral = async () => {
+  //   if (!referralLink || !primary.referralCode) return;
+  //   await downloadReferralPass({
+  //     referralLink,
+  //     referralCode: primary.referralCode,
+  //     filename: `referral-${primary.referralCode}`,
+  //   });
+  // };
 
   return (
     <SiteShell>
@@ -305,6 +372,27 @@ function SuccessPage() {
             </div>
           </Reveal>
 
+          {primary.wantsFancyDress && (
+            <CompetitionDetailsCard
+              competition={siteConfig.competitions.find((c) => c.id === "fancy-dress")}
+            />
+          )}
+
+          {primary.wantsLadduGopal && (
+            <CompetitionDetailsCard
+              competition={siteConfig.competitions.find((c) => c.id === "laddu-gopal")}
+              extra={
+                primary.ladduGopalSize ? (
+                  <p className="rounded-xl bg-background/80 px-3 py-2 text-sm ring-1 ring-primary/20">
+                    Registered size:{" "}
+                    <span className="font-bold text-secondary">{primary.ladduGopalSize}</span>
+                  </p>
+                ) : null
+              }
+            />
+          )}
+
+          {/* REFERRAL DISABLED — original share Krishna code card (uncomment + restore FestiveIcon, Lotus, referral helpers)
           {primary.wantsReferral && primary.referralCode && referralLink && (
             <Reveal delay={0.1} className="mt-10">
               <div className="rounded-[2rem] bg-gradient-peacock p-[3px] shadow-warm">
@@ -380,17 +468,20 @@ function SuccessPage() {
                 See where you rank
               </Link>
             </div>
-          ) : (
-            <div className="mt-8 text-center sm:mt-10">
-              <p className="text-sm text-muted-foreground">Your entry pass is ready — see you at the utsav! 🙏</p>
-              <Link
-                to="/"
-                className="mt-4 inline-flex min-h-11 items-center rounded-full bg-secondary/15 px-6 font-display font-semibold text-secondary ring-1 ring-secondary/35 transition hover:scale-105"
-              >
-                Back to home
-              </Link>
-            </div>
-          )}
+          ) : null}
+          */}
+
+          <div className="mt-8 text-center sm:mt-10">
+            <p className="text-sm text-muted-foreground">
+              Attend the event for a lot of memories and a divine evening. See you at the utsav! 🙏
+            </p>
+            <Link
+              to="/"
+              className="mt-4 inline-flex min-h-11 items-center rounded-full bg-secondary/15 px-6 font-display font-semibold text-secondary ring-1 ring-secondary/35 transition hover:scale-105"
+            >
+              Back to home
+            </Link>
+          </div>
         </div>
       </section>
     </SiteShell>

@@ -7,7 +7,8 @@ export const ADMIN_PAGES = [
   'abhishek',
   'fancy-dress',
   'laddu-gopal',
-  'leaderboard',
+  // REFERRAL DISABLED
+  // 'leaderboard',
   'admins',
 ];
 

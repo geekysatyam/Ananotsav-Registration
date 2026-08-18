@@ -1,3 +1,4 @@
+// REFERRAL DISABLED — model kept, not written to while referral is off
 import mongoose from 'mongoose';
 
 const referralUsageLogSchema = new mongoose.Schema({

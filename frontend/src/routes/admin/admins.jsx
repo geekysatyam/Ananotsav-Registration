@@ -12,7 +12,7 @@ import {
   ScanLine,
   Shield,
   Sparkles,
-  Trophy,
+  // Trophy,
   UserPlus,
   Users,
 } from "lucide-react";
@@ -37,7 +37,8 @@ const PAGE_META = {
   abhishek: { label: "Abhishek", hint: "Panchamrit list", icon: Sparkles },
   "fancy-dress": { label: "Fancy Dress", hint: "Kids entries", icon: Baby },
   "laddu-gopal": { label: "Laddu Gopal", hint: "Size opt-ins", icon: Gift },
-  leaderboard: { label: "Leaderboard", hint: "Referral ranks", icon: Trophy },
+  // REFERRAL DISABLED
+  // leaderboard: { label: "Leaderboard", hint: "Referral ranks", icon: Trophy },
 };
 
 const ASSIGNABLE_PAGES = ADMIN_PAGE_KEYS.filter((p) => p !== "admins");

@@ -14,7 +14,7 @@ export const Route = createFileRoute("/admin/fancy-dress")({
         { key: "childDob", label: "Child DOB" },
         { key: "getupDetail", label: "Getup" },
         { key: "parentName", label: "Parent" },
-        { key: "parentPhone", label: "Phone" },
+        { key: "parentPhone", label: "Parent phone" },
         { key: "city", label: "City" },
         { key: "entryCode", label: "Entry" },
       ]}

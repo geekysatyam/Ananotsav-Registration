@@ -1,9 +1,10 @@
+// REFERRAL DISABLED — this router is not mounted (see routes/index.js)
 import { Router } from 'express';
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { getLeaderboard } from '../controllers/leaderboard.controller.js';
+// import { asyncHandler } from '../utils/asyncHandler.js';
+// import { getLeaderboard } from '../controllers/leaderboard.controller.js';
 
 const router = Router();
 
-router.get('/', asyncHandler(getLeaderboard));
+// router.get('/', asyncHandler(getLeaderboard));
 
 export default router;

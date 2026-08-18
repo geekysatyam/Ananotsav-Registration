@@ -2,6 +2,7 @@ import { memo } from "react";
 import { Medal } from "lucide-react";
 import { PatternBackdrop } from "./motifs";
 
+// REFERRAL DISABLED — public leaderboard list (page currently paused)
 export const LeaderboardList = memo(function LeaderboardList({ rows }) {
   const medal = [
     "from-[oklch(0.82_0.14_85)]",

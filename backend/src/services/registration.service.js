@@ -1,9 +1,10 @@
 import { nanoid } from 'nanoid';
 import Registration from '../models/Registration.model.js';
-import ReferralUsageLog from '../models/ReferralUsageLog.model.js';
-import { resolveReferral } from './fraudCheck.service.js';
-import { generateEntryCode } from './entryCode.service.js';
-import { generateReferralCode } from './referralCode.service.js';
+// REFERRAL DISABLED
+// import ReferralUsageLog from '../models/ReferralUsageLog.model.js';
+// import { resolveReferral } from './fraudCheck.service.js';
+import { generateEntryCodes } from './entryCode.service.js';
+// import { generateReferralCode } from './referralCode.service.js';
 import { shapeRegistration } from '../utils/shapeRegistration.js';
 import { withOptionalTransaction, sessionOpts } from '../utils/withOptionalTransaction.js';
 import { nameDobKey, findByNameDob } from '../utils/normalizeName.js';
@@ -12,59 +13,39 @@ function parseDob(dobString) {
   return new Date(dobString);
 }
 
-/** Fancy-dress children also get a general entry pass unless already listed as family. */
-function membersWithFancyDressKids(primary, members) {
-  const list = [...(members ?? [])];
-  if (!primary.wantsFancyDress) return list;
-
-  const seen = new Set([
-    nameDobKey(primary.fullName, primary.dob),
-    ...list.map((m) => nameDobKey(m.fullName, m.dob)),
-  ]);
-
-  for (const entry of primary.fancyDressEntries ?? []) {
-    const fullName = String(entry.childName ?? '').trim();
-    const dob = entry.childDob;
-    if (!fullName || !dob) continue;
-    const key = nameDobKey(fullName, dob);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    list.push({ fullName, dob, phone: undefined });
-  }
-  return list;
-}
-
 export async function createRegistrationBatch({
   primary,
   members = [],
   registrationSourceOverride = null,
   ip = null,
 }) {
-  const memberList = membersWithFancyDressKids(primary, members);
+  const memberList = primary.wantsFancyDress ? [] : [...(members ?? [])];
   const familyGroupId = memberList.length > 0 ? nanoid(10) : null;
-  const submissionId = nanoid();
-  const memberCount = 1 + memberList.length;
-  const phones = [primary.phone, ...memberList.map((m) => m.phone || primary.phone)];
-
-  const referralResolution = registrationSourceOverride === 'desk-manual'
-    ? {
-        finalReferredBy: primary.referredBy || null,
-        finalRegistrationSource: 'desk-manual',
-        shouldCredit: false,
-        usageLog: null,
-      }
-    : await resolveReferral({
-        submittedCode: primary.referredBy || null,
-        phones,
-        ip,
-        memberCount,
-        submissionId,
-      });
-
-  const source =
-    registrationSourceOverride === 'desk-manual'
-      ? 'desk-manual'
-      : referralResolution.finalRegistrationSource;
+  // REFERRAL DISABLED
+  // const submissionId = nanoid();
+  // const memberCount = 1 + memberList.length;
+  // const phones = [primary.phone, ...memberList.map((m) => m.phone)];
+  //
+  // const referralResolution = registrationSourceOverride === 'desk-manual'
+  //   ? {
+  //       finalReferredBy: primary.referredBy || null,
+  //       finalRegistrationSource: 'desk-manual',
+  //       shouldCredit: false,
+  //       usageLog: null,
+  //     }
+  //   : await resolveReferral({
+  //       submittedCode: primary.referredBy || null,
+  //       phones,
+  //       ip,
+  //       memberCount,
+  //       submissionId,
+  //     });
+  //
+  // const source =
+  //   registrationSourceOverride === 'desk-manual'
+  //     ? 'desk-manual'
+  //     : referralResolution.finalRegistrationSource;
+  const source = registrationSourceOverride === 'desk-manual' ? 'desk-manual' : 'web';
 
   const { primaryDoc, memberDocs } = await withOptionalTransaction(async (session) => {
     const opts = sessionOpts(session);
@@ -122,20 +103,18 @@ export async function createRegistrationBatch({
         continue;
       }
 
-      if (m.phone) {
-        const phoneExisting = await Registration.findOne(
-          { phone: m.phone, dob: parseDob(m.dob) },
-          null,
-          opts,
-        );
-        if (phoneExisting) {
-          duplicates.push({
-            name: m.fullName,
-            suggestion: 'duplicate-member',
-            kind: 'member',
-          });
-          flaggedMembers.add(memberKey);
-        }
+      const phoneExisting = await Registration.findOne(
+        { phone: m.phone, dob: parseDob(m.dob) },
+        null,
+        opts,
+      );
+      if (phoneExisting) {
+        duplicates.push({
+          name: m.fullName,
+          suggestion: 'duplicate-member',
+          kind: 'member',
+        });
+        flaggedMembers.add(memberKey);
       }
     }
 
@@ -147,16 +126,16 @@ export async function createRegistrationBatch({
       throw err;
     }
 
-    const primaryEntryCode = await generateEntryCode(session);
-    const memberEntryCodes = [];
-    for (const _ of memberList) {
-      memberEntryCodes.push(await generateEntryCode(session));
-    }
+    const [primaryEntryCode, ...memberEntryCodes] = await generateEntryCodes(
+      1 + memberList.length,
+      session,
+    );
 
-    let primaryReferralCode = null;
-    if (primary.wantsReferral) {
-      primaryReferralCode = await generateReferralCode(session);
-    }
+    // REFERRAL DISABLED
+    // let primaryReferralCode = null;
+    // if (primary.wantsReferral) {
+    //   primaryReferralCode = await generateReferralCode(session);
+    // }
 
     const isDesk = registrationSourceOverride === 'desk-manual';
     const deskNow = isDesk ? new Date() : null;
@@ -178,18 +157,25 @@ export async function createRegistrationBatch({
       familyGroupId,
       isPrimaryRegistrant: true,
       entryCode: primaryEntryCode,
-      wantsReferral: primary.wantsReferral,
-      referredBy: referralResolution.finalReferredBy,
+      // REFERRAL DISABLED
+      // wantsReferral: primary.wantsReferral,
+      // referredBy: referralResolution.finalReferredBy,
       registrationSource: source,
       wantsVolunteer: Boolean(primary.wantsVolunteer),
       wantsPanchamritAbhishek: Boolean(primary.wantsPanchamritAbhishek),
       wantsFancyDress: Boolean(primary.wantsFancyDress),
+      fancyDressParentPhone: primary.wantsFancyDress ? primary.phone : null,
+      fancyDressGetup: primary.wantsFancyDress
+        ? (primary.fancyDressGetup ?? '').trim()
+        : '',
       fancyDressEntries: primary.wantsFancyDress
-        ? (primary.fancyDressEntries ?? []).map((e) => ({
-            childName: e.childName.trim(),
-            childDob: parseDob(e.childDob),
-            getupDetail: (e.getupDetail ?? '').trim(),
-          }))
+        ? [
+            {
+              childName: primary.fullName.trim(),
+              childDob: parseDob(primary.dob),
+              getupDetail: (primary.fancyDressGetup ?? '').trim(),
+            },
+          ]
         : [],
       wantsLadduGopal: Boolean(primary.wantsLadduGopal),
       ladduGopalSize: primary.wantsLadduGopal
@@ -197,9 +183,10 @@ export async function createRegistrationBatch({
         : null,
       ...deskCheckInFields,
     };
-    if (primaryReferralCode) {
-      primaryFields.referralCode = primaryReferralCode;
-    }
+    // REFERRAL DISABLED
+    // if (primaryReferralCode) {
+    //   primaryFields.referralCode = primaryReferralCode;
+    // }
 
     const primaryDoc = new Registration(primaryFields);
     await primaryDoc.save(opts);
@@ -209,14 +196,15 @@ export async function createRegistrationBatch({
       const m = memberList[i];
       const doc = new Registration({
         fullName: m.fullName,
-        phone: m.phone || primary.phone,
+        phone: m.phone,
         dob: parseDob(m.dob),
         city: primary.city,
         familyGroupId,
         isPrimaryRegistrant: false,
         entryCode: memberEntryCodes[i],
-        wantsReferral: false,
-        referredBy: null,
+        // REFERRAL DISABLED
+        // wantsReferral: false,
+        // referredBy: null,
         registrationSource: source,
         ...deskCheckInFields,
       });
@@ -224,20 +212,21 @@ export async function createRegistrationBatch({
       memberDocs.push(doc);
     }
 
-    if (
-      registrationSourceOverride !== 'desk-manual' &&
-      referralResolution.shouldCredit &&
-      referralResolution.finalReferredBy
-    ) {
-      await Registration.updateOne(
-        { referralCode: referralResolution.finalReferredBy },
-        { $inc: { referralCount: memberCount } },
-        opts,
-      );
-      if (referralResolution.usageLog) {
-        await ReferralUsageLog.create([referralResolution.usageLog], opts);
-      }
-    }
+    // REFERRAL DISABLED
+    // if (
+    //   registrationSourceOverride !== 'desk-manual' &&
+    //   referralResolution.shouldCredit &&
+    //   referralResolution.finalReferredBy
+    // ) {
+    //   await Registration.updateOne(
+    //     { referralCode: referralResolution.finalReferredBy },
+    //     { $inc: { referralCount: memberCount } },
+    //     opts,
+    //   );
+    //   if (referralResolution.usageLog) {
+    //     await ReferralUsageLog.create([referralResolution.usageLog], opts);
+    //   }
+    // }
 
     return { primaryDoc, memberDocs };
   });

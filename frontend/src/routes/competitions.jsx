@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { SiteShell } from "@/components/site-shell";
 import { FloatingMotifs, GradientMesh } from "@/components/ambient";
 import { Flourish } from "@/components/motifs";
-import { Countdown } from "@/components/countdown";
 import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
@@ -14,12 +13,12 @@ export const Route = createFileRoute("/competitions")({
       {
         name: "description",
         content:
-          "Join Anandotsav competitions: referral challenge, kids fancy dress, and Laddu Gopal shringar at Sri Gokul Gaushala, Amritsar.",
+          "Join Anandotsav competitions: kids fancy dress and Laddu Gopal shringar at Sri Gokul Gaushala, Amritsar.",
       },
       { property: "og:title", content: `Competitions — ${siteConfig.brand.name}` },
       {
         property: "og:description",
-        content: "Three festive competitions — referral, fancy dress for kids, and Laddu Gopal shringar.",
+        content: "Festive competitions — fancy dress for kids and Laddu Gopal shringar.",
       },
     ],
   }),
@@ -56,7 +55,8 @@ function PosterImage({ competition }) {
 }
 
 function CompetitionBlock({ competition, reverse = false }) {
-  const endsAt = competition.endsAt ?? siteConfig.event.competitionEnds;
+  // REFERRAL DISABLED
+  // const endsAt = competition.endsAt ?? siteConfig.event.competitionEnds;
 
   return (
     <section
@@ -124,6 +124,7 @@ function CompetitionBlock({ competition, reverse = false }) {
             </p>
           ) : null}
 
+          {/* REFERRAL DISABLED
           {competition.id === "referral" && endsAt ? (
             <div className="mt-6 max-w-md rounded-2xl border border-[#D89B24]/20 bg-[#FFF8E7]/60 p-4">
               <p className="text-[10px] font-bold tracking-[0.18em] text-[#D89B24] uppercase">
@@ -132,6 +133,7 @@ function CompetitionBlock({ competition, reverse = false }) {
               <Countdown to={endsAt} variant="light" compact />
             </div>
           ) : null}
+          */}
 
           {competition.howTo?.length ? (
             <ol className="mt-7 space-y-3">
@@ -198,8 +200,7 @@ function CompetitionsPage() {
             </h1>
             <Flourish className="mx-auto mt-4 h-5 w-40" />
             <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">
-              Celebrate with devotion — climb the referral board, dress up the little ones, or offer
-              shringar to Laddu Gopal.
+              Celebrate with devotion — dress up the little ones, or offer shringar to Laddu Gopal.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               {competitions.map((c) => (

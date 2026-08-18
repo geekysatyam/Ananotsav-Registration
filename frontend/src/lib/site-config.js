@@ -10,7 +10,8 @@
 // Vite-bundled poster URLs (works on Vercel). Files in /public alone return 500
 // when the SSR handler catches static paths.
 import anandotsavPoster from "@/assets/posters/anandotsav-2026-poster.svg?url";
-import referralPoster from "@/assets/posters/referral.svg?url";
+// REFERRAL DISABLED
+// import referralPoster from "@/assets/posters/referral.svg?url";
 import fancyDressPoster from "@/assets/posters/fancy-dress.svg?url";
 import ladduGopalPoster from "@/assets/posters/laddu-gopal.svg?url";
 
@@ -268,9 +269,9 @@ export const siteConfig = {
     /** Short location line in footer */
     location: "Birbalpura, Amritsar",
 
-    /** Registration desk note */
+    /** Pass note shown on the downloaded entry card */
     giftDeskNote:
-      "Show your registration pass at the Seva Desk for event assistance.",
+      "Attend the event for a lot of memories and a divine evening.",
   },
 
   // ── Social links ─────────────────────────────────────────────────────────
@@ -299,26 +300,27 @@ export const siteConfig = {
    * See frontend/MEDIA_GUIDE.md
    */
   competitions: [
-    {
-      id: "referral",
-      title: "Referral Challenge",
-      shortTitle: "Referral",
-      tagline: "Register. Share. Spread the joy.",
-      description:
-        "Opt into a personal Krishna referral code when you register. Every friend who joins with your code lifts you up the live leaderboard.",
-      audience: "All registered bhaktas",
-      timing: "Ends 5 September 2026",
-      endsAt: "2026-09-05T23:59:59",
-      poster: referralPoster,
-      theme: { from: "#08495B", to: "#D89B24" },
-      howTo: [
-        "Complete Bhakta registration in under 60 seconds.",
-        "Choose Yes for your own Krishna referral code.",
-        "Share your code or QR — every verified registration moves you up.",
-      ],
-      primaryCta: { label: "Join the challenge", to: "/register" },
-      secondaryCta: { label: "View leaderboard", to: "/leaderboard" },
-    },
+    // REFERRAL DISABLED
+    // {
+    //   id: "referral",
+    //   title: "Referral Challenge",
+    //   shortTitle: "Referral",
+    //   tagline: "Register. Share. Spread the joy.",
+    //   description:
+    //     "Opt into a personal Krishna referral code when you register. Every friend who joins with your code lifts you up the live leaderboard.",
+    //   audience: "All registered bhaktas",
+    //   timing: "Ends 5 September 2026",
+    //   endsAt: "2026-09-05T23:59:59",
+    //   poster: referralPoster,
+    //   theme: { from: "#08495B", to: "#D89B24" },
+    //   howTo: [
+    //     "Complete Bhakta registration in under 60 seconds.",
+    //     "Choose Yes for your own Krishna referral code.",
+    //     "Share your code or QR — every verified registration moves you up.",
+    //   ],
+    //   primaryCta: { label: "Join the challenge", to: "/register" },
+    //   secondaryCta: { label: "View leaderboard", to: "/leaderboard" },
+    // },
     {
       id: "fancy-dress",
       title: "Fancy Dress for Kids",
@@ -396,12 +398,14 @@ export const eventInfo = {
 // Use VITE_PUBLIC_URL if set (recommended for production), otherwise fall back
 // to window.location.origin on the client or a relative path on the server.
 // Set VITE_PUBLIC_URL=https://yourdomain.com in your production environment.
-export const REFERRAL_LINK_BASE =
-  import.meta.env.VITE_PUBLIC_URL
-    ? `${import.meta.env.VITE_PUBLIC_URL}/register`
-    : typeof window !== "undefined"
-      ? `${window.location.origin}/register`
-      : "/register";
+// REFERRAL DISABLED
+// export const REFERRAL_LINK_BASE =
+//   import.meta.env.VITE_PUBLIC_URL
+//     ? `${import.meta.env.VITE_PUBLIC_URL}/register`
+//     : typeof window !== "undefined"
+//       ? `${window.location.origin}/register`
+//       : "/register";
+export const REFERRAL_LINK_BASE = "/register";
 
 /** Replace `{name}` in gift desk copy */
 export function giftDeskMessage(fullName) {
@@ -420,7 +424,7 @@ export function buildCalendarEventDescription(registrations = []) {
   const lines = [
     `Janmashtami Anandotsav — ${timing}.`,
     "",
-    "Bring your entry QR at the gate. Collect your Divine Gifts at the registration desk.",
+    "Bring your entry QR at the gate. Attend for a lot of memories and a divine evening.",
   ];
 
   if (registrations.length > 0) {

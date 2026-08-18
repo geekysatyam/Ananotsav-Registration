@@ -14,6 +14,7 @@ function createLimiter(windowMs, max, name) {
 }
 
 export const registerLimiter = createLimiter(60 * 1000, 10, 'registration');
-export const validateReferralLimiter = createLimiter(60 * 1000, 30, 'referral validation');
+// REFERRAL DISABLED
+// export const validateReferralLimiter = createLimiter(60 * 1000, 30, 'referral validation');
 export const findRegistrationLimiter = createLimiter(60 * 1000, 20, 'lookup');
 export const adminLoginLimiter = createLimiter(60 * 1000, 5, 'login');

@@ -14,7 +14,8 @@ import {
   Sparkles,
   Baby,
   Gift,
-  Trophy,
+  Gift,
+  // Trophy,
   Shield,
 } from "lucide-react";
 import {
@@ -37,7 +38,8 @@ const NAV = [
   { to: "/admin/abhishek", page: "abhishek", label: "Abhishek", icon: Sparkles },
   { to: "/admin/fancy-dress", page: "fancy-dress", label: "Fancy Dress", icon: Baby },
   { to: "/admin/laddu-gopal", page: "laddu-gopal", label: "Laddu Gopal", icon: Gift },
-  { to: "/admin/leaderboard", page: "leaderboard", label: "Leaderboard", icon: Trophy },
+  // REFERRAL DISABLED
+  // { to: "/admin/leaderboard", page: "leaderboard", label: "Leaderboard", icon: Trophy },
 ];
 
 const PAGE_BY_PATH = {
@@ -49,7 +51,8 @@ const PAGE_BY_PATH = {
   "/admin/abhishek": "abhishek",
   "/admin/fancy-dress": "fancy-dress",
   "/admin/laddu-gopal": "laddu-gopal",
-  "/admin/leaderboard": "leaderboard",
+  // REFERRAL DISABLED
+  // "/admin/leaderboard": "leaderboard",
 };
 
 function firstAllowedPath(admin) {

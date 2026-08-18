@@ -13,9 +13,7 @@ const registrationSchema = new mongoose.Schema({
   fullName: { type: String, required: true, trim: true },
   phone: {
     type: String,
-    required: function () {
-      return this.isPrimaryRegistrant;
-    },
+    required: true,
     trim: true,
   },
   dob: { type: Date, required: true },
@@ -23,10 +21,11 @@ const registrationSchema = new mongoose.Schema({
   familyGroupId: { type: String, default: null, index: true },
   isPrimaryRegistrant: { type: Boolean, required: true, default: true },
   entryCode: { type: String, required: true, unique: true, index: true },
-  wantsReferral: { type: Boolean, default: false },
-  referralCode: { type: String, unique: true, sparse: true },
-  referredBy: { type: String, default: null },
-  referralCount: { type: Number, default: 0 },
+  // REFERRAL DISABLED — do not store / issue referral codes
+  // wantsReferral: { type: Boolean, default: false },
+  // referralCode: { type: String, unique: true, sparse: true },
+  // referredBy: { type: String, default: null },
+  // referralCount: { type: Number, default: 0 },
   checkedIn: { type: Boolean, default: false },
   checkInTime: { type: Date, default: null },
   verifiedBySignature: { type: Boolean, default: null },
@@ -43,6 +42,8 @@ const registrationSchema = new mongoose.Schema({
   wantsPanchamritAbhishek: { type: Boolean, default: false },
   wantsFancyDress: { type: Boolean, default: false },
   fancyDressEntries: { type: [fancyDressEntrySchema], default: [] },
+  fancyDressParentPhone: { type: String, trim: true, default: null },
+  fancyDressGetup: { type: String, trim: true, default: '' },
   wantsLadduGopal: { type: Boolean, default: false },
   ladduGopalSize: { type: String, trim: true, default: null },
 
@@ -54,7 +55,8 @@ registrationSchema.index({ wantsVolunteer: 1, createdAt: -1 });
 registrationSchema.index({ wantsPanchamritAbhishek: 1, createdAt: -1 });
 registrationSchema.index({ wantsFancyDress: 1, createdAt: -1 });
 registrationSchema.index({ wantsLadduGopal: 1, createdAt: -1 });
-registrationSchema.index({ wantsReferral: 1, referralCount: -1 });
+// REFERRAL DISABLED
+// registrationSchema.index({ wantsReferral: 1, referralCount: -1 });
 
 const Registration = mongoose.model('Registration', registrationSchema);
 

@@ -27,34 +27,22 @@ const indianPhoneSchema = z
     message: 'Enter a valid 10-digit Indian mobile number',
   });
 
-const optionalIndianPhoneSchema = z
-  .string()
-  .trim()
-  .optional()
-  .transform((v) => {
-    if (!v) return undefined;
-    let d = v.replace(/\D/g, '');
-    if (d.length === 12 && d.startsWith('91')) d = d.slice(2);
-    if (d.length === 11 && d.startsWith('0')) d = d.slice(1);
-    return d || undefined;
-  })
-  .refine((d) => d === undefined || /^[6-9]\d{9}$/.test(d), {
-    message: 'Enter a valid 10-digit Indian mobile number',
-  });
-
 const memberSchema = z.object({
   fullName: z.string().trim().min(1, 'Member full name is required'),
   dob: dobSchema,
-  phone: optionalIndianPhoneSchema,
-});
-
-const fancyDressEntrySchema = z.object({
-  childName: z.string().trim().min(1, 'Child name is required'),
-  childDob: dobSchema,
-  getupDetail: z.string().trim().optional().default(''),
+  phone: indianPhoneSchema,
 });
 
 const LADDU_GOPAL_SIZES = []; // free-text size on form; kept for any legacy imports
+
+function ageYearsFromDob(dobString) {
+  const [y, m, d] = dobString.split('-').map(Number);
+  const today = new Date();
+  let age = today.getFullYear() - y;
+  const monthDelta = today.getMonth() - (m - 1);
+  if (monthDelta < 0 || (monthDelta === 0 && today.getDate() < d)) age -= 1;
+  return age;
+}
 
 export const registrationSchema = z
   .object({
@@ -63,12 +51,14 @@ export const registrationSchema = z
       phone: indianPhoneSchema,
       dob: dobSchema,
       city: z.string().trim().min(1, 'City is required'),
-      wantsReferral: z.boolean(),
-      referredBy: z.string().trim().nullable().optional(),
+      // REFERRAL DISABLED
+      // wantsReferral: z.boolean(),
+      // referredBy: z.string().trim().nullable().optional(),
       wantsVolunteer: z.boolean().optional().default(false),
       wantsPanchamritAbhishek: z.boolean().optional().default(false),
       wantsFancyDress: z.boolean().optional().default(false),
-      fancyDressEntries: z.array(fancyDressEntrySchema).optional().default([]),
+      fancyDressParentPhone: z.string().trim().optional().nullable(),
+      fancyDressGetup: z.string().trim().optional().default(''),
       wantsLadduGopal: z.boolean().optional().default(false),
       ladduGopalSize: z.string().trim().nullable().optional().default(null),
     }),
@@ -77,12 +67,44 @@ export const registrationSchema = z
   .superRefine((data, ctx) => {
     const { primary } = data;
 
+    const sevaCount = [
+      primary.wantsVolunteer,
+      primary.wantsPanchamritAbhishek,
+      primary.wantsFancyDress,
+      primary.wantsLadduGopal,
+    ].filter(Boolean).length;
+
+    if (sevaCount > 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Choose only one Seva & celebrations option',
+        path: ['primary'],
+      });
+    }
+
     if (primary.wantsFancyDress) {
-      if (!primary.fancyDressEntries?.length) {
+      if (data.members.length > 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Add at least one child for fancy dress',
-          path: ['primary', 'fancyDressEntries'],
+          message: 'Fancy dress is a standalone child registration — do not add family members',
+          path: ['members'],
+        });
+      }
+
+      if (ageYearsFromDob(primary.dob) > 12) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Fancy dress is for children 12 years and under',
+          path: ['primary', 'dob'],
+        });
+      }
+
+      const getup = primary.fancyDressGetup?.trim();
+      if (getup && getup.length > 200) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Getup detail is too long',
+          path: ['primary', 'fancyDressGetup'],
         });
       }
     }

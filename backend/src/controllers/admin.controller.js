@@ -319,6 +319,42 @@ export async function exportLadduGopal(req, res) {
   );
 }
 
+function fancyDressNormalizeStage() {
+  return {
+    $addFields: {
+      _fancyRows: {
+        $cond: {
+          if: { $gt: [{ $strLenCP: { $ifNull: ['$fancyDressParentPhone', ''] } }, 0] },
+          then: [
+            {
+              childName: '$fullName',
+              childDob: '$dob',
+              getupDetail: {
+                $ifNull: ['$fancyDressGetup', { $arrayElemAt: ['$fancyDressEntries.getupDetail', 0] }],
+              },
+              parentName: '',
+              parentPhone: '$fancyDressParentPhone',
+            },
+          ],
+          else: {
+            $map: {
+              input: { $ifNull: ['$fancyDressEntries', []] },
+              as: 'e',
+              in: {
+                childName: '$$e.childName',
+                childDob: '$$e.childDob',
+                getupDetail: '$$e.getupDetail',
+                parentName: '$fullName',
+                parentPhone: '$phone',
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+}
+
 export async function listFancyDress(req, res) {
   const { search, page, limit } = req.validated;
   const match = { wantsFancyDress: true, isPrimaryRegistrant: true, ...buildSearchFilter(search) };
@@ -327,17 +363,18 @@ export async function listFancyDress(req, res) {
   const [agg, countAgg] = await Promise.all([
     Registration.aggregate([
       { $match: match },
-      { $unwind: '$fancyDressEntries' },
+      fancyDressNormalizeStage(),
+      { $unwind: '$_fancyRows' },
       { $sort: { createdAt: -1 } },
       { $skip: skip },
       { $limit: limit },
       {
         $project: {
-          childName: '$fancyDressEntries.childName',
-          childDob: '$fancyDressEntries.childDob',
-          getupDetail: '$fancyDressEntries.getupDetail',
-          parentName: '$fullName',
-          parentPhone: '$phone',
+          childName: '$_fancyRows.childName',
+          childDob: '$_fancyRows.childDob',
+          getupDetail: '$_fancyRows.getupDetail',
+          parentName: '$_fancyRows.parentName',
+          parentPhone: '$_fancyRows.parentPhone',
           city: 1,
           entryCode: 1,
           createdAt: 1,
@@ -346,7 +383,8 @@ export async function listFancyDress(req, res) {
     ]),
     Registration.aggregate([
       { $match: match },
-      { $unwind: '$fancyDressEntries' },
+      fancyDressNormalizeStage(),
+      { $unwind: '$_fancyRows' },
       { $count: 'total' },
     ]),
   ]);
@@ -357,7 +395,7 @@ export async function listFancyDress(req, res) {
     childName: r.childName,
     childDob: formatDob(r.childDob),
     getupDetail: r.getupDetail ?? '',
-    parentName: r.parentName,
+    parentName: r.parentName || '—',
     parentPhone: r.parentPhone ?? '',
     city: r.city ?? '',
     entryCode: r.entryCode,
@@ -372,15 +410,16 @@ export async function exportFancyDress(req, res) {
   const match = { wantsFancyDress: true, isPrimaryRegistrant: true, ...buildSearchFilter(search) };
   const rows = await Registration.aggregate([
     { $match: match },
-    { $unwind: '$fancyDressEntries' },
+    fancyDressNormalizeStage(),
+    { $unwind: '$_fancyRows' },
     { $sort: { fullName: 1 } },
     {
       $project: {
-        childName: '$fancyDressEntries.childName',
-        childDob: '$fancyDressEntries.childDob',
-        getupDetail: '$fancyDressEntries.getupDetail',
-        parentName: '$fullName',
-        parentPhone: '$phone',
+        childName: '$_fancyRows.childName',
+        childDob: '$_fancyRows.childDob',
+        getupDetail: '$_fancyRows.getupDetail',
+        parentName: '$_fancyRows.parentName',
+        parentPhone: '$_fancyRows.parentPhone',
         city: 1,
         entryCode: 1,
         createdAt: 1,
@@ -396,7 +435,7 @@ export async function exportFancyDress(req, res) {
       r.childName,
       formatDob(r.childDob),
       r.getupDetail ?? '',
-      r.parentName,
+      r.parentName || '',
       r.parentPhone ?? '',
       r.city ?? '',
       r.entryCode,
@@ -405,6 +444,7 @@ export async function exportFancyDress(req, res) {
   );
 }
 
+/* REFERRAL DISABLED
 export async function adminLeaderboard(req, res) {
   const { search, page, limit } = req.validated;
   const filter = { wantsReferral: true, ...buildSearchFilter(search) };
@@ -458,6 +498,7 @@ export async function exportAdminLeaderboard(req, res) {
     ]),
   );
 }
+*/
 
 export async function deskRegister(req, res) {
   try {

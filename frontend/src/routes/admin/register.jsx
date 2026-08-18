@@ -23,7 +23,6 @@ import {
 import { DobPicker } from "@/components/dob-picker";
 import {
   phoneValidationMessage,
-  optionalPhoneValidationMessage,
   dobValidationMessage,
 } from "@/lib/validators";
 
@@ -47,14 +46,15 @@ function Field({ label, icon, ...props }) {
   );
 }
 
-function DeskToggle({ title, value, onChange, children }) {
+function DeskToggle({ title, value, onChange, children, disabled = false }) {
   return (
-    <div className="rounded-xl bg-background p-3 ring-1 ring-primary/15">
-      <label className="flex cursor-pointer items-center justify-between gap-3">
-        <span className="text-sm font-semibold">{title}</span>
+    <div className={`rounded-xl bg-background p-3 ring-1 ring-primary/15 ${disabled ? "opacity-40" : ""}`}>
+      <label className={`flex items-center justify-between gap-3 ${disabled ? "pointer-events-none" : "cursor-pointer"}`}>
+        <span className={`text-sm font-semibold ${disabled ? "text-muted-foreground" : ""}`}>{title}</span>
         <input
           type="checkbox"
           checked={value}
+          disabled={disabled}
           onChange={(e) => onChange(e.target.checked)}
           className="h-4 w-4 accent-secondary"
         />
@@ -74,7 +74,7 @@ function AdminRegisterPage() {
   const [wantsVolunteer, setWantsVolunteer] = useState(false);
   const [wantsPanchamrit, setWantsPanchamrit] = useState(false);
   const [wantsFancyDress, setWantsFancyDress] = useState(false);
-  const [fancyDressEntries, setFancyDressEntries] = useState([]);
+  const [fancyDressGetup, setFancyDressGetup] = useState("");
   const [wantsLadduGopal, setWantsLadduGopal] = useState(false);
   const [ladduGopalSize, setLadduGopalSize] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -91,7 +91,7 @@ function AdminRegisterPage() {
     setWantsVolunteer(false);
     setWantsPanchamrit(false);
     setWantsFancyDress(false);
-    setFancyDressEntries([]);
+    setFancyDressGetup("");
     setWantsLadduGopal(false);
     setLadduGopalSize("");
     setError(null);
@@ -99,13 +99,27 @@ function AdminRegisterPage() {
     setQrIndex(0);
   }, []);
 
+  const setSeva = (kind, value) => {
+    setWantsVolunteer(kind === "volunteer" && value);
+    setWantsPanchamrit(kind === "panchamrit" && value);
+    setWantsFancyDress(kind === "fancy" && value);
+    setWantsLadduGopal(kind === "laddu" && value);
+    if (kind !== "fancy" || !value) {
+      setFancyDressGetup("");
+    }
+    if (kind !== "laddu" || !value) setLadduGopalSize("");
+    if (kind === "fancy" && value) setFamily([]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!token) return;
     setError(null);
 
     const pErr = phoneValidationMessage(phone);
-    const dErr = dobValidationMessage(dob);
+    const dErr = wantsFancyDress
+      ? dobValidationMessage(dob, { maxAgeYears: 12, label: "Child date of birth" })
+      : dobValidationMessage(dob);
     if (pErr || dErr) {
       setError(pErr || dErr);
       return;
@@ -120,41 +134,28 @@ function AdminRegisterPage() {
       return;
     }
 
-    for (const m of family) {
-      if (!m.name.trim() && !m.dob && !m.phone?.trim()) continue;
-      if (m.name.trim() || m.dob) {
+    if (!wantsFancyDress) {
+      for (const m of family) {
+        if (!m.name.trim() && !m.dob && !m.phone?.trim()) continue;
+        if (!m.name.trim()) {
+          setError("Please enter each family member's name.");
+          return;
+        }
         const memberDobErr = dobValidationMessage(m.dob, {
-          label: `${m.name.trim() || "Family member"} DOB`,
+          label: `${m.name.trim()} DOB`,
         });
         if (memberDobErr) {
           setError(memberDobErr);
           return;
         }
-        const memberPhoneErr = optionalPhoneValidationMessage(m.phone);
+        const memberPhoneErr = phoneValidationMessage(m.phone);
         if (memberPhoneErr) {
-          setError(`Family member phone: ${memberPhoneErr}`);
+          setError(`${m.name.trim()}'s phone: ${memberPhoneErr}`);
           return;
         }
       }
     }
 
-    if (wantsFancyDress) {
-      const validKids = fancyDressEntries.filter((x) => x.childName?.trim() && x.childDob);
-      if (validKids.length === 0) {
-        setError("Add at least one child for fancy dress, or uncheck it.");
-        return;
-      }
-      for (const entry of validKids) {
-        const childDobErr = dobValidationMessage(entry.childDob, {
-          label: `${entry.childName.trim()} DOB`,
-          maxAgeYears: 18,
-        });
-        if (childDobErr) {
-          setError(childDobErr);
-          return;
-        }
-      }
-    }
     if (wantsLadduGopal && !ladduGopalSize.trim()) {
       setError("Enter Laddu Gopal size, or uncheck it.");
       return;
@@ -168,30 +169,25 @@ function AdminRegisterPage() {
           phone: normalizePhone(phone),
           dob,
           city: city.trim(),
-          wantsReferral: false,
-          referredBy: null,
+          // REFERRAL DISABLED
+          // wantsReferral: false,
+          // referredBy: null,
           wantsVolunteer,
           wantsPanchamritAbhishek: wantsPanchamrit,
           wantsFancyDress,
-          fancyDressEntries: wantsFancyDress
-            ? fancyDressEntries
-                .filter((x) => x.childName?.trim() && x.childDob)
-                .map((x) => ({
-                  childName: x.childName.trim(),
-                  childDob: x.childDob,
-                  getupDetail: x.getupDetail?.trim() || "",
-                }))
-            : [],
+          fancyDressGetup: wantsFancyDress ? fancyDressGetup.trim() : "",
           wantsLadduGopal,
           ladduGopalSize: wantsLadduGopal ? ladduGopalSize.trim() : null,
         },
-        members: family
-          .filter((m) => m.name.trim() && m.dob)
-          .map((m) => ({
-            fullName: m.name.trim(),
-            dob: m.dob,
-            phone: m.phone?.trim() ? normalizePhone(m.phone) : undefined,
-          })),
+        members: wantsFancyDress
+          ? []
+          : family
+              .filter((m) => m.name.trim() && m.dob && m.phone?.trim())
+              .map((m) => ({
+                fullName: m.name.trim(),
+                dob: m.dob,
+                phone: normalizePhone(m.phone),
+              })),
       });
       setResult(data.registrations);
     } catch (err) {
@@ -257,7 +253,7 @@ function AdminRegisterPage() {
         />
         <div className="grid gap-4 sm:grid-cols-2">
           <Field
-            label="Phone"
+            label={wantsFancyDress ? "Parent contact" : "Phone"}
             icon={<Phone className="h-4 w-4" />}
             required
             type="tel"
@@ -284,11 +280,12 @@ function AdminRegisterPage() {
           placeholder="Amritsar"
         />
 
+        {!wantsFancyDress && (
         <div className="rounded-xl bg-primary/10 p-4 ring-1 ring-primary/20">
           <div className="flex items-center justify-between gap-2">
             <div>
               <h3 className="text-sm font-display font-semibold">Family members</h3>
-              <p className="text-xs text-muted-foreground">Each gets their own QR & Divine Gift</p>
+              <p className="text-xs text-muted-foreground">Each needs their own phone, QR & Divine Gift</p>
             </div>
             <button
               type="button"
@@ -333,8 +330,9 @@ function AdminRegisterPage() {
                     }
                   />
                   <input
-                    placeholder="Phone (optional)"
+                    placeholder="Phone (required)"
                     type="tel"
+                    required
                     value={m.phone ?? ""}
                     onChange={(e) =>
                       setFamily((f) =>
@@ -352,13 +350,15 @@ function AdminRegisterPage() {
             ))}
           </AnimatePresence>
         </div>
+        )}
 
         <div className="space-y-2 rounded-xl bg-secondary/5 p-4 ring-1 ring-secondary/15">
-          <h3 className="text-sm font-display font-semibold text-secondary">Seva & celebrations (optional)</h3>
+          <h3 className="text-sm font-display font-semibold text-secondary">Seva & celebrations (pick one)</h3>
           <DeskToggle
             title="Become a Youth Volunteer?"
             value={wantsVolunteer}
-            onChange={setWantsVolunteer}
+            disabled={!wantsVolunteer && (wantsPanchamrit || wantsFancyDress || wantsLadduGopal)}
+            onChange={(v) => setSeva("volunteer", v)}
           >
             <p className="text-xs leading-relaxed text-muted-foreground">
               Be the hands behind Anandotsav — decorate, welcome bhaktas, and help the utsav shine.
@@ -368,7 +368,8 @@ function AdminRegisterPage() {
           <DeskToggle
             title="Join Divya Panchamrit Abhishek?"
             value={wantsPanchamrit}
-            onChange={setWantsPanchamrit}
+            disabled={!wantsPanchamrit && (wantsVolunteer || wantsFancyDress || wantsLadduGopal)}
+            onChange={(v) => setSeva("panchamrit", v)}
           >
             <p className="text-xs leading-relaxed text-muted-foreground">
               Free Divya Panchamrit Abhishek of Nitai–Nimai — milk, curd, ghee, honey and sugar
@@ -378,81 +379,25 @@ function AdminRegisterPage() {
           <DeskToggle
             title="Fancy dress for kids"
             value={wantsFancyDress}
-            onChange={(v) => {
-              setWantsFancyDress(v);
-              if (v && fancyDressEntries.length === 0) {
-                setFancyDressEntries([{ childName: "", childDob: "", getupDetail: "" }]);
-              }
-              if (!v) setFancyDressEntries([]);
-            }}
+            disabled={!wantsFancyDress && (wantsVolunteer || wantsPanchamrit || wantsLadduGopal)}
+            onChange={(v) => setSeva("fancy", v)}
           >
-            <div className="space-y-2">
-              {fancyDressEntries.map((entry, i) => (
-                <div key={i} className="grid gap-2 rounded-lg bg-card p-2 ring-1 ring-primary/15">
-                  <input
-                    placeholder="Child name"
-                    value={entry.childName}
-                    onChange={(e) =>
-                      setFancyDressEntries((list) =>
-                        list.map((x, idx) => (idx === i ? { ...x, childName: e.target.value } : x)),
-                      )
-                    }
-                    className="min-h-9 rounded-lg border-2 border-primary/25 px-2 text-sm outline-none focus:border-primary"
-                  />
-                  <DobPicker
-                    value={entry.childDob}
-                    defaultAgeYears={6}
-                    minYear={new Date().getFullYear() - 18}
-                    onChange={(iso) =>
-                      setFancyDressEntries((list) =>
-                        list.map((x, idx) => (idx === i ? { ...x, childDob: iso } : x)),
-                      )
-                    }
-                  />
-                  <div className="flex gap-1">
-                    <input
-                      placeholder="Getup (optional)"
-                      value={entry.getupDetail}
-                      onChange={(e) =>
-                        setFancyDressEntries((list) =>
-                          list.map((x, idx) => (idx === i ? { ...x, getupDetail: e.target.value } : x)),
-                        )
-                      }
-                      className="min-h-9 min-w-0 flex-1 rounded-lg border-2 border-primary/25 px-2 text-sm outline-none focus:border-primary"
-                    />
-                    {fancyDressEntries.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => setFancyDressEntries((list) => list.filter((_, idx) => idx !== i))}
-                        className="text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() =>
-                  setFancyDressEntries((list) => [
-                    ...list,
-                    { childName: "", childDob: "", getupDetail: "" },
-                  ])
-                }
-                className="text-xs font-bold text-secondary"
-              >
-                + Add child
-              </button>
-            </div>
+            <p className="mb-2 text-xs text-muted-foreground">
+              This form is for the child. The phone field above becomes parent contact. One child
+              per registration.
+            </p>
+            <input
+              placeholder="Getup / costume (optional)"
+              value={fancyDressGetup}
+              onChange={(e) => setFancyDressGetup(e.target.value)}
+              className="min-h-9 rounded-lg border-2 border-primary/25 px-2 text-sm outline-none focus:border-primary"
+            />
           </DeskToggle>
           <DeskToggle
             title="Laddu Gopal shringar"
             value={wantsLadduGopal}
-            onChange={(v) => {
-              setWantsLadduGopal(v);
-              if (!v) setLadduGopalSize("");
-            }}
+            disabled={!wantsLadduGopal && (wantsVolunteer || wantsPanchamrit || wantsFancyDress)}
+            onChange={(v) => setSeva("laddu", v)}
           >
             <p className="mb-2 text-xs leading-relaxed text-muted-foreground">
               Staging at Utsav Mandapam. Please bring Laddu Gopal before 6:00 PM — no competition

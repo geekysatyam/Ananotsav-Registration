@@ -11,7 +11,8 @@ import { api } from "@/lib/api";
 import heroTempleImg from "@/assets/hero-gaur-nitai-temple.png";
 
 export { EventDetailsSection } from "@/components/event-details-section";
-export { LeaderboardList } from "@/components/leaderboard-list";
+// REFERRAL DISABLED
+// export { LeaderboardList } from "@/components/leaderboard-list";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -75,6 +76,7 @@ function useCountUp(target, duration = 1500) {
   return { value, ref };
 }
 
+/* REFERRAL DISABLED
 function HomeLeaderboardPreview({ rows }) {
   const badges = ["👑", "🪶", "🪷", "✨", "🌸"];
   const rankBg = [
@@ -117,14 +119,16 @@ function HomeLeaderboardPreview({ rows }) {
     </div>
   );
 }
+*/
 
 function Landing() {
   const [registrantCount, setRegistrantCount] = useState(null);
-  const [previewRows, setPreviewRows] = useState([]);
+  // REFERRAL DISABLED
+  // const [previewRows, setPreviewRows] = useState([]);
 
   useEffect(() => {
     api.getStatsCount().then((d) => setRegistrantCount(d.totalRegistrants ?? 0)).catch(() => setRegistrantCount(0));
-    api.getLeaderboard().then((rows) => setPreviewRows(rows.slice(0, 5))).catch(() => undefined);
+    // api.getLeaderboard().then((rows) => setPreviewRows(rows.slice(0, 5))).catch(() => undefined);
   }, []);
 
   const counter = useCountUp(registrantCount ?? 0, 1500);
@@ -183,8 +187,7 @@ function Landing() {
                 <Flourish className="my-1.5 hidden h-5 w-40 max-w-xs lg:flex lg:my-3 lg:h-6 lg:w-48" />
 
                 <p className="mt-1.5 hidden max-w-lg text-[12px] leading-5 text-slate-600 sm:text-sm sm:leading-6 lg:mt-3 lg:block lg:max-w-xl lg:text-base lg:leading-7">
-                  Register for {siteConfig.brand.name}, receive your entry QR, invite fellow Bhaktas and
-                  climb the referral leaderboard.
+                  Register for {siteConfig.brand.name}, receive your entry QR, and celebrate as one family.
                 </p>
 
                 <div className="mt-3 flex w-full max-w-md flex-col gap-2 sm:flex-row sm:justify-center lg:mt-5 lg:max-w-none lg:justify-start lg:gap-3">
@@ -196,17 +199,18 @@ function Landing() {
                   </Link>
                   <Link
                     to="/competitions"
-                    hash="referral"
                     className="inline-flex items-center justify-center gap-2 rounded-xl border border-secondary/15 bg-white/80 px-4 py-2.5 text-sm font-bold text-secondary shadow-sm transition hover:bg-white sm:px-6 sm:py-3 lg:px-7 lg:py-3.5 lg:text-base"
                   >
-                    See how referrals work
+                    See competitions
                   </Link>
                 </div>
 
                 <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] font-semibold text-slate-600 lg:mt-3 lg:justify-start lg:gap-x-4 sm:text-xs lg:text-sm">
                   <span className="whitespace-nowrap">🔐 Secure QR Entry</span>
                   <span className="whitespace-nowrap">🎁 Divine Gifts</span>
+                  {/* REFERRAL DISABLED
                   <span className="whitespace-nowrap">🪶 Referral Rewards</span>
+                  */}
                 </div>
               </div>
 
@@ -223,6 +227,7 @@ function Landing() {
                     </div>
                   </div>
 
+                  {/* REFERRAL DISABLED
                   <div className="jh-float3 jh-glass absolute bottom-2 -left-4 z-20 hidden items-center gap-2 rounded-xl border border-[#D89B24]/15 px-3 py-2 lg:flex xl:-left-8">
                     <div className="grid h-8 w-8 place-items-center rounded-full bg-secondary/10 text-base">🏆</div>
                     <div>
@@ -230,6 +235,7 @@ function Landing() {
                       <div className="text-[10px] text-slate-500">Festive leaderboard</div>
                     </div>
                   </div>
+                  */}
 
                   <img
                     src={heroTempleImg}
@@ -298,16 +304,16 @@ function Landing() {
             <div className="grid items-center gap-10 md:grid-cols-[1fr_auto]">
               <div>
                 <div className="inline-flex items-center gap-2 text-sm font-bold text-[#F7D98A]">
-                  <span>🔥</span> THE FESTIVE CHALLENGE
+                  <span>🔥</span> THE FESTIVE GATHERING
                 </div>
                 <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl lg:text-5xl">
-                  The more you share,
+                  Come as a bhakta,
                   <br />
-                  <span className="text-[#F7D98A]">the more you inspire.</span>
+                  <span className="text-[#F7D98A]">celebrate as one family.</span>
                 </h2>
                 <p className="mt-4 max-w-2xl leading-7 text-white/75">
-                  Invite friends and family using your Krishna referral code. Every verified registration
-                  adds to your count and moves you closer to the top of the leaderboard.
+                  Register for Anandotsav, receive your entry QR, and join thousands of bhaktas at Sri
+                  Gokul Gaushala.
                 </p>
               </div>
               <div className="mx-auto w-full max-w-sm rounded-3xl border border-white/20 bg-[#042f3c]/75 px-6 py-6 text-center shadow-[0_18px_50px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:px-10 sm:py-7 md:mx-0 md:min-w-[240px]">
@@ -443,62 +449,11 @@ function Landing() {
 
         <CompetitionsCarousel />
 
-        {/* Leaderboard */}
+        {/* REFERRAL DISABLED — homepage leaderboard
         <section id="leaderboard" className="jh-section-wash relative overflow-hidden py-14 sm:py-20">
-          <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-8">
-            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
-              <div>
-                <div className="text-xs font-bold tracking-[0.2em] text-[#D89B24] uppercase">Who is leading?</div>
-                <h2 className="mt-3 font-display text-3xl font-bold text-[#08495B] sm:text-4xl lg:text-5xl">
-                  Bhakta <span className="text-[#D89B24]">Leaderboard</span>
-                </h2>
-                <Flourish className="mt-4 h-5 w-40" />
-                <p className="text-slate-600">A little friendly competition, powered by devotion.</p>
-              </div>
-              <Link
-                to="/leaderboard"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-secondary/15 bg-white px-5 py-3 font-bold text-secondary shadow-sm"
-              >
-                View Full Leaderboard →
-              </Link>
-            </div>
-
-            <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_0.7fr]">
-              <div className="jh-card overflow-hidden rounded-3xl">
-                <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
-                  <div className="font-bold">Top Referrers</div>
-                  <div className="text-xs text-slate-400">Live ranking</div>
-                </div>
-                <HomeLeaderboardPreview rows={previewRows} />
-              </div>
-
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-peacock p-5 text-white sm:p-8">
-                <div className="absolute -top-16 -right-16 h-52 w-52 rounded-full border border-white/10" />
-                <div className="jh-float absolute top-6 right-6 text-5xl">🪶</div>
-                <div className="relative z-10">
-                  <div className="text-xs font-bold tracking-[0.18em] text-[#F7D98A] uppercase">Want your name here?</div>
-                  <h3 className="mt-3 font-display text-2xl font-bold sm:text-3xl">Your next referral could change the board.</h3>
-                  <p className="mt-4 leading-7 text-white/70">
-                    Register, opt into the referral challenge and start inviting your people.
-                  </p>
-                  <Link
-                    to="/register"
-                    className="mt-7 inline-flex rounded-xl bg-white px-6 py-3 font-extrabold text-secondary transition hover:bg-[#F7D98A]"
-                  >
-                    Join the Challenge →
-                  </Link>
-                  <div className="mt-10 flex items-center gap-3 border-t border-white/10 pt-6">
-                    <div className="text-3xl">🙏</div>
-                    <div>
-                      <div className="font-bold">Celebrate together</div>
-                      <div className="text-xs text-white/50">Every invitation spreads the joy.</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          ... Bhakta Leaderboard / Top Referrers ...
         </section>
+        */}
 
         {/* Register CTA */}
         <section id="register" className="jh-hero-bg relative overflow-hidden py-16 sm:py-24">
@@ -516,7 +471,7 @@ function Landing() {
             </div>
             <p className="mx-auto max-w-2xl leading-8 text-slate-600">
               {siteConfig.event.invitation.body} Every Bhakta receives a personal Entry QR and Divine
-              Gifts. Opt into the referral challenge to invite friends and climb the leaderboard.
+              Gifts.
             </p>
             <div className="mt-8 flex w-full flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
               <Link

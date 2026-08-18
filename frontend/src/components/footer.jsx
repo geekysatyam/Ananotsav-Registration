@@ -37,9 +37,11 @@ export function Footer() {
             <Link to="/competitions" className="opacity-90 hover:opacity-100">
               Competitions
             </Link>
+            {/* REFERRAL DISABLED
             <Link to="/leaderboard" className="opacity-90 hover:opacity-100">
               Leaderboard
             </Link>
+            */}
             <Link to="/event-details" className="opacity-90 hover:opacity-100">
               Event Details
             </Link>

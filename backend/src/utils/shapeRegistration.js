@@ -1,10 +1,13 @@
 import { buildSignedPayload } from '../services/hmac.service.js';
 
-/** Child first names only — no DOB / getup on public responses. */
-function shapeFancyDressPublic(entries) {
-  return (entries ?? []).map((e) => ({
-    childName: e.childName,
-  }));
+/** Child first names only — no DOB / getup / parent phone on public responses. */
+function shapeFancyDressPublic(doc) {
+  if (!doc.wantsFancyDress) return [];
+  const entries = doc.fancyDressEntries ?? [];
+  if (entries.length > 0) {
+    return entries.map((e) => ({ childName: e.childName }));
+  }
+  return [{ childName: doc.fullName }];
 }
 
 /**
@@ -18,9 +21,10 @@ export function shapeRegistration(doc) {
     isPrimaryRegistrant: doc.isPrimaryRegistrant,
     entryCode: doc.entryCode,
     signedPayload: buildSignedPayload(doc.entryCode),
-    wantsReferral: doc.wantsReferral,
-    referralCode: doc.referralCode ?? null,
-    referredBy: doc.referredBy ?? null,
+    // REFERRAL DISABLED
+    // wantsReferral: doc.wantsReferral,
+    // referralCode: doc.referralCode ?? null,
+    // referredBy: doc.referredBy ?? null,
     familyGroupId: doc.familyGroupId ?? null,
     checkedIn: doc.checkedIn,
     checkInTime: doc.checkInTime ?? null,
@@ -28,7 +32,7 @@ export function shapeRegistration(doc) {
     wantsVolunteer: doc.wantsVolunteer ?? false,
     wantsPanchamritAbhishek: doc.wantsPanchamritAbhishek ?? false,
     wantsFancyDress: doc.wantsFancyDress ?? false,
-    fancyDressEntries: shapeFancyDressPublic(doc.fancyDressEntries),
+    fancyDressEntries: shapeFancyDressPublic(doc),
     wantsLadduGopal: doc.wantsLadduGopal ?? false,
     ladduGopalSize: doc.ladduGopalSize ?? null,
   };

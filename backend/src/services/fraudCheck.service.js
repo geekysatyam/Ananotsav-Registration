@@ -1,3 +1,4 @@
+// REFERRAL DISABLED — not imported while referral is off
 import Registration from '../models/Registration.model.js';
 import ReferralUsageLog from '../models/ReferralUsageLog.model.js';
 

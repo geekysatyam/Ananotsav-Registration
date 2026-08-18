@@ -96,7 +96,8 @@ export const ADMIN_PAGE_KEYS = [
   "abhishek",
   "fancy-dress",
   "laddu-gopal",
-  "leaderboard",
+  // REFERRAL DISABLED
+  // "leaderboard",
   "admins",
 ];
 
@@ -156,12 +157,13 @@ export const api = {
       body: JSON.stringify(body)
     });
   },
-  validateReferral(code) {
-    return request(`/api/validate-referral/${encodeURIComponent(code)}`);
-  },
-  getLeaderboard() {
-    return request("/api/leaderboard");
-  },
+  // REFERRAL DISABLED
+  // validateReferral(code) {
+  //   return request(`/api/validate-referral/${encodeURIComponent(code)}`);
+  // },
+  // getLeaderboard() {
+  //   return request("/api/leaderboard");
+  // },
   getStatsCount() {
     return request("/api/stats/count");
   },

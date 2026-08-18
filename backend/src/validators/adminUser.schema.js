@@ -8,7 +8,8 @@ const pageEnum = z.enum([
   'abhishek',
   'fancy-dress',
   'laddu-gopal',
-  'leaderboard',
+  // REFERRAL DISABLED
+  // 'leaderboard',
   'admins',
 ]);
 

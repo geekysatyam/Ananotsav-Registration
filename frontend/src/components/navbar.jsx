@@ -8,7 +8,8 @@ const links = [
   { to: "/", label: "Home" },
   { to: "/event-details", label: "Event Details" },
   { to: "/competitions", label: "Competitions" },
-  { to: "/leaderboard", label: "Leaderboard" },
+  // REFERRAL DISABLED
+  // { to: "/leaderboard", label: "Leaderboard" },
   { to: "/find", label: "Find Registration" },
 ];
 

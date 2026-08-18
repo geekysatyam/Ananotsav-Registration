@@ -1,3 +1,4 @@
+// REFERRAL DISABLED — Krishna names used to mint referral codes
 export const KRISHNA_NAMES = [
   'Gopal', 'Govinda', 'Madhav', 'Murari', 'Kanha', 'Damodar', 'BankeBihari', 'Shyam',
   'Hari', 'Keshav', 'Narayan', 'Vasudev', 'Janardan', 'Madhava', 'RadheShyam', 'Giridhar',

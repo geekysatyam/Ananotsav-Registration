@@ -2,11 +2,11 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Check,
-  X,
+  // Check,
+  // X,
   Plus,
   Trash2,
-  Sparkles,
+  // Sparkles,
   UserRound,
   Phone,
   Cake,
@@ -21,7 +21,6 @@ import { api, formatRegistrationError, normalizePhone, saveRegistrationResult } 
 import { DobPicker } from "@/components/dob-picker";
 import {
   phoneValidationMessage,
-  optionalPhoneValidationMessage,
   dobValidationMessage,
 } from "@/lib/validators";
 
@@ -55,16 +54,19 @@ function Field({ label, icon, hint, error, children, className = "", ...props })
   );
 }
 
-function PillToggle({ value, onChange, options, compact = false }) {
+function PillToggle({ value, onChange, options, compact = false, disabled = false }) {
   return (
     <div
-      className={`flex shrink-0 rounded-full bg-background ring-1 ring-primary/30 ${compact ? "p-0.5" : "p-1"}`}
+      className={`flex shrink-0 rounded-full bg-background ring-1 ring-primary/30 ${compact ? "p-0.5" : "p-1"} ${
+        disabled ? "pointer-events-none opacity-40" : ""
+      }`}
       suppressHydrationWarning
     >
       {options.map((opt) => (
         <button
           key={String(opt.value)}
           type="button"
+          disabled={disabled}
           suppressHydrationWarning
           onClick={() => onChange(opt.value)}
           className={`rounded-full font-bold transition-colors ${
@@ -82,13 +84,16 @@ function PillToggle({ value, onChange, options, compact = false }) {
   );
 }
 
-function CompactToggleRow({ title, value, onChange, children }) {
+function CompactToggleRow({ title, value, onChange, children, disabled = false }) {
   return (
-    <div>
+    <div className={disabled ? "opacity-40" : ""}>
       <div className="flex items-center justify-between gap-2">
-        <span className="min-w-0 flex-1 text-sm font-semibold leading-snug">{title}</span>
+        <span className={`min-w-0 flex-1 text-sm font-semibold leading-snug ${disabled ? "text-muted-foreground" : ""}`}>
+          {title}
+        </span>
         <PillToggle
           compact
+          disabled={disabled}
           value={value}
           onChange={onChange}
           options={[
@@ -114,9 +119,10 @@ function CompactToggleRow({ title, value, onChange, children }) {
 }
 
 export const Route = createFileRoute("/register")({
-  validateSearch: (search) => ({
-    ref: typeof search.ref === "string" ? search.ref : undefined,
-  }),
+  // REFERRAL DISABLED
+  // validateSearch: (search) => ({
+  //   ref: typeof search.ref === "string" ? search.ref : undefined,
+  // }),
   head: () => ({
     meta: [
       { title: "Register for Free !! — Janmashtami Utsav 2026" },
@@ -147,29 +153,29 @@ function readDraft() {
 
 function RegisterPage() {
   const navigate = useNavigate();
-  const { ref: refParam } = Route.useSearch();
+  // REFERRAL DISABLED
+  // const { ref: refParam } = Route.useSearch();
 
   const [fullName, setFullName] = useState(() => readDraft().fullName ?? "");
   const [phone, setPhone] = useState(() => readDraft().phone ?? "");
   const [dob, setDob] = useState(() => readDraft().dob ?? "");
   const [city, setCity] = useState(() => readDraft().city ?? "");
-  const [hasIncomingCode, setHasIncomingCode] = useState(() => readDraft().hasIncomingCode ?? readDraft().hasReferral ?? false);
-  const [incomingReferral, setIncomingReferral] = useState(() => readDraft().incomingReferral ?? readDraft().referral ?? "");
-  const [wantsOwnReferral, setWantsOwnReferral] = useState(() => readDraft().wantsOwnReferral ?? false);
+  // REFERRAL DISABLED
+  // const [hasIncomingCode, setHasIncomingCode] = useState(() => readDraft().hasIncomingCode ?? readDraft().hasReferral ?? false);
+  // const [incomingReferral, setIncomingReferral] = useState(() => readDraft().incomingReferral ?? readDraft().referral ?? "");
+  // const [wantsOwnReferral, setWantsOwnReferral] = useState(() => readDraft().wantsOwnReferral ?? false);
   const [family, setFamily] = useState(() => readDraft().family ?? []);
 
   const [wantsVolunteer, setWantsVolunteer] = useState(() => readDraft().wantsVolunteer ?? false);
   const [wantsPanchamrit, setWantsPanchamrit] = useState(() => readDraft().wantsPanchamrit ?? false);
   const [wantsFancyDress, setWantsFancyDress] = useState(() => readDraft().wantsFancyDress ?? false);
-  const [fancyDressEntries, setFancyDressEntries] = useState(
-    () => readDraft().fancyDressEntries ?? [],
-  );
+  const [fancyDressGetup, setFancyDressGetup] = useState(() => readDraft().fancyDressGetup ?? "");
   const [wantsLadduGopal, setWantsLadduGopal] = useState(() => readDraft().wantsLadduGopal ?? false);
   const [ladduGopalSize, setLadduGopalSize] = useState(() => readDraft().ladduGopalSize ?? "");
 
-  // Someone referred this registrant (incoming code → referredBy)
-  const [incomingValid, setIncomingValid] = useState(null);
-  const [incomingChecking, setIncomingChecking] = useState(false);
+  // REFERRAL DISABLED
+  // const [incomingValid, setIncomingValid] = useState(null);
+  // const [incomingChecking, setIncomingChecking] = useState(false);
 
   const [totalRegistrants, setTotalRegistrants] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -185,13 +191,13 @@ function RegisterPage() {
   const phoneError = touched.phone ? phoneValidationMessage(phone) : null;
   const dobError = touched.dob ? dobValidationMessage(dob) : null;
 
-  // Apply ?ref= query param on mount (overrides any saved draft)
-  useEffect(() => {
-    if (refParam) {
-      setHasIncomingCode(true);
-      setIncomingReferral(refParam);
-    }
-  }, [refParam]);
+  // REFERRAL DISABLED
+  // useEffect(() => {
+  //   if (refParam) {
+  //     setHasIncomingCode(true);
+  //     setIncomingReferral(refParam);
+  //   }
+  // }, [refParam]);
 
   useEffect(() => {
     if (!mountedRef.current) return;
@@ -203,14 +209,15 @@ function RegisterPage() {
           phone,
           dob,
           city,
-          hasIncomingCode,
-          incomingReferral,
-          wantsOwnReferral,
+          // REFERRAL DISABLED
+          // hasIncomingCode,
+          // incomingReferral,
+          // wantsOwnReferral,
           family,
           wantsVolunteer,
           wantsPanchamrit,
           wantsFancyDress,
-          fancyDressEntries,
+          fancyDressGetup,
           wantsLadduGopal,
           ladduGopalSize,
         }),
@@ -222,14 +229,14 @@ function RegisterPage() {
     phone,
     dob,
     city,
-    hasIncomingCode,
-    incomingReferral,
-    wantsOwnReferral,
+    // hasIncomingCode,
+    // incomingReferral,
+    // wantsOwnReferral,
     family,
     wantsVolunteer,
     wantsPanchamrit,
     wantsFancyDress,
-    fancyDressEntries,
+    fancyDressGetup,
     wantsLadduGopal,
     ladduGopalSize,
   ]);
@@ -238,27 +245,35 @@ function RegisterPage() {
     api.getStatsCount().then((d) => setTotalRegistrants(d.totalRegistrants)).catch(() => undefined);
   }, []);
 
-  useEffect(() => {
-    if (!hasIncomingCode || !incomingReferral.trim()) {
-      setIncomingValid(null);
-      return;
-    }
-    const code = incomingReferral.trim();
-    setIncomingChecking(true);
-    const timer = setTimeout(() => {
-      api
-        .validateReferral(code)
-        .then((r) => setIncomingValid(r.valid))
-        .catch(() => setIncomingValid(false))
-        .finally(() => setIncomingChecking(false));
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [hasIncomingCode, incomingReferral]);
+  // REFERRAL DISABLED
+  // useEffect(() => {
+  //   if (!hasIncomingCode || !incomingReferral.trim()) {
+  //     setIncomingValid(null);
+  //     return;
+  //   }
+  //   const code = incomingReferral.trim();
+  //   setIncomingChecking(true);
+  //   const timer = setTimeout(() => {
+  //     api
+  //       .validateReferral(code)
+  //       .then((r) => setIncomingValid(r.valid))
+  //       .catch(() => setIncomingValid(false))
+  //       .finally(() => setIncomingChecking(false));
+  //   }, 400);
+  //   return () => clearTimeout(timer);
+  // }, [hasIncomingCode, incomingReferral]);
 
-  const socialLine =
-    totalRegistrants !== null
-      ? `🎁 ${totalRegistrants.toLocaleString("en-IN")} Divine Gifts reserved so far`
-      : "🔥 Bhaktas are registering right now";
+  const setSeva = useCallback((kind, value) => {
+    setWantsVolunteer(kind === "volunteer" && value);
+    setWantsPanchamrit(kind === "panchamrit" && value);
+    setWantsFancyDress(kind === "fancy" && value);
+    setWantsLadduGopal(kind === "laddu" && value);
+    if (kind !== "fancy" || !value) {
+      setFancyDressGetup("");
+    }
+    if (kind !== "laddu" || !value) setLadduGopalSize("");
+    if (kind === "fancy" && value) setFamily([]);
+  }, []);
 
   const handleSubmit = useCallback(
     async (e) => {
@@ -276,48 +291,39 @@ function RegisterPage() {
         return;
       }
 
-      if (hasIncomingCode && incomingReferral.trim() && incomingValid === false) {
-        setError("Please enter a valid referral code, or choose No for “Were you referred?”");
-        return;
-      }
+      // REFERRAL DISABLED
+      // if (hasIncomingCode && incomingReferral.trim() && incomingValid === false) {
+      //   setError("Please enter a valid referral code, or choose No for “Were you referred?”");
+      //   return;
+      // }
 
       setTouched({ phone: true, dob: true });
       const pErr = phoneValidationMessage(phone);
-      const dErr = dobValidationMessage(dob);
+      const dErr = wantsFancyDress
+        ? dobValidationMessage(dob, { maxAgeYears: 12, label: "Child date of birth" })
+        : dobValidationMessage(dob);
       if (pErr || dErr) {
         setError(pErr || dErr);
         return;
       }
 
-      for (const m of family) {
-        if (!m.name.trim() && !m.dob && !m.phone?.trim()) continue;
-        if (m.name.trim() || m.dob || m.phone?.trim()) {
-          const memberDobErr = dobValidationMessage(m.dob, { label: `${m.name.trim() || "Family member"} DOB` });
+      if (!wantsFancyDress) {
+        for (const m of family) {
+          if (!m.name.trim() && !m.dob && !m.phone?.trim()) continue;
+          if (!m.name.trim()) {
+            setError("Please enter each family member's name.");
+            return;
+          }
+          const memberDobErr = dobValidationMessage(m.dob, {
+            label: `${m.name.trim()} DOB`,
+          });
           if (memberDobErr) {
             setError(memberDobErr);
             return;
           }
-          const memberPhoneErr = optionalPhoneValidationMessage(m.phone);
+          const memberPhoneErr = phoneValidationMessage(m.phone);
           if (memberPhoneErr) {
-            setError(`Family member phone: ${memberPhoneErr}`);
-            return;
-          }
-        }
-      }
-
-      if (wantsFancyDress) {
-        const validKids = fancyDressEntries.filter((e) => e.childName?.trim() && e.childDob);
-        if (validKids.length === 0) {
-          setError("Add at least one child for fancy dress, or choose No.");
-          return;
-        }
-        for (const e of validKids) {
-          const childDobErr = dobValidationMessage(e.childDob, {
-            label: `${e.childName.trim()} DOB`,
-            maxAgeYears: 18,
-          });
-          if (childDobErr) {
-            setError(childDobErr);
+            setError(`${m.name.trim()}'s phone: ${memberPhoneErr}`);
             return;
           }
         }
@@ -336,31 +342,26 @@ function RegisterPage() {
             phone: normalizePhone(phone),
             dob,
             city: city.trim(),
-            wantsReferral: wantsOwnReferral,
-            referredBy:
-              hasIncomingCode && incomingReferral.trim() ? incomingReferral.trim() : null,
+            // REFERRAL DISABLED
+            // wantsReferral: wantsOwnReferral,
+            // referredBy:
+            //   hasIncomingCode && incomingReferral.trim() ? incomingReferral.trim() : null,
             wantsVolunteer,
             wantsPanchamritAbhishek: wantsPanchamrit,
             wantsFancyDress,
-            fancyDressEntries: wantsFancyDress
-              ? fancyDressEntries
-                  .filter((e) => e.childName?.trim() && e.childDob)
-                  .map((e) => ({
-                    childName: e.childName.trim(),
-                    childDob: e.childDob,
-                    getupDetail: e.getupDetail?.trim() || "",
-                  }))
-              : [],
+            fancyDressGetup: wantsFancyDress ? fancyDressGetup.trim() : "",
             wantsLadduGopal,
             ladduGopalSize: wantsLadduGopal ? ladduGopalSize.trim() : null,
           },
-          members: family
-            .filter((m) => m.name.trim() && m.dob)
-            .map((m) => ({
-              fullName: m.name.trim(),
-              dob: m.dob,
-              phone: m.phone?.trim() ? normalizePhone(m.phone) : undefined,
-            })),
+          members: wantsFancyDress
+            ? []
+            : family
+                .filter((m) => m.name.trim() && m.dob && m.phone?.trim())
+                .map((m) => ({
+                  fullName: m.name.trim(),
+                  dob: m.dob,
+                  phone: normalizePhone(m.phone),
+                })),
         });
 
         localStorage.removeItem(FORM_STORAGE_KEY);
@@ -378,17 +379,17 @@ function RegisterPage() {
       city,
       dob,
       family,
-      fancyDressEntries,
+      fancyDressGetup,
       fullName,
-      hasIncomingCode,
-      incomingReferral,
-      incomingValid,
+      // hasIncomingCode,
+      // incomingReferral,
+      // incomingValid,
       ladduGopalSize,
       navigate,
       phone,
       wantsFancyDress,
       wantsLadduGopal,
-      wantsOwnReferral,
+      // wantsOwnReferral,
       wantsPanchamrit,
       wantsVolunteer,
     ],
@@ -438,7 +439,7 @@ function RegisterPage() {
 
                 <div className="grid gap-3 sm:grid-cols-2 sm:gap-5">
                   <Field
-                    label="Phone"
+                    label={wantsFancyDress ? "Parent contact" : "Phone"}
                     icon={<Phone className="h-4 w-4 sm:h-5 sm:w-5" />}
                     required
                     type="tel"
@@ -448,7 +449,13 @@ function RegisterPage() {
                     placeholder="9876543210"
                     value={phone}
                     error={phoneError}
-                    hint={!phoneError ? "10-digit Indian mobile" : undefined}
+                    hint={
+                      !phoneError
+                        ? wantsFancyDress
+                          ? "Parent's 10-digit mobile — used for this registration"
+                          : "10-digit Indian mobile"
+                        : undefined
+                    }
                     onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
                     onChange={(e) => {
                       const next = e.target.value.replace(/[^\d+\s-]/g, "").slice(0, 16);
@@ -465,6 +472,8 @@ function RegisterPage() {
                     <DobPicker
                       value={dob}
                       error={Boolean(dobError)}
+                      defaultAgeYears={wantsFancyDress ? 6 : 18}
+                      minYear={wantsFancyDress ? new Date().getFullYear() - 13 : undefined}
                       onChange={(iso) => {
                         setDob(iso);
                         setTouched((t) => ({ ...t, dob: true }));
@@ -482,7 +491,212 @@ function RegisterPage() {
                   onChange={(e) => setCity(e.target.value)}
                 />
 
-                {/* Referrals — compact two-row block */}
+                
+
+                {!wantsFancyDress && (
+                <div className="rounded-xl bg-primary/10 px-3 py-2.5 ring-1 ring-primary/25 sm:rounded-2xl sm:p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-display font-semibold sm:text-base">Add family member</h3>
+                      <p className="text-xs text-muted-foreground">Each needs their own phone, QR & Divine Gift</p>
+                    </div>
+                    <button
+                      type="button"
+                      suppressHydrationWarning
+                      onClick={() =>
+                        setFamily((f) => [
+                          ...f,
+                          { id: crypto.randomUUID(), name: "", dob: "", phone: "" },
+                        ])
+                      }
+                      className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1 rounded-full bg-gradient-gold px-3.5 text-sm font-display font-semibold text-primary-foreground shadow-warm sm:min-h-10 sm:gap-2 sm:px-5"
+                    >
+                      <Plus className="h-4 w-4" strokeWidth={3} /> Add
+                    </button>
+                  </div>
+
+                  <AnimatePresence initial={false}>
+                    {family.map((m, i) => (
+                      <motion.div
+                        key={m.id ?? i}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: 30 }}
+                        className="mt-2 rounded-xl bg-background p-2.5 ring-1 ring-primary/20 sm:mt-3 sm:p-3"
+                      >
+                        <div className="mb-2 flex items-center justify-between gap-2">
+                          <span className="text-xs font-display font-semibold text-secondary sm:text-sm">
+                            Member {i + 1}
+                          </span>
+                          <button
+                            type="button"
+                            aria-label="Remove member"
+                            onClick={() => setFamily((f) => f.filter((x) => x.id !== m.id))}
+                            className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-destructive/12 text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <div className="grid gap-2">
+                          <input
+                            placeholder="Name"
+                            suppressHydrationWarning
+                            value={m.name}
+                            onChange={(e) =>
+                              setFamily((f) =>
+                                f.map((x) => (x.id === m.id ? { ...x, name: e.target.value } : x)),
+                              )
+                            }
+                            className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary sm:min-h-10 sm:rounded-xl sm:px-3"
+                          />
+                          <DobPicker
+                            value={m.dob}
+                            onChange={(iso) =>
+                              setFamily((f) =>
+                                f.map((x) => (x.id === m.id ? { ...x, dob: iso } : x)),
+                              )
+                            }
+                          />
+                          <input
+                            placeholder="Phone (required)"
+                            type="tel"
+                            required
+                            inputMode="numeric"
+                            maxLength={13}
+                            suppressHydrationWarning
+                            value={m.phone ?? ""}
+                            onChange={(e) =>
+                              setFamily((f) =>
+                                f.map((x) =>
+                                  x.id === m.id
+                                    ? { ...x, phone: e.target.value.replace(/[^\d+\s-]/g, "").slice(0, 16) }
+                                    : x,
+                                ),
+                              )
+                            }
+                            className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary sm:min-h-10 sm:rounded-xl sm:px-3"
+                          />
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+                )}
+
+                {/* Optional seva & celebrations — one option only */}
+                <div className="rounded-xl bg-secondary/5 px-3 py-3 ring-1 ring-secondary/15 sm:rounded-2xl sm:p-4">
+                  <div className="mb-3">
+                    <h3 className="font-display text-sm font-semibold text-secondary sm:text-base">
+                      Seva & celebrations
+                    </h3>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      All free · pick one, or leave on No to skip
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <CompactToggleRow
+                      title="Become a Youth Volunteer?"
+                      value={wantsVolunteer}
+                      disabled={!wantsVolunteer && (wantsPanchamrit || wantsFancyDress || wantsLadduGopal)}
+                      onChange={(v) => setSeva("volunteer", v)}
+                    >
+                      <div className="rounded-xl bg-gradient-to-br from-[#EEF9F8] to-[#FFF8E7] px-3 py-2.5 text-xs leading-relaxed text-[#08495B] ring-1 ring-[#126B82]/20">
+                        <p className="font-display text-sm font-semibold text-[#126B82]">
+                          Be the hands behind Isckon ✨
+                        </p>
+                      </div>
+                    </CompactToggleRow>
+
+                    <div className="border-t border-secondary/10 pt-3">
+                      <CompactToggleRow
+                        title="Join Divya Panchamrit Abhishek?"
+                        value={wantsPanchamrit}
+                        disabled={!wantsPanchamrit && (wantsVolunteer || wantsFancyDress || wantsLadduGopal)}
+                        onChange={(v) => setSeva("panchamrit", v)}
+                      >
+                        <div className="rounded-xl bg-gradient-to-br from-[#FFF8E7] to-[#EEF9F8] px-3 py-2.5 text-xs leading-relaxed text-[#08495B] ring-1 ring-[#D89B24]/25">
+                          <p className="font-display  text-sm font-semibold text-[#D89B24]">
+                          Offer Divine Panchamrit with love to Nitai–Nimai🪷
+                          </p>
+                          
+                        </div>
+                      </CompactToggleRow>
+                    </div>
+
+                    <div className="border-t border-secondary/10 pt-3">
+                      <CompactToggleRow
+                        title="Fancy dress for kids?"
+                        value={wantsFancyDress}
+                        disabled={!wantsFancyDress && (wantsVolunteer || wantsPanchamrit || wantsLadduGopal)}
+                        onChange={(v) => setSeva("fancy", v)}
+                      >
+                        <p className="mb-2 text-xs text-muted-foreground">
+                          This form is for the child. The phone field above becomes parent contact.
+                          Dress related to Sanatan Dharma (Krishna, Radha, Ram, Sita, or any bhakta).
+                          One child per registration.
+                        </p>
+                        <label className="block">
+                          <span className="mb-1 block text-xs font-bold text-secondary">
+                            Getup / costume (optional)
+                          </span>
+                          <input
+                            type="text"
+                            value={fancyDressGetup}
+                            onChange={(e) => setFancyDressGetup(e.target.value)}
+                            placeholder="e.g. Little Krishna with flute"
+                            className="min-h-10 w-full rounded-xl border-2 border-primary/30 bg-background px-3 text-sm outline-none focus:border-primary"
+                          />
+                        </label>
+                      </CompactToggleRow>
+                    </div>
+
+                    <div className="border-t border-secondary/10 pt-3">
+                      <CompactToggleRow
+                        title="Laddu Gopal shringar?"
+                        value={wantsLadduGopal}
+                        disabled={!wantsLadduGopal && (wantsVolunteer || wantsPanchamrit || wantsFancyDress)}
+                        onChange={(v) => setSeva("laddu", v)}
+                      >
+                        <p className="mb-2 text-xs leading-snug text-muted-foreground">
+                          Bring your Laddu Gopal pre-shringar from home to Utsav Mandapam. Kindly
+                          arrive before 6:00 PM so he can join the joyous evening of bhaktas.
+                        </p>
+                        <label className="block">
+                          <span className="mb-1 block text-xs font-bold text-secondary">
+                            Size of Laddu Gopal
+                          </span>
+                          <input
+                            type="text"
+                            inputMode="text"
+                            required={wantsLadduGopal}
+                            value={ladduGopalSize}
+                            onChange={(e) => setLadduGopalSize(e.target.value)}
+                            placeholder="e.g. 6 inch — please bring before 6 PM"
+                            className="min-h-10 w-full rounded-xl border-2 border-primary/30 bg-background px-3 text-sm outline-none focus:border-primary"
+                          />
+                          <p className="mt-1 text-[11px] text-muted-foreground">
+                            Staging is at Utsav Mandapam. Entry for the competition closes after 6:00 PM.
+                          </p>
+                        </label>
+                      </CompactToggleRow>
+                    </div>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="rounded-2xl bg-destructive/10 p-4 text-sm font-semibold text-destructive ring-1 ring-destructive/30">
+                    {error}
+                    {duplicateNames.length > 0 && (
+                      <p className="mt-2 font-normal">
+                        <Link to="/find" className="underline">
+                          Find my registration
+                        </Link>
+                      </p>
+                    )}
+                  </div>
+                )}
+                {/* REFERRAL DISABLED
                 <div className="rounded-xl bg-primary/5 px-3 py-2.5 ring-1 ring-primary/15 sm:rounded-2xl sm:p-4">
                   <div className="space-y-2.5 sm:space-y-3">
                     <CompactToggleRow
@@ -558,303 +772,9 @@ function RegisterPage() {
                     </div>
                   </div>
                 </div>
-
-                {/* Family members */}
-                <div className="rounded-xl bg-primary/10 px-3 py-2.5 ring-1 ring-primary/25 sm:rounded-2xl sm:p-4">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="min-w-0">
-                      <h3 className="text-sm font-display font-semibold sm:text-base">Add family member</h3>
-                      <p className="text-xs text-muted-foreground">Each gets their own QR & Divine Gift</p>
-                    </div>
-                    <button
-                      type="button"
-                      suppressHydrationWarning
-                      onClick={() =>
-                        setFamily((f) => [
-                          ...f,
-                          { id: crypto.randomUUID(), name: "", dob: "", phone: "" },
-                        ])
-                      }
-                      className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1 rounded-full bg-gradient-gold px-3.5 text-sm font-display font-semibold text-primary-foreground shadow-warm sm:min-h-10 sm:gap-2 sm:px-5"
-                    >
-                      <Plus className="h-4 w-4" strokeWidth={3} /> Add
-                    </button>
-                  </div>
-
-                  <AnimatePresence initial={false}>
-                    {family.map((m, i) => (
-                      <motion.div
-                        key={m.id ?? i}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: 30 }}
-                        className="mt-2 rounded-xl bg-background p-2.5 ring-1 ring-primary/20 sm:mt-3 sm:p-3"
-                      >
-                        <div className="mb-2 flex items-center justify-between gap-2">
-                          <span className="text-xs font-display font-semibold text-secondary sm:text-sm">
-                            Member {i + 1}
-                          </span>
-                          <button
-                            type="button"
-                            aria-label="Remove member"
-                            onClick={() => setFamily((f) => f.filter((x) => x.id !== m.id))}
-                            className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-destructive/12 text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                        <div className="grid gap-2">
-                          <input
-                            placeholder="Name"
-                            suppressHydrationWarning
-                            value={m.name}
-                            onChange={(e) =>
-                              setFamily((f) =>
-                                f.map((x) => (x.id === m.id ? { ...x, name: e.target.value } : x)),
-                              )
-                            }
-                            className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary sm:min-h-10 sm:rounded-xl sm:px-3"
-                          />
-                          <DobPicker
-                            value={m.dob}
-                            onChange={(iso) =>
-                              setFamily((f) =>
-                                f.map((x) => (x.id === m.id ? { ...x, dob: iso } : x)),
-                              )
-                            }
-                          />
-                          <input
-                            placeholder="Phone (optional)"
-                            type="tel"
-                            inputMode="numeric"
-                            maxLength={13}
-                            suppressHydrationWarning
-                            value={m.phone ?? ""}
-                            onChange={(e) =>
-                              setFamily((f) =>
-                                f.map((x) =>
-                                  x.id === m.id
-                                    ? { ...x, phone: e.target.value.replace(/[^\d+\s-]/g, "").slice(0, 16) }
-                                    : x,
-                                ),
-                              )
-                            }
-                            className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary sm:min-h-10 sm:rounded-xl sm:px-3"
-                          />
-                        </div>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
-
-                {/* Optional seva & celebrations */}
-                <div className="rounded-xl bg-secondary/5 px-3 py-3 ring-1 ring-secondary/15 sm:rounded-2xl sm:p-4">
-                  <div className="mb-3">
-                    <h3 className="font-display text-sm font-semibold text-secondary sm:text-base">
-                      Seva & celebrations
-                    </h3>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      All free · leave on No to skip · ~1 minute
-                    </p>
-                  </div>
-
-                  <div className="space-y-3">
-                    <CompactToggleRow
-                      title="Become a Youth Volunteer?"
-                      value={wantsVolunteer}
-                      onChange={setWantsVolunteer}
-                    >
-                      <div className="rounded-xl bg-gradient-to-br from-[#EEF9F8] to-[#FFF8E7] px-3 py-2.5 text-xs leading-relaxed text-[#08495B] ring-1 ring-[#126B82]/20">
-                        <p className="font-display text-sm font-semibold text-[#126B82]">
-                          Be the hands behind Anandotsav ✨
-                        </p>
-                        <p className="mt-1.5">
-                          Join the youth seva team — decorate, welcome bhaktas, and help the utsav
-                          shine. You’ll prepare the sacred space with love and leave with memories
-                          that last.
-                        </p>
-                        <p className="mt-2 rounded-lg bg-white/70 px-2.5 py-2 font-medium text-[#08495B] ring-1 ring-[#D89B24]/25">
-                          Please reach the venue <strong>2 days prior</strong> and stay for
-                          Anandotsav preparation.
-                        </p>
-                      </div>
-                    </CompactToggleRow>
-
-                    <div className="border-t border-secondary/10 pt-3">
-                      <CompactToggleRow
-                        title="Join Divya Panchamrit Abhishek?"
-                        value={wantsPanchamrit}
-                        onChange={setWantsPanchamrit}
-                      >
-                        <div className="rounded-xl bg-gradient-to-br from-[#FFF8E7] to-[#EEF9F8] px-3 py-2.5 text-xs leading-relaxed text-[#08495B] ring-1 ring-[#D89B24]/25">
-                          <p className="font-display text-sm font-semibold text-[#D89B24]">
-                            Bathe Nitai–Nimai in divine nectar 🪷
-                          </p>
-                          <p className="mt-1.5">
-                            Register free for the Divya Panchamrit Abhishek of Nitai–Nimai — milk,
-                            curd, ghee, honey and sugar offered with devotion. A rare chance to
-                            serve the Lord and receive His blessings at Sri Gokul Gaushala.
-                          </p>
-                        </div>
-                      </CompactToggleRow>
-                    </div>
-
-                    <div className="border-t border-secondary/10 pt-3">
-                      <CompactToggleRow
-                        title="Fancy dress for kids?"
-                        value={wantsFancyDress}
-                        onChange={(v) => {
-                          setWantsFancyDress(v);
-                          if (v && fancyDressEntries.length === 0) {
-                            setFancyDressEntries([
-                              { id: crypto.randomUUID(), childName: "", childDob: "", getupDetail: "" },
-                            ]);
-                          }
-                          if (!v) setFancyDressEntries([]);
-                        }}
-                      >
-                        <p className="mb-2 text-xs text-muted-foreground">
-                          Each child also gets a general entry pass and Divine Gift — no need to add
-                          them again as family members. Dress related to Sanatan Dharma (Krishna,
-                          Radha, Ram, Sita, or any bhakta).
-                        </p>
-                        <div className="space-y-2">
-                          {fancyDressEntries.map((e, i) => (
-                            <div
-                              key={e.id ?? i}
-                              className="rounded-xl bg-background p-3 ring-1 ring-primary/20 sm:p-3.5"
-                            >
-                              <div className="mb-2 flex items-center justify-between">
-                                <span className="text-xs font-semibold text-secondary">
-                                  Child {i + 1}
-                                </span>
-                                {fancyDressEntries.length > 1 && (
-                                  <button
-                                    type="button"
-                                    aria-label="Remove child"
-                                    onClick={() =>
-                                      setFancyDressEntries((list) =>
-                                        list.filter((x) => x.id !== e.id),
-                                      )
-                                    }
-                                    className="grid h-7 w-7 place-items-center rounded-full bg-destructive/12 text-destructive"
-                                  >
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                  </button>
-                                )}
-                              </div>
-                              <div className="grid gap-2">
-                                <input
-                                  placeholder="Child name"
-                                  required={wantsFancyDress}
-                                  value={e.childName}
-                                  onChange={(ev) =>
-                                    setFancyDressEntries((list) =>
-                                      list.map((x) =>
-                                        x.id === e.id ? { ...x, childName: ev.target.value } : x,
-                                      ),
-                                    )
-                                  }
-                                  className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary"
-                                />
-                                <DobPicker
-                                  value={e.childDob}
-                                  defaultAgeYears={6}
-                                  minYear={new Date().getFullYear() - 18}
-                                  onChange={(iso) =>
-                                    setFancyDressEntries((list) =>
-                                      list.map((x) =>
-                                        x.id === e.id ? { ...x, childDob: iso } : x,
-                                      ),
-                                    )
-                                  }
-                                />
-                                <input
-                                  placeholder="Getup / costume (optional)"
-                                  value={e.getupDetail}
-                                  onChange={(ev) =>
-                                    setFancyDressEntries((list) =>
-                                      list.map((x) =>
-                                        x.id === e.id ? { ...x, getupDetail: ev.target.value } : x,
-                                      ),
-                                    )
-                                  }
-                                  className="min-h-9 rounded-lg border-2 border-primary/25 bg-card px-2.5 text-sm outline-none focus:border-primary"
-                                />
-                              </div>
-                            </div>
-                          ))}
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setFancyDressEntries((list) => [
-                                ...list,
-                                {
-                                  id: crypto.randomUUID(),
-                                  childName: "",
-                                  childDob: "",
-                                  getupDetail: "",
-                                },
-                              ])
-                            }
-                            className="inline-flex items-center gap-1 text-xs font-bold text-secondary"
-                          >
-                            <Plus className="h-3.5 w-3.5" /> Add another child
-                          </button>
-                        </div>
-                      </CompactToggleRow>
-                    </div>
-
-                    <div className="border-t border-secondary/10 pt-3">
-                      <CompactToggleRow
-                        title="Laddu Gopal shringar?"
-                        value={wantsLadduGopal}
-                        onChange={(v) => {
-                          setWantsLadduGopal(v);
-                          if (!v) setLadduGopalSize("");
-                        }}
-                      >
-                        <p className="mb-2 text-xs leading-snug text-muted-foreground">
-                          Bring your Laddu Gopal pre-shringar from home to Utsav Mandapam. Kindly
-                          arrive before 6:00 PM so he can join the joyous evening of bhaktas.
-                        </p>
-                        <label className="block">
-                          <span className="mb-1 block text-xs font-bold text-secondary">
-                            Size of Laddu Gopal
-                          </span>
-                          <input
-                            type="text"
-                            inputMode="text"
-                            required={wantsLadduGopal}
-                            value={ladduGopalSize}
-                            onChange={(e) => setLadduGopalSize(e.target.value)}
-                            placeholder="e.g. 6 inch — please bring before 6 PM"
-                            className="min-h-10 w-full rounded-xl border-2 border-primary/30 bg-background px-3 text-sm outline-none focus:border-primary"
-                          />
-                          <p className="mt-1 text-[11px] text-muted-foreground">
-                            Staging is at Utsav Mandapam. Entry for the competition closes after 6:00 PM.
-                          </p>
-                        </label>
-                      </CompactToggleRow>
-                    </div>
-                  </div>
-                </div>
-
-                {error && (
-                  <div className="rounded-2xl bg-destructive/10 p-4 text-sm font-semibold text-destructive ring-1 ring-destructive/30">
-                    {error}
-                    {duplicateNames.length > 0 && (
-                      <p className="mt-2 font-normal">
-                        <Link to="/find" className="underline">
-                          Find my registration
-                        </Link>
-                      </p>
-                    )}
-                  </div>
-                )}
+                */}
 
                 <div className="border-t border-primary/15 pt-4 text-center sm:pt-6">
-                  <p className="text-xs font-semibold text-secondary sm:text-sm">{socialLine}</p>
                   <div className="mt-3 sm:mt-4">
                     <GoldButton
                       glow
@@ -879,6 +799,7 @@ function RegisterPage() {
                     </Link>
                   </p>
                 </div>
+                
               </div>
             </div>
           </motion.form>
