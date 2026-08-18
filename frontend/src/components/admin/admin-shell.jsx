@@ -14,7 +14,6 @@ import {
   Sparkles,
   Baby,
   Gift,
-  Gift,
   // Trophy,
   Shield,
 } from "lucide-react";
