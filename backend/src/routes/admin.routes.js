@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { validate } from '../middleware/validate.middleware.js';
-import { adminLoginLimiter } from '../middleware/rateLimiter.middleware.js';
+import { adminLoginLimiter, whatsappPairLimiter, whatsappAdminLimiter } from '../middleware/rateLimiter.middleware.js';
 import { adminAuth, requirePage, requireSuperAdmin } from '../middleware/adminAuth.middleware.js';
 import { adminLoginSchema, createAdminSchema, updateAdminSchema } from '../validators/adminUser.schema.js';
 import { registrationSchema } from '../validators/registration.schema.js';
@@ -23,16 +23,46 @@ import {
   exportLadduGopal,
   listFancyDress,
   exportFancyDress,
-  // REFERRAL DISABLED
-  // adminLeaderboard,
-  // exportAdminLeaderboard,
 } from '../controllers/admin.controller.js';
+import {
+  whatsappStatus,
+  whatsappPairStart,
+  whatsappPairQr,
+  whatsappPairingCode,
+  whatsappPairCancel,
+  whatsappChangeNumber,
+  whatsappReconnect,
+  whatsappDisconnect,
+  whatsappAckAlert,
+  whatsappListMessages,
+  whatsappRetryMessage,
+  whatsappRetryRegistration,
+} from '../controllers/whatsapp.controller.js';
 
 const router = Router();
 
 router.post('/login', adminLoginLimiter, validate(adminLoginSchema), asyncHandler(adminLogin));
 
 router.get('/me', adminAuth, asyncHandler(adminMe));
+
+router.get('/whatsapp/status', adminAuth, requireSuperAdmin, whatsappAdminLimiter, asyncHandler(whatsappStatus));
+router.post('/whatsapp/pair', adminAuth, requireSuperAdmin, whatsappPairLimiter, asyncHandler(whatsappPairStart));
+router.get('/whatsapp/pair/qr', adminAuth, requireSuperAdmin, whatsappPairLimiter, asyncHandler(whatsappPairQr));
+router.post('/whatsapp/pairing-code', adminAuth, requireSuperAdmin, whatsappPairLimiter, asyncHandler(whatsappPairingCode));
+router.post('/whatsapp/pair/cancel', adminAuth, requireSuperAdmin, whatsappPairLimiter, asyncHandler(whatsappPairCancel));
+router.post('/whatsapp/change-number', adminAuth, requireSuperAdmin, whatsappPairLimiter, asyncHandler(whatsappChangeNumber));
+router.post('/whatsapp/reconnect', adminAuth, requireSuperAdmin, whatsappAdminLimiter, asyncHandler(whatsappReconnect));
+router.post('/whatsapp/disconnect', adminAuth, requireSuperAdmin, whatsappAdminLimiter, asyncHandler(whatsappDisconnect));
+router.post('/whatsapp/ack-alert', adminAuth, requireSuperAdmin, whatsappAdminLimiter, asyncHandler(whatsappAckAlert));
+router.get('/whatsapp/messages', adminAuth, requireSuperAdmin, whatsappAdminLimiter, asyncHandler(whatsappListMessages));
+router.post('/whatsapp/messages/:id/retry', adminAuth, requireSuperAdmin, whatsappAdminLimiter, asyncHandler(whatsappRetryMessage));
+router.post(
+  '/whatsapp/registrations/:id/retry',
+  adminAuth,
+  requireSuperAdmin,
+  whatsappAdminLimiter,
+  asyncHandler(whatsappRetryRegistration),
+);
 
 router.get('/users', adminAuth, requireSuperAdmin, asyncHandler(listAdmins));
 router.post(

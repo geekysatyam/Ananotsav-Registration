@@ -28,6 +28,7 @@ import { Route as AdminRegisterRouteImport } from './../routes/admin/register'
 import { Route as AdminRegistrationsRouteImport } from './../routes/admin/registrations'
 import { Route as AdminScannerRouteImport } from './../routes/admin/scanner'
 import { Route as AdminVolunteersRouteImport } from './../routes/admin/volunteers'
+import { Route as AdminWhatsappRouteImport } from './../routes/admin/whatsapp'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -124,6 +125,11 @@ const AdminVolunteersRoute = AdminVolunteersRouteImport.update({
   path: '/volunteers',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminWhatsappRoute = AdminWhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/admin/registrations': typeof AdminRegistrationsRoute
   '/admin/scanner': typeof AdminScannerRoute
   '/admin/volunteers': typeof AdminVolunteersRoute
+  '/admin/whatsapp': typeof AdminWhatsappRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/admin/registrations': typeof AdminRegistrationsRoute
   '/admin/scanner': typeof AdminScannerRoute
   '/admin/volunteers': typeof AdminVolunteersRoute
+  '/admin/whatsapp': typeof AdminWhatsappRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/admin/registrations': typeof AdminRegistrationsRoute
   '/admin/scanner': typeof AdminScannerRoute
   '/admin/volunteers': typeof AdminVolunteersRoute
+  '/admin/whatsapp': typeof AdminWhatsappRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/admin/registrations'
     | '/admin/scanner'
     | '/admin/volunteers'
+    | '/admin/whatsapp'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/admin/registrations'
     | '/admin/scanner'
     | '/admin/volunteers'
+    | '/admin/whatsapp'
     | '/admin'
   id:
     | '__root__'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/admin/registrations'
     | '/admin/scanner'
     | '/admin/volunteers'
+    | '/admin/whatsapp'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -400,6 +412,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminVolunteersRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/whatsapp': {
+      id: '/admin/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/admin/whatsapp'
+      preLoaderRoute: typeof AdminWhatsappRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
@@ -413,6 +432,7 @@ interface AdminRouteRouteChildren {
   AdminRegistrationsRoute: typeof AdminRegistrationsRoute
   AdminScannerRoute: typeof AdminScannerRoute
   AdminVolunteersRoute: typeof AdminVolunteersRoute
+  AdminWhatsappRoute: typeof AdminWhatsappRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -426,6 +446,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminRegistrationsRoute: AdminRegistrationsRoute,
   AdminScannerRoute: AdminScannerRoute,
   AdminVolunteersRoute: AdminVolunteersRoute,
+  AdminWhatsappRoute: AdminWhatsappRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 

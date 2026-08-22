@@ -1,1 +1,14 @@
+# Dependencies / build
+node_modules/
+dist/
+.DS_Store
+*.log
+.env
+.env.local
+
+# Generated
 routeTree.gen.js
+
+# WhatsApp Baileys session (never commit)
+backend/data/
+**/whatsapp-session/

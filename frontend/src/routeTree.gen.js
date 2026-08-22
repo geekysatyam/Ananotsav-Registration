@@ -28,6 +28,7 @@ import { Route as AdminFancyDressRouteImport } from './routes/admin/fancy-dress'
 import { Route as AdminLadduGopalRouteImport } from './routes/admin/laddu-gopal';
 import { Route as AdminLeaderboardRouteImport } from './routes/admin/leaderboard';
 import { Route as AdminAdminsRouteImport } from './routes/admin/admins';
+import { Route as AdminWhatsappRouteImport } from './routes/admin/whatsapp';
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -124,6 +125,11 @@ const AdminAdminsRoute = AdminAdminsRouteImport.update({
   path: '/admins',
   getParentRoute: () => AdminRouteRoute,
 });
+const AdminWhatsappRoute = AdminWhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => AdminRouteRoute,
+});
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren({
   AdminIndexRoute: AdminIndexRoute,
@@ -136,6 +142,7 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren({
   AdminLadduGopalRoute: AdminLadduGopalRoute,
   AdminLeaderboardRoute: AdminLeaderboardRoute,
   AdminAdminsRoute: AdminAdminsRoute,
+  AdminWhatsappRoute: AdminWhatsappRoute,
 });
 
 const rootRouteChildren = {

@@ -18,6 +18,61 @@ export const Route = createFileRoute("/admin/registrations")({
   component: AdminRegistrationsPage,
 });
 
+function WhatsAppStatusBadge({ whatsapp, registrationId, registrationSource, onRetry }) {
+  if (registrationSource === "desk-manual") {
+    return (
+      <span className="text-xs text-muted-foreground" title="Desk register — no WhatsApp QR">
+        Desk
+      </span>
+    );
+  }
+  if (!whatsapp?.status) {
+    return <span className="text-xs text-muted-foreground">—</span>;
+  }
+  if (whatsapp.status === "sent") {
+    return (
+      <span className="inline-flex flex-col gap-0.5">
+        <span className="inline-flex rounded-full bg-secondary/20 px-2.5 py-0.5 text-xs font-bold text-secondary">
+          ✓ Sent
+        </span>
+        {whatsapp.sentAt ? (
+          <span className="text-[10px] text-muted-foreground">
+            {new Date(whatsapp.sentAt).toLocaleString("en-IN")}
+          </span>
+        ) : null}
+      </span>
+    );
+  }
+  if (whatsapp.status === "failed") {
+    return (
+      <span className="inline-flex flex-col gap-0.5">
+        <span className="inline-flex rounded-full bg-destructive/15 px-2.5 py-0.5 text-xs font-bold text-destructive">
+          ✕ Failed
+        </span>
+        {whatsapp.lastError ? (
+          <span className="max-w-[10rem] truncate text-[10px] text-muted-foreground" title={whatsapp.lastError}>
+            {whatsapp.lastError}
+          </span>
+        ) : null}
+        {registrationId && onRetry ? (
+          <button
+            type="button"
+            className="text-left text-[10px] font-bold text-secondary"
+            onClick={() => onRetry(registrationId)}
+          >
+            Retry
+          </button>
+        ) : null}
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-bold text-secondary">
+      ⏳ Pending
+    </span>
+  );
+}
+
 function AdminRegistrationsPage() {
   const token = adminTokenStore.get(ADMIN_TOKEN_KEY);
   const [rows, setRows] = useState([]);
@@ -134,18 +189,19 @@ function AdminRegistrationsPage() {
               <TableHead>DOB</TableHead>
               <TableHead>City</TableHead>
               <TableHead>Attended</TableHead>
+              <TableHead>WhatsApp</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading && rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
                   <Loader2 className="mx-auto h-6 w-6 animate-spin" />
                 </TableCell>
               </TableRow>
             ) : rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
                   No registrations found
                 </TableCell>
               </TableRow>
@@ -166,6 +222,23 @@ function AdminRegistrationsPage() {
                     >
                       {row.checkedIn ? "Yes" : "No"}
                     </span>
+                  </TableCell>
+                  <TableCell>
+                    <WhatsAppStatusBadge
+                      whatsapp={row.whatsapp}
+                      registrationId={row.id}
+                      registrationSource={row.registrationSource}
+                      onRetry={(id) => {
+                        void (async () => {
+                          try {
+                            await api.whatsappRetryRegistration(token, id);
+                            await load();
+                          } catch {
+                            setError("WhatsApp retry failed");
+                          }
+                        })();
+                      }}
+                    />
                   </TableCell>
                 </TableRow>
               ))

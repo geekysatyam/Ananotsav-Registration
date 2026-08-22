@@ -18,9 +18,16 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ScannerRouteImport } from './routes/scanner'
 import { Route as SuccessRouteImport } from './routes/success'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminAbhishekRouteImport } from './routes/admin/abhishek'
+import { Route as AdminAdminsRouteImport } from './routes/admin/admins'
+import { Route as AdminFancyDressRouteImport } from './routes/admin/fancy-dress'
+import { Route as AdminLadduGopalRouteImport } from './routes/admin/laddu-gopal'
+import { Route as AdminLeaderboardRouteImport } from './routes/admin/leaderboard'
 import { Route as AdminRegisterRouteImport } from './routes/admin/register'
 import { Route as AdminRegistrationsRouteImport } from './routes/admin/registrations'
 import { Route as AdminScannerRouteImport } from './routes/admin/scanner'
+import { Route as AdminVolunteersRouteImport } from './routes/admin/volunteers'
+import { Route as AdminWhatsappRouteImport } from './routes/admin/whatsapp'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -67,6 +74,31 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminAbhishekRoute = AdminAbhishekRouteImport.update({
+  id: '/abhishek',
+  path: '/abhishek',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminAdminsRoute = AdminAdminsRouteImport.update({
+  id: '/admins',
+  path: '/admins',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminFancyDressRoute = AdminFancyDressRouteImport.update({
+  id: '/fancy-dress',
+  path: '/fancy-dress',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLadduGopalRoute = AdminLadduGopalRouteImport.update({
+  id: '/laddu-gopal',
+  path: '/laddu-gopal',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLeaderboardRoute = AdminLeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminRegisterRoute = AdminRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -82,6 +114,16 @@ const AdminScannerRoute = AdminScannerRouteImport.update({
   path: '/scanner',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminVolunteersRoute = AdminVolunteersRouteImport.update({
+  id: '/volunteers',
+  path: '/volunteers',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminWhatsappRoute = AdminWhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -92,9 +134,16 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/scanner': typeof ScannerRoute
   '/success': typeof SuccessRoute
+  '/admin/abhishek': typeof AdminAbhishekRoute
+  '/admin/admins': typeof AdminAdminsRoute
+  '/admin/fancy-dress': typeof AdminFancyDressRoute
+  '/admin/laddu-gopal': typeof AdminLadduGopalRoute
+  '/admin/leaderboard': typeof AdminLeaderboardRoute
   '/admin/register': typeof AdminRegisterRoute
   '/admin/registrations': typeof AdminRegistrationsRoute
   '/admin/scanner': typeof AdminScannerRoute
+  '/admin/volunteers': typeof AdminVolunteersRoute
+  '/admin/whatsapp': typeof AdminWhatsappRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -105,9 +154,16 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/scanner': typeof ScannerRoute
   '/success': typeof SuccessRoute
+  '/admin/abhishek': typeof AdminAbhishekRoute
+  '/admin/admins': typeof AdminAdminsRoute
+  '/admin/fancy-dress': typeof AdminFancyDressRoute
+  '/admin/laddu-gopal': typeof AdminLadduGopalRoute
+  '/admin/leaderboard': typeof AdminLeaderboardRoute
   '/admin/register': typeof AdminRegisterRoute
   '/admin/registrations': typeof AdminRegistrationsRoute
   '/admin/scanner': typeof AdminScannerRoute
+  '/admin/volunteers': typeof AdminVolunteersRoute
+  '/admin/whatsapp': typeof AdminWhatsappRoute
   '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
@@ -120,9 +176,16 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/scanner': typeof ScannerRoute
   '/success': typeof SuccessRoute
+  '/admin/abhishek': typeof AdminAbhishekRoute
+  '/admin/admins': typeof AdminAdminsRoute
+  '/admin/fancy-dress': typeof AdminFancyDressRoute
+  '/admin/laddu-gopal': typeof AdminLadduGopalRoute
+  '/admin/leaderboard': typeof AdminLeaderboardRoute
   '/admin/register': typeof AdminRegisterRoute
   '/admin/registrations': typeof AdminRegistrationsRoute
   '/admin/scanner': typeof AdminScannerRoute
+  '/admin/volunteers': typeof AdminVolunteersRoute
+  '/admin/whatsapp': typeof AdminWhatsappRoute
   '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -136,9 +199,16 @@ export interface FileRouteTypes {
     | '/register'
     | '/scanner'
     | '/success'
+    | '/admin/abhishek'
+    | '/admin/admins'
+    | '/admin/fancy-dress'
+    | '/admin/laddu-gopal'
+    | '/admin/leaderboard'
     | '/admin/register'
     | '/admin/registrations'
     | '/admin/scanner'
+    | '/admin/volunteers'
+    | '/admin/whatsapp'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -149,9 +219,16 @@ export interface FileRouteTypes {
     | '/register'
     | '/scanner'
     | '/success'
+    | '/admin/abhishek'
+    | '/admin/admins'
+    | '/admin/fancy-dress'
+    | '/admin/laddu-gopal'
+    | '/admin/leaderboard'
     | '/admin/register'
     | '/admin/registrations'
     | '/admin/scanner'
+    | '/admin/volunteers'
+    | '/admin/whatsapp'
     | '/admin'
   id:
     | '__root__'
@@ -163,9 +240,16 @@ export interface FileRouteTypes {
     | '/register'
     | '/scanner'
     | '/success'
+    | '/admin/abhishek'
+    | '/admin/admins'
+    | '/admin/fancy-dress'
+    | '/admin/laddu-gopal'
+    | '/admin/leaderboard'
     | '/admin/register'
     | '/admin/registrations'
     | '/admin/scanner'
+    | '/admin/volunteers'
+    | '/admin/whatsapp'
     | '/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -245,6 +329,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/abhishek': {
+      id: '/admin/abhishek'
+      path: '/abhishek'
+      fullPath: '/admin/abhishek'
+      preLoaderRoute: typeof AdminAbhishekRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/admins': {
+      id: '/admin/admins'
+      path: '/admins'
+      fullPath: '/admin/admins'
+      preLoaderRoute: typeof AdminAdminsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/fancy-dress': {
+      id: '/admin/fancy-dress'
+      path: '/fancy-dress'
+      fullPath: '/admin/fancy-dress'
+      preLoaderRoute: typeof AdminFancyDressRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/laddu-gopal': {
+      id: '/admin/laddu-gopal'
+      path: '/laddu-gopal'
+      fullPath: '/admin/laddu-gopal'
+      preLoaderRoute: typeof AdminLadduGopalRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/leaderboard': {
+      id: '/admin/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/admin/leaderboard'
+      preLoaderRoute: typeof AdminLeaderboardRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/register': {
       id: '/admin/register'
       path: '/register'
@@ -266,20 +385,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminScannerRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/volunteers': {
+      id: '/admin/volunteers'
+      path: '/volunteers'
+      fullPath: '/admin/volunteers'
+      preLoaderRoute: typeof AdminVolunteersRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/whatsapp': {
+      id: '/admin/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/admin/whatsapp'
+      preLoaderRoute: typeof AdminWhatsappRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
 interface AdminRouteRouteChildren {
+  AdminAbhishekRoute: typeof AdminAbhishekRoute
+  AdminAdminsRoute: typeof AdminAdminsRoute
+  AdminFancyDressRoute: typeof AdminFancyDressRoute
+  AdminLadduGopalRoute: typeof AdminLadduGopalRoute
+  AdminLeaderboardRoute: typeof AdminLeaderboardRoute
   AdminRegisterRoute: typeof AdminRegisterRoute
   AdminRegistrationsRoute: typeof AdminRegistrationsRoute
   AdminScannerRoute: typeof AdminScannerRoute
+  AdminVolunteersRoute: typeof AdminVolunteersRoute
+  AdminWhatsappRoute: typeof AdminWhatsappRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminAbhishekRoute: AdminAbhishekRoute,
+  AdminAdminsRoute: AdminAdminsRoute,
+  AdminFancyDressRoute: AdminFancyDressRoute,
+  AdminLadduGopalRoute: AdminLadduGopalRoute,
+  AdminLeaderboardRoute: AdminLeaderboardRoute,
   AdminRegisterRoute: AdminRegisterRoute,
   AdminRegistrationsRoute: AdminRegistrationsRoute,
   AdminScannerRoute: AdminScannerRoute,
+  AdminVolunteersRoute: AdminVolunteersRoute,
+  AdminWhatsappRoute: AdminWhatsappRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 

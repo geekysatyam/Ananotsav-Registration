@@ -48,6 +48,16 @@ const registrationSchema = new mongoose.Schema({
   wantsLadduGopal: { type: Boolean, default: false },
   ladduGopalSize: { type: String, trim: true, default: null },
 
+  /** Lightweight WhatsApp delivery snapshot (primary registrant). Detail lives in WhatsAppMessage. */
+  whatsapp: {
+    status: {
+      type: String,
+      enum: ['pending', 'sent', 'failed'],
+    },
+    sentAt: { type: Date, default: null },
+    lastError: { type: String, default: null },
+  },
+
   createdAt: { type: Date, default: Date.now },
 });
 

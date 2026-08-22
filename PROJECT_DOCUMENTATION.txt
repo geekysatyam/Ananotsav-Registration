@@ -684,10 +684,14 @@ Used on /scanner and /admin/scanner. Not in public nav.
   · Rate limits are per IP. Behind a proxy, TRUST_PROXY / production
     NODE_ENV must be set or every client may share one bucket.
 
+  · WhatsApp (optional Baileys): see backend/WHATSAPP.md. Public register
+    queues a non-blocking Entry QR image; desk register does not. Disable
+    with WHATSAPP_ENABLED=false. Pair with npm run whatsapp:login.
+
 
 ================================================================================
   END OF DOCUMENT
-  Last updated: 18 August 2026
+  Last updated: 23 August 2026
   Project: Anandotsav 2026 Registration Platform
   Organisation: Sri Gokul Gaushala, Amritsar
 ================================================================================

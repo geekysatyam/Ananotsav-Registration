@@ -153,6 +153,13 @@ function shapeAdminRow(doc) {
     entryCode: doc.entryCode,
     registrationSource: doc.registrationSource,
     createdAt: doc.createdAt,
+    whatsapp: doc.whatsapp?.status
+      ? {
+          status: doc.whatsapp.status,
+          sentAt: doc.whatsapp.sentAt ?? null,
+          lastError: doc.whatsapp.lastError ?? null,
+        }
+      : null,
   };
 }
 
@@ -503,6 +510,7 @@ export async function exportAdminLeaderboard(req, res) {
 export async function deskRegister(req, res) {
   try {
     const { primary, members } = req.validated;
+    // Intentionally no WhatsApp enqueue — desk guests get QR on site
     const { familyGroupId, registrations } = await createRegistrationBatch({
       primary,
       members,
