@@ -332,7 +332,7 @@ function fancyDressNormalizeStage() {
               getupDetail: {
                 $ifNull: ['$fancyDressGetup', { $arrayElemAt: ['$fancyDressEntries.getupDetail', 0] }],
               },
-              parentName: '',
+              parentName: { $ifNull: ['$fancyDressParentName', ''] },
               parentPhone: '$fancyDressParentPhone',
             },
           ],
@@ -344,7 +344,7 @@ function fancyDressNormalizeStage() {
                 childName: '$$e.childName',
                 childDob: '$$e.childDob',
                 getupDetail: '$$e.getupDetail',
-                parentName: '$fullName',
+                parentName: { $ifNull: ['$fancyDressParentName', '$fullName'] },
                 parentPhone: '$phone',
               },
             },

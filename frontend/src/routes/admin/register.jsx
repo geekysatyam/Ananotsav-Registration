@@ -24,6 +24,8 @@ import { DobPicker } from "@/components/dob-picker";
 import {
   phoneValidationMessage,
   dobValidationMessage,
+  FANCY_DRESS_MAX_AGE_YEARS,
+  dobMinSelectableDateForMaxAge,
 } from "@/lib/validators";
 
 export const Route = createFileRoute("/admin/register")({
@@ -75,6 +77,7 @@ function AdminRegisterPage() {
   const [wantsPanchamrit, setWantsPanchamrit] = useState(false);
   const [wantsFancyDress, setWantsFancyDress] = useState(false);
   const [fancyDressGetup, setFancyDressGetup] = useState("");
+  const [fancyDressParentName, setFancyDressParentName] = useState("");
   const [wantsLadduGopal, setWantsLadduGopal] = useState(false);
   const [ladduGopalSize, setLadduGopalSize] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -106,9 +109,20 @@ function AdminRegisterPage() {
     setWantsLadduGopal(kind === "laddu" && value);
     if (kind !== "fancy" || !value) {
       setFancyDressGetup("");
+      setFancyDressParentName("");
     }
     if (kind !== "laddu" || !value) setLadduGopalSize("");
-    if (kind === "fancy" && value) setFamily([]);
+    if (kind === "fancy" && value) {
+      setFamily([]);
+      setDob((prev) => {
+        if (!prev) return prev;
+        const err = dobValidationMessage(prev, {
+          maxAgeYears: FANCY_DRESS_MAX_AGE_YEARS,
+          label: "Child date of birth",
+        });
+        return err ? "" : prev;
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -118,7 +132,10 @@ function AdminRegisterPage() {
 
     const pErr = phoneValidationMessage(phone);
     const dErr = wantsFancyDress
-      ? dobValidationMessage(dob, { maxAgeYears: 12, label: "Child date of birth" })
+      ? dobValidationMessage(dob, {
+          maxAgeYears: FANCY_DRESS_MAX_AGE_YEARS,
+          label: "Child date of birth",
+        })
       : dobValidationMessage(dob);
     if (pErr || dErr) {
       setError(pErr || dErr);
@@ -175,6 +192,7 @@ function AdminRegisterPage() {
           wantsVolunteer,
           wantsPanchamritAbhishek: wantsPanchamrit,
           wantsFancyDress,
+          fancyDressParentName: wantsFancyDress ? fancyDressParentName.trim() : "",
           fancyDressGetup: wantsFancyDress ? fancyDressGetup.trim() : "",
           wantsLadduGopal,
           ladduGopalSize: wantsLadduGopal ? ladduGopalSize.trim() : null,
@@ -268,7 +286,16 @@ function AdminRegisterPage() {
               <Cake className="h-4 w-4" />
               Date of Birth
             </span>
-            <DobPicker value={dob} onChange={setDob} />
+            <DobPicker
+              value={dob}
+              onChange={setDob}
+              defaultAgeYears={wantsFancyDress ? 6 : 18}
+              minDate={
+                wantsFancyDress
+                  ? dobMinSelectableDateForMaxAge(FANCY_DRESS_MAX_AGE_YEARS)
+                  : null
+              }
+            />
           </label>
         </div>
         <Field
@@ -387,10 +414,16 @@ function AdminRegisterPage() {
               per registration.
             </p>
             <input
+              placeholder="Parent name (optional)"
+              value={fancyDressParentName}
+              onChange={(e) => setFancyDressParentName(e.target.value)}
+              className="mb-2 min-h-9 w-full rounded-lg border-2 border-primary/25 px-2 text-sm outline-none focus:border-primary"
+            />
+            <input
               placeholder="Getup / costume (optional)"
               value={fancyDressGetup}
               onChange={(e) => setFancyDressGetup(e.target.value)}
-              className="min-h-9 rounded-lg border-2 border-primary/25 px-2 text-sm outline-none focus:border-primary"
+              className="min-h-9 w-full rounded-lg border-2 border-primary/25 px-2 text-sm outline-none focus:border-primary"
             />
           </DeskToggle>
           <DeskToggle

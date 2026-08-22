@@ -43,6 +43,7 @@ const registrationSchema = new mongoose.Schema({
   wantsFancyDress: { type: Boolean, default: false },
   fancyDressEntries: { type: [fancyDressEntrySchema], default: [] },
   fancyDressParentPhone: { type: String, trim: true, default: null },
+  fancyDressParentName: { type: String, trim: true, default: '' },
   fancyDressGetup: { type: String, trim: true, default: '' },
   wantsLadduGopal: { type: Boolean, default: false },
   ladduGopalSize: { type: String, trim: true, default: null },

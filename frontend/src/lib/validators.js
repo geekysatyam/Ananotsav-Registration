@@ -37,6 +37,32 @@ export function optionalPhoneValidationMessage(value) {
 }
 
 const DOB_MIN_YEAR = 1920;
+/** Fancy dress: children 12 years and under */
+export const FANCY_DRESS_MAX_AGE_YEARS = 12;
+
+function startOfToday() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+/** Latest selectable DOB — yesterday (today / future not allowed) */
+export function dobMaxSelectableDate() {
+  const d = startOfToday();
+  d.setDate(d.getDate() - 1);
+  return d;
+}
+
+/**
+ * Earliest DOB still ≤ maxAgeYears old today
+ * (day after “exactly maxAgeYears+1 years ago”).
+ */
+export function dobMinSelectableDateForMaxAge(maxAgeYears) {
+  const d = startOfToday();
+  d.setFullYear(d.getFullYear() - (maxAgeYears + 1));
+  d.setDate(d.getDate() + 1);
+  return d;
+}
 
 /** Parse YYYY-MM-DD as local date parts */
 export function parseIsoDate(iso) {
@@ -55,6 +81,17 @@ export function toIsoDate(date) {
   return `${y}-${m}-${d}`;
 }
 
+/** Calendar age in full years as of today */
+export function ageYearsFromDob(isoOrDate) {
+  const date = isoOrDate instanceof Date ? isoOrDate : parseIsoDate(isoOrDate);
+  if (!date) return null;
+  const today = startOfToday();
+  let age = today.getFullYear() - date.getFullYear();
+  const monthDelta = today.getMonth() - date.getMonth();
+  if (monthDelta < 0 || (monthDelta === 0 && today.getDate() < date.getDate())) age -= 1;
+  return age;
+}
+
 /**
  * @param {string} iso YYYY-MM-DD
  * @param {{ required?: boolean, label?: string, maxAgeYears?: number, minAgeYears?: number }} opts
@@ -66,15 +103,18 @@ export function dobValidationMessage(iso, opts = {}) {
   const date = parseIsoDate(iso);
   if (!date) return `Enter a valid ${label.toLowerCase()}`;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  if (date > today) return `${label} cannot be in the future`;
+  const today = startOfToday();
+  if (date >= today) return `${label} cannot be today or in the future`;
 
   if (date.getFullYear() < DOB_MIN_YEAR) return `${label} year looks too early`;
 
-  const ageMs = today - date;
-  const ageYears = ageMs / (365.25 * 24 * 60 * 60 * 1000);
-  if (ageYears > maxAgeYears) return `Please check ${label.toLowerCase()}`;
+  const ageYears = ageYearsFromDob(date);
+  if (ageYears > maxAgeYears) {
+    if (maxAgeYears === FANCY_DRESS_MAX_AGE_YEARS) {
+      return "Fancy dress is for children 12 years and under";
+    }
+    return `Please check ${label.toLowerCase()}`;
+  }
   if (ageYears < minAgeYears) return `${label} does not meet the minimum age`;
 
   return null;

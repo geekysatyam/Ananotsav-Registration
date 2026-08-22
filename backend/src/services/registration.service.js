@@ -165,6 +165,9 @@ export async function createRegistrationBatch({
       wantsPanchamritAbhishek: Boolean(primary.wantsPanchamritAbhishek),
       wantsFancyDress: Boolean(primary.wantsFancyDress),
       fancyDressParentPhone: primary.wantsFancyDress ? primary.phone : null,
+      fancyDressParentName: primary.wantsFancyDress
+        ? (primary.fancyDressParentName ?? '').trim()
+        : '',
       fancyDressGetup: primary.wantsFancyDress
         ? (primary.fancyDressGetup ?? '').trim()
         : '',

@@ -2,7 +2,12 @@ import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { DOB_MIN_YEAR, parseIsoDate, toIsoDate } from "@/lib/validators";
+import {
+  DOB_MIN_YEAR,
+  dobMaxSelectableDate,
+  parseIsoDate,
+  toIsoDate,
+} from "@/lib/validators";
 
 const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const MONTHS = [
@@ -48,13 +53,22 @@ export function DobPicker({
   error = false,
   disabled = false,
   id,
-  maxDate = new Date(),
+  maxDate = dobMaxSelectableDate(),
+  minDate = null,
   minYear = DOB_MIN_YEAR,
   defaultAgeYears = 18,
 }) {
   const selected = parseIsoDate(value);
-  const max = maxDate instanceof Date ? maxDate : new Date();
-  const maxYear = max.getFullYear();
+  const max = maxDate instanceof Date ? maxDate : dobMaxSelectableDate();
+  const maxNorm = new Date(max);
+  maxNorm.setHours(0, 0, 0, 0);
+  const maxYear = maxNorm.getFullYear();
+
+  const minNorm = minDate instanceof Date ? new Date(minDate) : null;
+  if (minNorm) minNorm.setHours(0, 0, 0, 0);
+  const effectiveMinYear = minNorm
+    ? Math.max(minYear, minNorm.getFullYear())
+    : minYear;
 
   const fallbackView = new Date(maxYear - defaultAgeYears, 0, 1);
   const initialView = selected ?? fallbackView;
@@ -68,9 +82,9 @@ export function DobPicker({
 
   const years = useMemo(() => {
     const list = [];
-    for (let y = maxYear; y >= minYear; y -= 1) list.push(y);
+    for (let y = maxYear; y >= effectiveMinYear; y -= 1) list.push(y);
     return list;
-  }, [maxYear, minYear]);
+  }, [maxYear, effectiveMinYear]);
 
   const cells = useMemo(() => {
     const first = startOfMonth(viewYear, viewMonth);
@@ -95,14 +109,15 @@ export function DobPicker({
     if (!day) return true;
     const t = new Date(day);
     t.setHours(0, 0, 0, 0);
-    const m = new Date(max);
-    m.setHours(0, 0, 0, 0);
-    return t > m || t.getFullYear() < minYear;
+    if (t > maxNorm) return true;
+    if (minNorm && t < minNorm) return true;
+    if (t.getFullYear() < effectiveMinYear) return true;
+    return false;
   };
 
   const shiftMonth = (delta) => {
     const next = new Date(viewYear, viewMonth + delta, 1);
-    if (next.getFullYear() < minYear || next.getFullYear() > maxYear) return;
+    if (next.getFullYear() < effectiveMinYear || next.getFullYear() > maxYear) return;
     setViewYear(next.getFullYear());
     setViewMonth(next.getMonth());
   };

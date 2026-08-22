@@ -10,15 +10,17 @@ import {
 } from "@/components/ui/table";
 import { GoldButton } from "@/components/festive";
 import { api, ADMIN_TOKEN_KEY, adminTokenStore } from "@/lib/api";
+import { AdminPagination, ADMIN_PAGE_SIZE } from "@/components/admin/admin-pagination";
 
 /**
- * Generic admin opt-in list with search + CSV export.
+ * Generic admin opt-in list with search + CSV export + pagination.
  * @param {{ kind: string, title: string, subtitle: string, columns: { key: string, label: string }[], filename: string }} props
  */
 export function AdminOptInList({ kind, title, subtitle, columns, filename }) {
   const token = adminTokenStore.get(ADMIN_TOKEN_KEY);
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
@@ -29,15 +31,21 @@ export function AdminOptInList({ kind, title, subtitle, columns, filename }) {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.listOptIn(token, kind, { search, limit: 500 });
+      const data = await api.listOptIn(token, kind, {
+        search,
+        page,
+        limit: ADMIN_PAGE_SIZE,
+      });
       setRows(data.rows);
       setTotal(data.total);
+      const maxPage = Math.max(1, Math.ceil((data.total ?? 0) / ADMIN_PAGE_SIZE));
+      if (page > maxPage) setPage(maxPage);
     } catch {
       setError("Failed to load");
     } finally {
       setLoading(false);
     }
-  }, [token, kind, search]);
+  }, [token, kind, search, page]);
 
   useEffect(() => {
     const t = setTimeout(load, search ? 300 : 0);
@@ -90,7 +98,10 @@ export function AdminOptInList({ kind, title, subtitle, columns, filename }) {
         <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
           placeholder="Search name, phone, city…"
           className="min-h-11 w-full rounded-xl border-2 border-primary/25 bg-card py-2 pr-4 pl-10 text-sm outline-none focus:border-primary"
         />
@@ -132,7 +143,13 @@ export function AdminOptInList({ kind, title, subtitle, columns, filename }) {
           </TableBody>
         </Table>
       </div>
-      <p className="mt-3 text-xs text-muted-foreground">{total.toLocaleString("en-IN")} total</p>
+
+      <AdminPagination
+        page={page}
+        total={total}
+        onPageChange={setPage}
+        disabled={loading}
+      />
     </div>
   );
 }

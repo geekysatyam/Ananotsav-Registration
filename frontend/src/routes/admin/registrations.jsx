@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { GoldButton } from "@/components/festive";
 import { api, ADMIN_TOKEN_KEY, adminTokenStore } from "@/lib/api";
+import { AdminPagination, ADMIN_PAGE_SIZE } from "@/components/admin/admin-pagination";
 
 export const Route = createFileRoute("/admin/registrations")({
   head: () => ({ meta: [{ title: "Registrations — Admin" }] }),
@@ -21,6 +22,7 @@ function AdminRegistrationsPage() {
   const token = adminTokenStore.get(ADMIN_TOKEN_KEY);
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [checkedIn, setCheckedIn] = useState("all");
   const [loading, setLoading] = useState(true);
@@ -32,15 +34,22 @@ function AdminRegistrationsPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.listRegistrations(token, { search, checkedIn, limit: 500 });
+      const data = await api.listRegistrations(token, {
+        search,
+        checkedIn,
+        page,
+        limit: ADMIN_PAGE_SIZE,
+      });
       setRows(data.rows);
       setTotal(data.total);
+      const maxPage = Math.max(1, Math.ceil((data.total ?? 0) / ADMIN_PAGE_SIZE));
+      if (page > maxPage) setPage(maxPage);
     } catch {
       setError("Failed to load registrations");
     } finally {
       setLoading(false);
     }
-  }, [token, search, checkedIn]);
+  }, [token, search, checkedIn, page]);
 
   useEffect(() => {
     const t = setTimeout(load, search ? 300 : 0);
@@ -92,14 +101,20 @@ function AdminRegistrationsPage() {
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             placeholder="Search name, phone, city…"
             className="min-h-11 w-full rounded-xl border-2 border-primary/25 bg-background pl-10 pr-4 outline-none focus:border-primary"
           />
         </div>
         <select
           value={checkedIn}
-          onChange={(e) => setCheckedIn(e.target.value)}
+          onChange={(e) => {
+            setCheckedIn(e.target.value);
+            setPage(1);
+          }}
           className="min-h-11 rounded-xl border-2 border-primary/25 bg-background px-4 outline-none focus:border-primary"
         >
           <option value="all">All attendance</option>
@@ -158,6 +173,13 @@ function AdminRegistrationsPage() {
           </TableBody>
         </Table>
       </div>
+
+      <AdminPagination
+        page={page}
+        total={total}
+        onPageChange={setPage}
+        disabled={loading}
+      />
     </div>
   );
 }

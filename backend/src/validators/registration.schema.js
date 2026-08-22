@@ -9,10 +9,11 @@ const dobSchema = z
     if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d) return false;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (date > today) return false;
+    // Must be strictly before today (not today or future)
+    if (date >= today) return false;
     if (y < 1920) return false;
     return true;
-  }, 'Enter a valid date of birth (not in the future)');
+  }, 'Enter a valid date of birth (not today or in the future)');
 
 const indianPhoneSchema = z
   .string()
@@ -58,6 +59,7 @@ export const registrationSchema = z
       wantsPanchamritAbhishek: z.boolean().optional().default(false),
       wantsFancyDress: z.boolean().optional().default(false),
       fancyDressParentPhone: z.string().trim().optional().nullable(),
+      fancyDressParentName: z.string().trim().optional().default(''),
       fancyDressGetup: z.string().trim().optional().default(''),
       wantsLadduGopal: z.boolean().optional().default(false),
       ladduGopalSize: z.string().trim().nullable().optional().default(null),
@@ -96,6 +98,15 @@ export const registrationSchema = z
           code: z.ZodIssueCode.custom,
           message: 'Fancy dress is for children 12 years and under',
           path: ['primary', 'dob'],
+        });
+      }
+
+      const parentName = primary.fancyDressParentName?.trim();
+      if (parentName && parentName.length > 120) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Parent name is too long',
+          path: ['primary', 'fancyDressParentName'],
         });
       }
 

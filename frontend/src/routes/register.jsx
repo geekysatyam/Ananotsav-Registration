@@ -22,6 +22,8 @@ import { DobPicker } from "@/components/dob-picker";
 import {
   phoneValidationMessage,
   dobValidationMessage,
+  FANCY_DRESS_MAX_AGE_YEARS,
+  dobMinSelectableDateForMaxAge,
 } from "@/lib/validators";
 
 const FORM_STORAGE_KEY = "janmashtami_register_draft";
@@ -170,6 +172,9 @@ function RegisterPage() {
   const [wantsPanchamrit, setWantsPanchamrit] = useState(() => readDraft().wantsPanchamrit ?? false);
   const [wantsFancyDress, setWantsFancyDress] = useState(() => readDraft().wantsFancyDress ?? false);
   const [fancyDressGetup, setFancyDressGetup] = useState(() => readDraft().fancyDressGetup ?? "");
+  const [fancyDressParentName, setFancyDressParentName] = useState(
+    () => readDraft().fancyDressParentName ?? "",
+  );
   const [wantsLadduGopal, setWantsLadduGopal] = useState(() => readDraft().wantsLadduGopal ?? false);
   const [ladduGopalSize, setLadduGopalSize] = useState(() => readDraft().ladduGopalSize ?? "");
 
@@ -189,7 +194,14 @@ function RegisterPage() {
   useEffect(() => { mountedRef.current = true; }, []);
 
   const phoneError = touched.phone ? phoneValidationMessage(phone) : null;
-  const dobError = touched.dob ? dobValidationMessage(dob) : null;
+  const dobError = touched.dob
+    ? wantsFancyDress
+      ? dobValidationMessage(dob, {
+          maxAgeYears: FANCY_DRESS_MAX_AGE_YEARS,
+          label: "Child date of birth",
+        })
+      : dobValidationMessage(dob)
+    : null;
 
   // REFERRAL DISABLED
   // useEffect(() => {
@@ -218,6 +230,7 @@ function RegisterPage() {
           wantsPanchamrit,
           wantsFancyDress,
           fancyDressGetup,
+          fancyDressParentName,
           wantsLadduGopal,
           ladduGopalSize,
         }),
@@ -237,6 +250,7 @@ function RegisterPage() {
     wantsPanchamrit,
     wantsFancyDress,
     fancyDressGetup,
+    fancyDressParentName,
     wantsLadduGopal,
     ladduGopalSize,
   ]);
@@ -270,9 +284,20 @@ function RegisterPage() {
     setWantsLadduGopal(kind === "laddu" && value);
     if (kind !== "fancy" || !value) {
       setFancyDressGetup("");
+      setFancyDressParentName("");
     }
     if (kind !== "laddu" || !value) setLadduGopalSize("");
-    if (kind === "fancy" && value) setFamily([]);
+    if (kind === "fancy" && value) {
+      setFamily([]);
+      setDob((prev) => {
+        if (!prev) return prev;
+        const err = dobValidationMessage(prev, {
+          maxAgeYears: FANCY_DRESS_MAX_AGE_YEARS,
+          label: "Child date of birth",
+        });
+        return err ? "" : prev;
+      });
+    }
   }, []);
 
   const handleSubmit = useCallback(
@@ -300,7 +325,10 @@ function RegisterPage() {
       setTouched({ phone: true, dob: true });
       const pErr = phoneValidationMessage(phone);
       const dErr = wantsFancyDress
-        ? dobValidationMessage(dob, { maxAgeYears: 12, label: "Child date of birth" })
+        ? dobValidationMessage(dob, {
+            maxAgeYears: FANCY_DRESS_MAX_AGE_YEARS,
+            label: "Child date of birth",
+          })
         : dobValidationMessage(dob);
       if (pErr || dErr) {
         setError(pErr || dErr);
@@ -349,6 +377,7 @@ function RegisterPage() {
             wantsVolunteer,
             wantsPanchamritAbhishek: wantsPanchamrit,
             wantsFancyDress,
+            fancyDressParentName: wantsFancyDress ? fancyDressParentName.trim() : "",
             fancyDressGetup: wantsFancyDress ? fancyDressGetup.trim() : "",
             wantsLadduGopal,
             ladduGopalSize: wantsLadduGopal ? ladduGopalSize.trim() : null,
@@ -380,6 +409,7 @@ function RegisterPage() {
       dob,
       family,
       fancyDressGetup,
+      fancyDressParentName,
       fullName,
       // hasIncomingCode,
       // incomingReferral,
@@ -473,7 +503,11 @@ function RegisterPage() {
                       value={dob}
                       error={Boolean(dobError)}
                       defaultAgeYears={wantsFancyDress ? 6 : 18}
-                      minYear={wantsFancyDress ? new Date().getFullYear() - 13 : undefined}
+                      minDate={
+                        wantsFancyDress
+                          ? dobMinSelectableDateForMaxAge(FANCY_DRESS_MAX_AGE_YEARS)
+                          : null
+                      }
                       onChange={(iso) => {
                         setDob(iso);
                         setTouched((t) => ({ ...t, dob: true }));
@@ -636,6 +670,18 @@ function RegisterPage() {
                           Dress related to Sanatan Dharma (Krishna, Radha, Ram, Sita, or any bhakta).
                           One child per registration.
                         </p>
+                        <label className="mb-2 block">
+                          <span className="mb-1 block text-xs font-bold text-secondary">
+                            Parent name (optional)
+                          </span>
+                          <input
+                            type="text"
+                            value={fancyDressParentName}
+                            onChange={(e) => setFancyDressParentName(e.target.value)}
+                            placeholder="Parent / guardian name"
+                            className="min-h-10 w-full rounded-xl border-2 border-primary/30 bg-background px-3 text-sm outline-none focus:border-primary"
+                          />
+                        </label>
                         <label className="block">
                           <span className="mb-1 block text-xs font-bold text-secondary">
                             Getup / costume (optional)

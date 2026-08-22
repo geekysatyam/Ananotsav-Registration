@@ -1,0 +1,1 @@
+mongodb://aanandotsavgaushala_db_user:<db_password>@ac-locfqhx-shard-00-00.rhy89xg.mongodb.net:27017,ac-locfqhx-shard-00-01.rhy89xg.mongodb.net:27017,ac-locfqhx-shard-00-02.rhy89xg.mongodb.net:27017/aanandotsav2026?ssl=true&replicaSet=atlas-34j85k-shard-0&authSource=admin&appName=aanandotsav
