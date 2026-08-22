@@ -1,3 +1,7 @@
 node_modules/
 .env
 *.log
+data/whatsapp-session/
+data/
+npm-install-out.txt
+npm-install-whatsapp.log

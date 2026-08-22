@@ -19,17 +19,18 @@ TABLE OF CONTENTS
   6.  Pages and What Each One Does
   7.  Complete User Flows
   8.  Seva & Celebration Opt-Ins
-  9.  The Referral / Competition System
+  9.  The Referral / Competition System (currently paused)
   10. The QR Code System
   11. The Scanner / Check-In System
   12. Admin Panel and Roles
-  13. Backend (API, Models, Services)
-  14. Data Storage (Browser + Database)
-  15. API Reference
-  16. Environment Variables
-  17. Deployment
-  18. Key Components and Content Files
-  19. Known Limitations and Notes for Developers
+  13. WhatsApp Entry Pass (Baileys)
+  14. Backend (API, Models, Services)
+  15. Data Storage (Browser + Database)
+  16. API Reference
+  17. Environment Variables
+  18. Deployment
+  19. Key Components and Content Files
+  20. Known Limitations and Notes for Developers
 
 
 ================================================================================
@@ -40,7 +41,7 @@ Anandotsav 2026 is the Sri Krishna Janmashtami celebration held at
 Sri Gokul Gaushala, Birbalpura, Amritsar on Sunday, 6 September 2026.
 
 This repository is the FULL registration platform (website + API + database).
-It does four things:
+It does five things:
 
   A) REGISTRATION
      People register themselves and family members. Each person gets a unique
@@ -50,18 +51,23 @@ It does four things:
      During registration, bhaktas can optionally opt in for:
      · Youth volunteer seva
      · Divya Panchamrit Abhishek
-     · Fancy dress for kids (under 12)
+     · Fancy dress for kids (age 12 or under)
      · Laddu Gopal shringar (bring murti to Utsav Mandapam before 6:00 PM)
      Staff can list and CSV-export each of these from the admin panel.
 
-  C) REFERRAL COMPETITION
-     Registered people can get a personal Krishna referral code. Friends who
-     register with that code increase their count. A public leaderboard shows
-     name + count only (codes are not public).
+  C) REFERRAL COMPETITION — CURRENTLY PAUSED
+     Code and models remain in the repo but the public UI / credit path is
+     disabled. See §9. Fancy dress and Laddu Gopal competitions still run.
 
   D) EVENT CHECK-IN (SCANNER)
      On event day, staff scan each Entry QR (or type the entry code) to mark
      the bhakta as checked in and issue Divine Gifts at the desk.
+
+  E) WHATSAPP ENTRY PASS (optional)
+     After a successful PUBLIC registration, the backend queues a non-blocking
+     WhatsApp message with the same signed Entry QR as the website.
+     Desk / admin register does NOT send WhatsApp. See §13 and backend/WHATSAPP.md.
+     Railway setup notes: whatsappguide.txt.
 
 The frontend never stores registrations permanently. MongoDB is the source of
 truth. The frontend only displays, submits, and briefly caches QR results in
@@ -76,30 +82,31 @@ the browser.
   - Visit the website on phone or computer
   - Register themselves and family members
   - Get a QR / downloadable pass for each person
+  - Optionally receive the Entry Pass on WhatsApp (when enabled + paired)
   - Optionally join volunteer / abhishek / fancy dress / Laddu Gopal
-  - Optionally join the referral competition and share their Krishna code
-  - Check the public leaderboard (names + counts)
   - Recover a lost pass via Find My Registration (phone + primary DOB)
   - On event day: show QR at the desk to check in and collect Divine Gifts
 
   --- ORGANISERS ---
   - Watch the home-page live registrant counter
   - Use admin lists/exports for volunteers, abhishek, fancy dress, Laddu Gopal
-  - Use the admin leaderboard (includes referral codes, unlike the public page)
 
   --- SUPER ADMIN ---
   - First account is created once via `npm run seed:super-admin` (not from .env)
   - Full access to every admin page
   - Creates desk / admin users and assigns page permissions at /admin/admins
+  - Manages WhatsApp pairing, queue, and retries at /admin/whatsapp
 
   --- ADMIN (custom pages) ---
   - Can only open the admin pages granted by super admin
-  - Examples: registrations list/export, volunteers, fancy dress, leaderboard
+  - Examples: registrations list/export, volunteers, fancy dress
+  - Cannot open /admin/whatsapp (super_admin only)
 
   --- DESK STAFF ---
   - Fixed access: Scanner + Desk Register only
   - Log in at /scanner or /admin
   - Scan Entry QR codes and register walk-ins at the desk
+  - Walk-ins do not receive WhatsApp QR (QR is shown on site)
 
 
 ================================================================================
@@ -124,21 +131,21 @@ the browser.
   -------
   Node.js (ESM)       — Runtime
   Express             — HTTP API
-  MongoDB + Mongoose  — Registrations, admins, counters, referral logs
+  MongoDB + Mongoose  — Registrations, admins, counters, WhatsApp queue
   Zod                 — Request validation
   jsonwebtoken        — Staff JWT (role, pages, tokenVersion)
   bcrypt              — Admin password hashes
   Helmet + CORS       — Security headers and origin allow-list
-  express-rate-limit  — Register / find / login / referral-validate limits
+  express-rate-limit  — Register / find / login / WhatsApp admin limits
   Pino                — Logging
+  Baileys             — WhatsApp Web client (@whiskeysockets/baileys)
+  qrcode              — Pairing QR render + Entry QR PNG for WhatsApp
 
   DEPLOYMENT
   ----------
   Frontend: Vercel (TanStack Start / Nitro). vercel.json proxies /api to Railway.
   Backend:  Railway (or any Node host) + MongoDB Atlas.
-
-  Note: Vite/Nitro still lists Cloudflare as a default build target in the
-  Lovable config, but this project is deployed on Vercel, not Cloudflare Pages.
+  WhatsApp: Railway volume for Baileys session; queue lives in MongoDB.
 
 
 ================================================================================
@@ -148,44 +155,50 @@ the browser.
   Ananotsav-Registration/
   ├── README.md
   ├── PROJECT_DOCUMENTATION.txt     This file
+  ├── whatsappguide.txt             Railway WhatsApp deploy / ops guide
   ├── frontend/
   │   ├── src/
   │   │   ├── routes/               One file = one URL (see §6)
-  │   │   │   ├── __root.jsx        HTML shell, fonts, meta, error boundary
+  │   │   │   ├── __root.jsx
   │   │   │   ├── index.jsx         Home
   │   │   │   ├── register.jsx      Public registration
   │   │   │   ├── success.jsx       QR / pass after register or find
-  │   │   │   ├── find.jsx          Recover registration
-  │   │   │   ├── leaderboard.jsx   Public rankings
-  │   │   │   ├── event-details.jsx Programme, venue, poster
-  │   │   │   ├── competitions.jsx  Referral / fancy dress / Laddu Gopal
-  │   │   │   ├── scanner.jsx       Standalone desk scanner (same APIs)
-  │   │   │   └── admin/            RBAC panel
-  │   │   ├── components/           Navbar, footer, QR, gallery, admin lists
-  │   │   ├── assets/posters/       Vite-bundled posters (see MEDIA_GUIDE.md)
-  │   │   ├── assets/svg/           Decorative motifs
+  │   │   │   ├── find.jsx
+  │   │   │   ├── leaderboard.jsx   Referral UI paused
+  │   │   │   ├── event-details.jsx
+  │   │   │   ├── competitions.jsx  Fancy dress + Laddu Gopal
+  │   │   │   ├── scanner.jsx
+  │   │   │   └── admin/
+  │   │   │       ├── whatsapp.jsx  Super-admin WhatsApp ops
+  │   │   │       ├── registrations.jsx  (+ WA column, pagination)
+  │   │   │       └── …
+  │   │   ├── components/
+  │   │   │   ├── competitions-carousel.jsx
+  │   │   │   └── admin/admin-pagination.jsx   15 rows / page
+  │   │   ├── assets/posters/
   │   │   └── lib/
-  │   │       ├── api.js            All HTTP calls + session helpers
-  │   │       ├── site-config.js    Event copy, dates, competitions, contact
-  │   │       └── scanner-config.js Camera box size / fps
-  │   ├── public/gallery/           Past-year photos (16:9)
-  │   ├── SITE_CONFIG.md
-  │   ├── MEDIA_GUIDE.md
-  │   └── vercel.json               /api and /health → Railway
+  │   │       ├── api.js
+  │   │       ├── validators.js     DOB / fancy-dress age rules
+  │   │       └── site-config.js
+  │   └── vercel.json
   │
   └── backend/
-      ├── scripts/seed-super-admin.js
+      ├── WHATSAPP.md
+      ├── scripts/
+      │   ├── seed-super-admin.js
+      │   ├── whatsapp-login.js
+      │   └── whatsapp-status.js
       └── src/
-          ├── server.js             Connect DB, listen
-          ├── app.js                Helmet, CORS, /health, /api
-          ├── config/               env.js, db.js
-          ├── routes/               Mounted under /api
-          ├── controllers/
-          ├── services/             Register, HMAC, duplicates, fraud, codes
-          ├── models/               Registration, Admin, Counter, ReferralUsageLog
-          ├── middleware/           JWT, Zod validate, rate limits, errors
-          ├── validators/           Zod schemas
-          └── constants/adminPages.js
+          ├── server.js
+          ├── config/env.js         Includes WHATSAPP_* vars
+          ├── models/
+          │   ├── Registration.model.js   (+ whatsapp snapshot)
+          │   ├── WhatsAppMessage.model.js  Persistent outbound queue
+          │   ├── WhatsAppConfig.model.js
+          │   └── …
+          ├── services/whatsapp/    Baileys client, queue, worker, admin-ops
+          ├── controllers/whatsapp.controller.js
+          └── routes/admin.routes.js      /api/admin/whatsapp/*
 
 
 ================================================================================
@@ -196,19 +209,22 @@ the browser.
 
   Backend:
     cd backend
-    cp .env.example .env          # set secrets; do not commit .env
+    copy .env.example .env        # Windows CMD; set secrets; do not commit .env
     npm install
     npm run seed:super-admin -- <username> <password>
     npm run dev                   # http://localhost:5000
 
-  If login fails for an existing super admin:
-    npm run seed:super-admin -- <username> <password> --reset-password
+  WhatsApp (optional):
+    Set WHATSAPP_ENABLED=true and PUBLIC_APP_URL in backend/.env
+    npm run whatsapp:login        # or pair from Admin → WhatsApp
+    npm run whatsapp:status
 
   Frontend:
     cd frontend
-    cp .env.example .env
-    # VITE_API_URL=http://localhost:5000
-    # VITE_PUBLIC_URL=http://localhost:5173
+    copy .env.example .env
+    REM VITE_API_URL=http://localhost:5000
+    REM VITE_PUBLIC_URL=http://localhost:5173
+    REM VITE_WHATSAPP_CONFIRMATION_HINT=true   (optional success-page hint)
     npm install
     npm run dev
 
@@ -220,172 +236,115 @@ the browser.
 ================================================================================
 
   --- HOME PAGE  (/) ---
-  Long scrolling landing page:
-
-  · Hero — heading, register CTA, temple photo, floating motifs
-  · Memories gallery — past Anandotsav photos (auto-scroll, pause on swipe)
-  · Live registrant count — count-up when the section is in view
-  · Divine Gifts — every registered bhakta collects a gift at the desk
-  · Event strip — date, venue, timing + celebration features + poster link
-  · Competitions carousel — Referral, Fancy Dress, Laddu Gopal
-  · Leaderboard preview — top 5 (name + count)
+  · Hero, gallery, live count, Divine Gifts, event strip
+  · Competitions carousel — currently two posters (Fancy Dress, Laddu Gopal)
+    when referral is paused; copy says “Two ways to celebrate”
   · Final register CTA
 
   --- REGISTER  (/register) ---
-  Public form. See §7 Flow A. Footer is hidden on this page.
+  Public form. DOB cannot be today or future. Fancy dress requires age ≤ 12.
+  Optional fancy-dress parent name. See §7 / §8.
 
   --- SUCCESS  (/success) ---
-  After register or Find My Registration. QR cards, download pass,
-  Google Calendar, referral share. See §7 Flow B.
+  QR cards + download. Optional WhatsApp confirmation hint when
+  VITE_WHATSAPP_CONFIRMATION_HINT=true.
 
   --- FIND MY REGISTRATION  (/find) ---
-  Phone + primary registrant DOB. Match → /success. No match → illustrated
-  empty state with a link to register.
+  Phone + primary DOB → /success.
 
   --- LEADERBOARD  (/leaderboard) ---
-  Public ranks: name + referral count only (no Krishna codes).
-  Search by name (250ms debounce). Auto-refresh every 60 seconds.
-  Top 3 get gold / silver / bronze treatment.
-
-  --- EVENT DETAILS  (/event-details) ---
-  Programme, venue, logistics, official invitation poster.
+  Referral competition paused — page explains fancy dress / Laddu Gopal still on.
 
   --- COMPETITIONS  (/competitions) ---
-  Full write-up of the three competitions from site-config.js.
-  Hash links: /competitions#referral, #fancy-dress, #laddu-gopal.
+  Fancy dress + Laddu Gopal (referral block commented in site-config).
 
   --- SCANNER  (/scanner) ---
-  Staff-only, not in public nav, noindex. Same check-in APIs as /admin/scanner.
+  Staff check-in (same APIs as /admin/scanner).
 
   --- ADMIN PANEL  (/admin/...) ---
-  Shared login shell. Nav is filtered by role / pages.
-
-  · /admin/admins          super_admin only — create/disable users, assign pages
+  · /admin/admins          super_admin — users + page permissions
+  · /admin/whatsapp        super_admin — pair, queue stats, message history
   · /admin/scanner         QR + manual override
-  · /admin/register        Walk-in registration (same fields as public form)
-  · /admin/registrations   Search, filter checked-in, CSV export
-  · /admin/volunteers      Youth seva opt-ins + export
-  · /admin/abhishek        Panchamrit Abhishek opt-ins + export
-  · /admin/fancy-dress     Kids costume entries + export
-  · /admin/laddu-gopal     Size opt-ins + export
-  · /admin/leaderboard     Staff leaderboard (includes referral codes) + export
+  · /admin/register        Walk-in (no WhatsApp send)
+  · /admin/registrations   Search, checked-in filter, WA status, CSV, 15/page
+  · /admin/volunteers|abhishek|fancy-dress|laddu-gopal   opt-in lists, 15/page
+  · /admin/leaderboard     Referral staff list (paused / placeholder)
 
 
 ================================================================================
 7. COMPLETE USER FLOWS
 ================================================================================
 
---- FLOW A: NEW REGISTRATION ---
+--- FLOW A: NEW REGISTRATION (PUBLIC) ---
 
-  Step 1: User visits the site or /register (optionally ?ref=KrishnaCode)
+  Step 1: Visit /register
 
-  Step 2: Primary fields (all required):
+  Step 2: Primary fields (required):
           Full Name, Phone (10-digit Indian mobile), Date of Birth, City
-          DOB is a year/month/day picker (not a free-text date).
+          DOB picker: max = yesterday (not today or future).
+          If fancy dress: DOB must imply calendar age ≤ 12.
 
-  Step 3: Referral (optional):
-          - "Were you referred?" — Yes/No
-          - If Yes: Krishna code field, live-validated (400ms debounce)
-          - Green tick / red X from GET /api/validate-referral/:code
+  Step 3: Family members (optional) — skipped when fancy dress is Yes
+          (child is the primary registrant for that path).
 
-  Step 4: Own referral code (optional):
-          - "Do you want your own referral code?" — Yes/No
-          - If Yes: a unique Krishna name+digits code is issued after submit
+  Step 4: Seva & celebrations (optional). Fancy dress may include optional
+          parent name + getup detail.
 
-  Step 5: Family members (optional):
-          - Name + DOB required; phone optional
-          - Each member gets their own Entry QR
+  Step 5: Submit → POST /api/register
+          · MongoDB write + entry codes + signed payloads
+          · HTTP 201 immediately (never waits on WhatsApp)
+          · Queue WhatsAppMessage for primary (if WA enabled) — fire-and-forget
+          · Redirect /success with sessionStorage result
 
-  Step 6: Seva & celebrations (optional, all default No):
-          See §8. Fancy-dress children also receive a general entry pass;
-          they do not need to be added again as family members.
-
-  Step 7: Submit → POST /api/register
-          Success: result saved to sessionStorage, redirect /success
-          Duplicate: message + link to /find
-          Other errors: stay on the form
-
-  Drafts: the form writes localStorage every 500ms (key
-  janmashtami_register_draft). Draft is cleared after a successful submit.
+  Desk path: POST /api/admin/register with registrationSource=desk-manual.
+  Auto check-in + freebie; NO WhatsApp queue.
 
 --- FLOW B: SUCCESS / QR PAGE ---
 
-  Step 1: /success reads sessionStorage. Empty → redirect /register.
-
-  Step 2: Single person → one QR card + Download Pass (PNG).
-          Family → carousel, Download Pass / Download All.
-
-  Step 3: Divine Gift reminder under each QR.
-
-  Step 4: If they opted in for a referral code: Krishna code, referral QR,
-          WhatsApp / SMS / Copy Link.
-
-  Step 5: Add to Google Calendar (pre-filled with venue, timing, entry codes).
+  sessionStorage → QR cards, Download Pass, calendar.
+  Optional WA hint. Referral share UI is paused with the competition.
 
 --- FLOW C: FIND MY REGISTRATION ---
 
-  Phone + primary DOB → POST /api/find-registration.
-  Found: sessionStorage + /success.
-  Not found: friendly empty state.
-
---- FLOW D: LEADERBOARD ---
-
-  GET /api/leaderboard (max 50 rows, name + count).
-  Search by name. Refresh every 60 seconds.
+  POST /api/find-registration → /success.
 
 
 ================================================================================
 8. SEVA & CELEBRATION OPT-INS
 ================================================================================
 
-Collected on the public form and desk register. Stored on the primary
-registrant document. Admin pages list/export each kind.
-
   VOLUNTEER  (wantsVolunteer)
-  Youth seva. Copy asks volunteers to reach the venue 2 days prior.
+  Youth seva. Reach venue 2 days prior (copy in UI).
 
   PANCHAMRIT ABHISHEK  (wantsPanchamritAbhishek)
-  Divya Panchamrit Abhishek of Nitai–Nimai. Free opt-in.
+  Free opt-in.
 
-  FANCY DRESS  (wantsFancyDress + fancyDressEntries[])
-  Children under 12. Each entry: childName, childDob, optional getupDetail.
-  Categories in site-config: below 6 (parent can accompany), 6–12 (1 min on
-  stage). Costume should relate to Sanatan Dharma.
-  Public API responses return child first names only — no child DOB or getup.
+  FANCY DRESS  (wantsFancyDress + fancyDressEntries[] + fancyDressParentName)
+  · Age rule: calendar age ≤ 12 at registration (frontend + backend Zod)
+  · Optional parent name (max 120 chars), optional getup
+  · Categories in site-config: below 6 / 6–12
+  · Admin list/CSV can show parentName from fancyDressParentName
 
   LADDU GOPAL  (wantsLadduGopal + ladduGopalSize)
-  Free-text size. Bring murti to Utsav Mandapam before 6:00 PM; competition
-  entry closes after that.
+  Free-text size. Bring murti before 6:00 PM.
 
 
 ================================================================================
-9. THE REFERRAL / COMPETITION SYSTEM
+9. THE REFERRAL / COMPETITION SYSTEM (CURRENTLY PAUSED)
 ================================================================================
 
-  1. Bhakta opts in for their own code at registration.
+  STATUS: Disabled in UI and registration credit path (marked REFERRAL DISABLED
+  in site-config, register forms, and related backend paths). Models and
+  services remain for a future re-enable.
 
-  2. Backend issues a unique code: a Krishna name + 3 digits (e.g. Murari219).
-     If collisions persist, it retries with 4 digits.
+  When re-enabled historically:
+  · Optional own Krishna code at registration
+  · Share link /register?ref=Code
+  · Abuse window + self-referral checks
+  · Public leaderboard top 50 (name + count)
+  · ReferralUsageLog audit collection
 
-  3. Share the code, QR, or link:
-     https://yourdomain.com/register?ref=Murari219
-     Opening that link sets “Were you referred?” to Yes and pre-fills the code.
-
-  4. When a new registration uses a valid code:
-     · Self-referral (same phone as the referrer) is ignored
-     · Abuse window (10 minutes): ≥5 uses of the same code, or ≥3 from the
-       same IP, is logged and does NOT increment the count
-     · Otherwise referralCount on the referrer goes up by 1
-     · Source is stored as referral-link vs web
-
-  5. Public leaderboard: people with wantsReferral, sorted by count, top 50,
-     name + count only.
-
-  6. Competition end datetime is siteConfig.event.competitionEnds
-     (currently 5 September 2026). Home page countdown uses this.
-
-  Referral usage is also written to ReferralUsageLog (code, IP, memberCount,
-  flaggedForAbuse) for later review.
+  Do not treat referral as live for Anandotsav 2026 ops until uncommented.
 
 
 ================================================================================
@@ -394,300 +353,257 @@ registrant document. Admin pages list/export each kind.
 
 ENTRY QR:
 
-  Payload format:  ENTRYCODE.HMAC_SHA256_HEX
-  Example:         JN2026-00452.<64-char hex>
+  Payload:  ENTRYCODE.HMAC_SHA256_HEX
+  HMAC over entry code with HMAC_SECRET (backend only).
+  Entry codes: JN{EVENT_YEAR}-{5-digit} from Mongo Counter.
 
-  HMAC is computed over the entry code with HMAC_SECRET (backend).
-  The browser only renders the payload; it cannot mint a valid signature.
+  Website Download Pass and WhatsApp image both use the SAME signed payload
+  via buildSignedPayload(entryCode) — never a different QR for WhatsApp.
 
-  Entry codes come from a Mongo Counter: JN{EVENT_YEAR}-{5-digit seq}
-  e.g. JN2026-00001.
-
-  Download Pass PNG includes: event name, QR, full name, entry code,
-  Divine Gift note, date and venue.
-
-REFERRAL QR:
-
-  Encodes the referral URL (VITE_PUBLIC_URL/register?ref=Code).
-  Scanning it opens the form with the code pre-filled.
-
-Generation is entirely client-side via the qrcode package.
+REFERRAL QR: paused with the competition.
 
 
 ================================================================================
 11. THE SCANNER / CHECK-IN SYSTEM
 ================================================================================
 
-Used on /scanner and /admin/scanner. Not in public nav.
+  POST /api/admin/login → JWT (role, pages, tokenVersion).
+  Camera scan → POST /api/scan/checkin { signedPayload }.
+  Manual → POST /api/scan/checkin/override { entryCode, reason }.
 
---- LOGIN ---
-
-  POST /api/admin/login  (rate limited: 5 / minute)
-  Accounts are in MongoDB Admin (roles: super_admin, admin, desk).
-  JWT includes role, pages, tokenVersion. Default expiry JWT_EXPIRY=2h.
-  Token + profile stored in sessionStorage (cleared when the tab closes).
-  Changing password or disabling a user bumps tokenVersion and invalidates
-  old tokens. The scanner page requires the "scanner" page permission.
-
---- SCANNING ---
-
-  Camera via html5-qrcode at 10 fps (see scanner-config.js).
-  Detected payload → POST /api/scan/checkin with Bearer JWT.
-
-  SUCCESS:            green card — name, checked in, gift issued, time
-  ALREADY CHECKED IN: red card — name + original check-in time
-  NOT FOUND:          red card
-  SIGNATURE MISMATCH: red card — entry code filled into manual box
-
-  Check-in also sets freebieClaimed / freebieClaimTime and verifiedBySignature.
-
---- MANUAL OVERRIDE ---
-
-  Type JN2026-xxxxx → POST /api/scan/checkin/override with a reason.
-  Same JWT + scanner permission.
-
---- LOGOUT ---
-
-  Exit / Log out clears sessionStorage.
+  Desk register walk-ins are already checked in + freebie claimed.
 
 
 ================================================================================
 12. ADMIN PANEL AND ROLES
 ================================================================================
 
-  Page keys (backend/src/constants/adminPages.js and frontend api.js):
-    scanner, register, registrations, volunteers, abhishek,
-    fancy-dress, laddu-gopal, leaderboard, admins
+  Page keys: scanner, register, registrations, volunteers, abhishek,
+             fancy-dress, laddu-gopal, leaderboard, admins
+  WhatsApp UI is super_admin only (not a grantable “page” key for admin role).
 
-  super_admin  — all pages
+  super_admin  — all pages + /admin/whatsapp
   desk         — scanner + register only
-  admin        — subset assigned at /admin/admins (cannot include "admins")
+  admin        — subset from /admin/admins (cannot include "admins")
 
-  Super admin APIs:
-    GET/POST  /api/admin/users
-    PATCH     /api/admin/users/:id   (password, pages, isActive)
+  List pages use AdminPagination (15 rows per page by default).
 
-  After login, AdminShell calls GET /api/admin/me to refresh role/pages.
-  401 → session cleared. Nav hides pages the user cannot open; visiting a
-  forbidden URL redirects to the first allowed page.
+  Registrations table: WhatsApp column (Sent / Pending / Failed / Desk).
+  Manual Retry for failed public registrations (not desk-manual).
 
 
 ================================================================================
-13. BACKEND (API, MODELS, SERVICES)
+13. WHATSAPP ENTRY PASS (BAILEYS)
 ================================================================================
 
-  Envelope:
-    Success  { "success": true, "data": ... }
-    Error    { "success": false, "error": { "code", "message" }, ... }
+  PURPOSE
+  -------
+  Transactional confirmation only after PUBLIC POST /api/register.
+  Image = Entry QR PNG (same HMAC payload). Caption = name, entry code,
+  date/venue, optional family /find link.
 
-  GET /health  — { ok: true }  (not under /api)
+  NON-BLOCKING
+  ------------
+  Registration always returns 201 on DB success. WhatsApp failures never
+  fail the HTTP response.
 
-  CORS: CORS_ORIGIN is a comma-separated allow-list. In development, any
-  http://localhost:<port> origin is also allowed (Vite port may vary).
+  PERSISTENT QUEUE (MongoDB WhatsAppMessage)
+  ------------------------------------------
+  Statuses: pending → processing → sent | failed | cancelled
+  uniqueKey = registrationId:registration-qr (unique index — no duplicates)
+  Survives Railway / Node restart. Stuck “processing” jobs reset to pending
+  on worker start. Offline: jobs stay pending; auto-resume when connected.
+  Change number: cancels pending/processing (not auto-sent on new number).
 
-  Body size: express.json limit 64kb.
-  Trust proxy: only when NODE_ENV=production or TRUST_PROXY=true.
+  WORKER
+  ------
+  · One message at a time (WHATSAPP_MAX_CONCURRENT_SENDS=1)
+  · FIFO by queuedAt
+  · Random delay between sends (MIN/MAX_DELAY_MS) — controlled delivery,
+    not a claimed WhatsApp-safe rate
+  · Exponential backoff retries up to WHATSAPP_MAX_ATTEMPTS
+  · Circuit breaker after consecutive failures (cooldown then resume when healthy)
+  · No bulk / broadcast / marketing endpoints
 
-  Rate limits (per IP, 1-minute window):
-    POST /api/register              10
-    GET  /api/validate-referral/*   30
-    POST /api/find-registration     20
-    POST /api/admin/login            5
+  DESK REGISTER
+  -------------
+  registrationSource desk-manual → never auto-queued; retry APIs reject desk.
+
+  ADMIN UI  /admin/whatsapp
+  ------------------------
+  Connection status, queue counts, worker state, offline “safely queued”
+  banner, pair (QR or phone code), reconnect / disconnect / change number,
+  message history + per-message retry.
+
+  Ops detail: backend/WHATSAPP.md
+  Railway volume / env: whatsappguide.txt
+
+
+================================================================================
+14. BACKEND (API, MODELS, SERVICES)
+================================================================================
+
+  Envelope: { success, data } / { success: false, error: { code, message } }
+  GET /health — { ok: true }
 
   MODELS
   ------
-  Registration  — person (primary or family member). Unique entryCode.
-                  Unique sparse (phone, dob). Optional referralCode.
-                  Opt-in flags, fancyDressEntries, ladduGopalSize,
-                  checkedIn, freebieClaimed, registrationSource
-                  (web | referral-link | desk-manual).
-
-  Admin         — username (lowercase unique), passwordHash, role, pages,
-                  isActive, tokenVersion, createdBy.
-
-  Counter       — _id "entryCode", seq for JN{year}-{nnnnn}.
-
-  ReferralUsageLog — audit of referral attempts (abuse flags).
+  Registration     — entryCode, opt-ins, registrationSource
+                     (web | referral-link | desk-manual),
+                     whatsapp: { status, sentAt, lastError } snapshot
+  Admin            — role, pages, tokenVersion
+  Counter          — entry code sequence
+  ReferralUsageLog — kept for paused referral feature
+  WhatsAppMessage  — outbound queue (persistent)
+  WhatsAppConfig   — singleton connection / alert state
 
   KEY SERVICES
   ------------
-  registration.service   create family group, codes, credit referral
-  duplicateCheck         phone+DOB already registered → use /find
-  fraudCheck             self-referral + burst limits
+  registration.service   create batch (desk vs web)
   hmac.service           sign / verify / buildSignedPayload
-  entryCode.service      JN{EVENT_YEAR}-{seq}
-  referralCode.service   Krishna name + digits
-  shapeRegistration      public JSON: signedPayload, redact child DOB/getup
-
-  GET /api/registration/:id was removed (unauthenticated IDOR that returned
-  signed QR payloads). Use find-registration or the register response.
+  entryCode.service
+  services/whatsapp/*    client, queue, worker, admin-ops, QR PNG, captions
 
 
 ================================================================================
-14. DATA STORAGE (BROWSER + DATABASE)
+15. DATA STORAGE (BROWSER + DATABASE)
 ================================================================================
 
-  --- sessionStorage (cleared when the tab closes) ---
-
-  janmashtami_registration_result   QR payloads after register / find
-  janmashtami_admin_token           Staff JWT
-  janmashtami_admin_user            { id, username, role, pages }
-
-  --- localStorage ---
-
-  janmashtami_register_draft        Form draft (500ms debounce), cleared
-                                    after successful submit
-
-  --- MongoDB ---
-
-  All registrations, check-ins, admins, counters, referral usage logs.
+  sessionStorage: registration result, admin JWT + profile
+  localStorage:   register form draft
+  MongoDB:        registrations, admins, counters, WhatsApp queue + config
+  Disk:           Baileys session under WHATSAPP_SESSION_DIR (gitignored)
 
 
 ================================================================================
-15. API REFERENCE
+16. API REFERENCE
 ================================================================================
 
   PUBLIC
   ------
-  POST /api/register                      Register family group
-  GET  /api/validate-referral/:code       Does this Krishna code exist?
-  GET  /api/leaderboard                   Top 50: rank, fullName, referralCount
-  GET  /api/stats/count                   { totalRegistrants }
-  POST /api/find-registration             { phone, dob } → shaped registrations
+  POST /api/register
+  GET  /api/validate-referral/:code   (feature paused; may still exist)
+  GET  /api/leaderboard
+  GET  /api/stats/count
+  POST /api/find-registration
 
-  STAFF (Authorization: Bearer <jwt>)
-  -----------------------------------
-  POST /api/admin/login                   { username, password }
-  GET  /api/admin/me                      Current role + pages
-  GET/POST /api/admin/users               Super admin: list / create
-  PATCH    /api/admin/users/:id           Super admin: update
-  POST /api/admin/register                Desk walk-in (same body as public)
-  GET  /api/admin/registrations           List + search + checkedIn filter
-  GET  /api/admin/registrations/export    CSV
+  STAFF
+  -----
+  POST /api/admin/login
+  GET  /api/admin/me
+  GET/POST /api/admin/users     PATCH /api/admin/users/:id
+  POST /api/admin/register      Desk walk-in (no WhatsApp)
+  GET  /api/admin/registrations (+ export)
   GET  /api/admin/volunteers|abhishek|fancy-dress|laddu-gopal|leaderboard
-  GET  /api/admin/.../export              CSV for each of the above
-  POST /api/scan/checkin                  { signedPayload }
-  POST /api/scan/checkin/override         { entryCode, reason }
+  POST /api/scan/checkin
+  POST /api/scan/checkin/override
 
-  Removed: GET /api/registration/:id
+  WHATSAPP (super_admin, rate-limited)
+  ------------------------------------
+  GET  /api/admin/whatsapp/status          queue{} + worker{}
+  POST /api/admin/whatsapp/pair
+  GET  /api/admin/whatsapp/pair/qr
+  POST /api/admin/whatsapp/pairing-code
+  POST /api/admin/whatsapp/pair/cancel
+  POST /api/admin/whatsapp/change-number
+  POST /api/admin/whatsapp/reconnect
+  POST /api/admin/whatsapp/disconnect
+  POST /api/admin/whatsapp/ack-alert
+  GET  /api/admin/whatsapp/messages
+  POST /api/admin/whatsapp/messages/:id/retry
+  POST /api/admin/whatsapp/registrations/:id/retry
 
 
 ================================================================================
-16. ENVIRONMENT VARIABLES
+17. ENVIRONMENT VARIABLES
 ================================================================================
 
-  BACKEND (required unless noted)
-  -------------------------------
-  PORT, NODE_ENV, MONGO_URI
-  CORS_ORIGIN          Comma-separated origins (e.g. http://localhost:5173)
-  HMAC_SECRET          QR signing key — keep private, never rotate mid-event
-                       without reissuing passes
-  JWT_SECRET, JWT_EXPIRY   (use 2h)
-  EVENT_YEAR           Used in entry codes (2026)
-  TRUST_PROXY          Optional; only behind a reverse proxy outside production
+  BACKEND (required)
+  ------------------
+  PORT, NODE_ENV, MONGO_URI, CORS_ORIGIN
+  HMAC_SECRET, JWT_SECRET, JWT_EXPIRY, EVENT_YEAR
+  TRUST_PROXY          Optional
 
-  Removed from env: ADMIN_USERNAME / ADMIN_PASSWORD_HASH.
-  Admins live in MongoDB.
+  BACKEND (WhatsApp — optional)
+  -----------------------------
+  PUBLIC_APP_URL                         Frontend origin for captions /find
+  WHATSAPP_ENABLED=false
+  WHATSAPP_SESSION_DIR=./data/whatsapp-session
+  WHATSAPP_SEND_REGISTRATION_CONFIRMATION=true
+  WHATSAPP_SEND_REGISTRATION_QR=true
+  WHATSAPP_MAX_ATTEMPTS=3
+  WHATSAPP_WORKER_INTERVAL_MS=15000
+  WHATSAPP_MAX_CONCURRENT_SENDS=1
+  WHATSAPP_MIN_DELAY_MS=5000
+  WHATSAPP_MAX_DELAY_MS=12000
+  WHATSAPP_MAX_CONSECUTIVE_FAILURES=3
+  WHATSAPP_COOLDOWN_MS=300000
+  WHATSAPP_EVENT_DATE / WHATSAPP_EVENT_VENUE
 
   FRONTEND
   --------
-  VITE_API_URL     Local: http://localhost:5000
-                   Production: leave empty so the site uses same-origin /api
-                   (vercel.json proxies to Railway). Do not set a
-                   *.railway.app URL — some ISPs block it. Localhost values
-                   are ignored in production builds.
-
-  VITE_PUBLIC_URL  Public site origin, no trailing slash.
-                   Used for referral share links and calendar/meta.
-                   Production example: https://aanandotsav.vercel.app
+  VITE_API_URL                         Local only; empty in production
+  VITE_PUBLIC_URL                      Public site origin
+  VITE_WHATSAPP_CONFIRMATION_HINT      Optional success-page hint
 
 
 ================================================================================
-17. DEPLOYMENT
+18. DEPLOYMENT
 ================================================================================
 
-  Frontend — Vercel (root or frontend/ as the project directory).
-    Production env: VITE_PUBLIC_URL only. Do not set VITE_API_URL.
-    After changing env: Redeploy (Vite inlines VITE_* at build time).
-    Checklist: frontend/vercel-env.txt
+  Frontend — Vercel. Production: VITE_PUBLIC_URL only (no VITE_API_URL).
+  vercel.json rewrites /api and /health → Railway.
 
-  vercel.json rewrites:
-    /api/:path*  →  Railway /api/:path*
-    /health      →  Railway /health
+  Backend — Railway + MongoDB Atlas.
+  CORS_ORIGIN must include the Vercel origin.
 
-  Backend — Railway (or similar) with MongoDB Atlas.
-    Set all required env vars. CORS_ORIGIN must include the Vercel origin.
-
-  Posters: files under frontend/public can 500 on Vercel when the SSR
-  handler catches the path. Competition / invitation posters are therefore
-  imported from frontend/src/assets/posters/ so Vite bundles them.
-  Gallery photos still live in frontend/public/gallery/.
+  WhatsApp on Railway:
+  · Persistent volume mounted at WHATSAPP_SESSION_DIR
+  · WHATSAPP_ENABLED=true, PUBLIC_APP_URL=Vercel origin
+  · Queue in MongoDB survives restarts; session restores from volume
+  · See whatsappguide.txt and backend/WHATSAPP.md
 
 
 ================================================================================
-18. KEY COMPONENTS AND CONTENT FILES
+19. KEY COMPONENTS AND CONTENT FILES
 ================================================================================
 
-  site-config.js
-    Single file for brand, organisation, event date/venue/programme,
-    contact, social, prizes, competitions, SEO. See frontend/SITE_CONFIG.md.
-
-  MEDIA_GUIDE.md
-    Poster sizes and where to drop files (assets/posters vs public/gallery).
-
-  SiteShell          Navbar + main + footer (hideFooter on /register)
-  FloatingMotifs     Ambient SVG drift
-  GradientMesh       Soft drifting colour washes
-  CompetitionsCarousel   Home slides from siteConfig.competitions
-  AnandotsavGallery  Past-year photos
-  DobPicker          Year / month / day selector
-  QrSvg / downloadEntryPass
-  LeaderboardList
-  AdminShell / AdminOptInList
-  api.js             Fetch wrapper, ApiError, admin session, formatRegistrationError
+  site-config.js           Brand, event, competitions (referral commented)
+  validators.js            DOB + fancy-dress max age
+  CompetitionsCarousel     Home posters (2-up grid when ≤2 competitions)
+  AdminPagination          Shared 15/page lists
+  admin/whatsapp.jsx       Super-admin WhatsApp console
+  backend/WHATSAPP.md      Developer ops for Baileys
+  whatsappguide.txt        Railway-focused WhatsApp guide
 
 
 ================================================================================
-19. KNOWN LIMITATIONS AND NOTES FOR DEVELOPERS
+20. KNOWN LIMITATIONS AND NOTES FOR DEVELOPERS
 ================================================================================
 
-  · HMAC_SECRET must stay stable for the whole event. Changing it invalidates
-    every already-downloaded QR.
+  · HMAC_SECRET must stay stable for the whole event.
 
-  · Public leaderboard is not WebSocket-live; it polls every 60 seconds.
+  · QR results live in sessionStorage; use Find My Registration if the tab
+    was closed before download.
 
-  · QR results live in sessionStorage. Closing the tab before download means
-    the bhakta must use Find My Registration. That is intentional.
+  · Scanner needs camera + HTTPS (iOS Safari).
 
-  · Scanner needs camera + HTTPS (required on iOS Safari).
+  · Referral competition is paused — do not promise it on marketing copy.
 
-  · Fonts (Marcellus, Mulish) load from Google Fonts. If blocked, the site
-    falls back to system serif/sans.
+  · WhatsApp is optional and transactional only. No bulk send.
+    Desk register never auto-sends. Public register never blocks on WA.
 
-  · nitro in frontend/package.json is a beta pin (3.0.260603-beta).
+  · Pairing codes / session keys must never be logged or committed.
 
-  · Production errors currently go to console via lovable-error-reporting.js.
-    Wire Sentry there if you want event-day alerting.
+  · TanStack routeTree.gen.js must include new admin routes (e.g. whatsapp)
+    or the nav link shows “Not Found”.
 
-  · Social links in site-config.js are still empty (Instagram / Facebook /
-    YouTube). Phone and email for the seva desk are filled.
-
-  · Gallery files in public/gallery/ are SVG placeholders until real photos
-    are added (see MEDIA_GUIDE.md).
-
-  · Prizes array in site-config.js is empty until official prizes are set.
-
-  · Duplicate detection: primary is phone + DOB; family members (including
-    fancy-dress children auto-added as members) are name + DOB. Fancy-dress
-    children are also stored on the primary document’s fancyDressEntries.
-
-  · Rate limits are per IP. Behind a proxy, TRUST_PROXY / production
-    NODE_ENV must be set or every client may share one bucket.
+  · Rate limits are per IP; set TRUST_PROXY behind a reverse proxy.
 
 
 ================================================================================
   END OF DOCUMENT
-  Last updated: 18 August 2026
+  Last updated: 23 August 2026
   Project: Anandotsav 2026 Registration Platform
   Organisation: Sri Gokul Gaushala, Amritsar
 ================================================================================

@@ -1,0 +1,696 @@
+# Railway Setup Guide — Anandotsav WhatsApp + Baileys
+
+This guide assumes your current implementation is already complete and you only need to deploy/configure it on Railway.
+
+---
+
+## 1. Push the latest code to Git
+
+Make sure your latest WhatsApp implementation is committed:
+
+```bash
+git status
+git add .
+git commit -m "Add WhatsApp Baileys integration"
+git push
+```
+
+Your `.gitignore` should continue to contain:
+
+```gitignore
+node_modules/
+.env
+*.log
+data/
+data/whatsapp-session/
+```
+
+**Do not commit the WhatsApp session.**
+
+---
+
+# 2. Open your Railway project
+
+Go to your Railway project and select the **backend service**.
+
+Your structure should roughly be:
+
+```text
+Railway Project
+│
+├── Backend Service
+│
+└── MongoDB / MongoDB connection
+```
+
+Select the backend service.
+
+---
+
+# 3. Configure Environment Variables
+
+Open:
+
+**Backend Service → Variables**
+
+Add the following.
+
+### Required
+
+```env
+WHATSAPP_ENABLED=true
+```
+
+```env
+WHATSAPP_SESSION_DIR=/app/data/whatsapp-session
+```
+
+```env
+WHATSAPP_SEND_REGISTRATION_CONFIRMATION=true
+```
+
+```env
+WHATSAPP_SEND_REGISTRATION_QR=true
+```
+
+### Production URL
+
+Use your actual Vercel URL:
+
+```env
+PUBLIC_APP_URL=https://aanandotsav.vercel.app
+```
+
+Do **not** use:
+
+```env
+PUBLIC_APP_URL=http://localhost:8081
+```
+
+on Railway.
+
+---
+
+# 4. Add Queue Configuration
+
+If you implemented the persistent queue/rate-controlled worker from the latest changes, add:
+
+```env
+WHATSAPP_MAX_CONCURRENT_SENDS=1
+WHATSAPP_MIN_DELAY_MS=5000
+WHATSAPP_MAX_DELAY_MS=12000
+
+WHATSAPP_MAX_ATTEMPTS=5
+
+WHATSAPP_MAX_CONSECUTIVE_FAILURES=3
+WHATSAPP_COOLDOWN_MS=300000
+```
+
+This gives you:
+
+```text
+1 message
+   ↓
+5–12 second controlled delay
+   ↓
+next message
+```
+
+It does **not** guarantee immunity from WhatsApp restrictions; it simply prevents your application from accidentally sending messages concurrently or in bursts.
+
+---
+
+# 5. Add the Railway Volume
+
+This is the most important step.
+
+Your `.gitignore` contains:
+
+```gitignore
+data/
+```
+
+That's correct.
+
+But Baileys needs to persist its authentication/session data.
+
+Go to your Railway backend service and add a **Volume**.
+
+Configure the mount path as:
+
+```text
+/app/data
+```
+
+Your Railway filesystem will then look approximately like:
+
+```text
+/app
+│
+├── backend/application files
+│
+└── data
+    └── whatsapp-session
+```
+
+And your environment variable points to:
+
+```env
+WHATSAPP_SESSION_DIR=/app/data/whatsapp-session
+```
+
+### Why the Volume is required
+
+Without persistent storage:
+
+```text
+Railway restart
+      ↓
+Container recreated
+      ↓
+WhatsApp session disappears
+      ↓
+Pair WhatsApp again
+```
+
+With persistent storage:
+
+```text
+Railway restart
+      ↓
+Container recreated
+      ↓
+Volume remains
+      ↓
+Baileys loads existing session
+      ↓
+WhatsApp reconnects
+```
+
+**Do not put the Baileys session into Git.**
+
+---
+
+# 6. Verify the backend start command
+
+Make sure Railway starts your normal backend server.
+
+For example, if your `backend/package.json` contains:
+
+```json
+{
+  "scripts": {
+    "dev": "...",
+    "start": "node src/server.js"
+  }
+}
+```
+
+Railway should use the production start command:
+
+```bash
+npm start
+```
+
+Do **not** use:
+
+```bash
+npm run whatsapp:login
+```
+
+as the Railway start command.
+
+The WhatsApp service should initialize from your normal backend startup:
+
+```text
+Railway
+   ↓
+npm start
+   ↓
+server.js
+   ↓
+WhatsApp service initialization
+   ↓
+Baileys
+```
+
+---
+
+# 7. Deploy
+
+Once the Variables and Volume are configured, deploy the latest code.
+
+Watch:
+
+**Railway → Deployments → View Logs**
+
+You should see your normal backend startup messages and WhatsApp initialization.
+
+If WhatsApp is not paired yet, that's okay.
+
+You should **not expect WhatsApp to be connected simply because the application deployed**.
+
+---
+
+# 8. Open the Production Admin Panel
+
+After the backend and frontend are deployed, open:
+
+```text
+https://aanandotsav.vercel.app/admin/whatsapp
+```
+
+Sign in using a **super_admin** account.
+
+You should see something similar to:
+
+```text
+WhatsApp
+
+● Not Configured
+
+No WhatsApp number is connected.
+
+[ Connect WhatsApp ]
+```
+
+---
+
+# 9. Pair the WhatsApp Number
+
+Click:
+
+**Connect WhatsApp**
+
+You should get:
+
+```text
+Connect WhatsApp
+
+[ Scan QR ]
+[ Use Phone Number ]
+```
+
+### Option A — QR
+
+Choose:
+
+**Scan QR**
+
+Scan the displayed QR using the WhatsApp account you want Anandotsav to use.
+
+After successful pairing:
+
+```text
+WhatsApp
+
+● Connected
+
++91 XXXXX XXXXX
+
+[ Disconnect ]
+[ Change Number ]
+```
+
+### Option B — Pairing Code
+
+Choose:
+
+**Use Phone Number**
+
+Enter the WhatsApp phone number.
+
+The system should display a pairing code.
+
+Follow the WhatsApp instructions to link the device.
+
+---
+
+# 10. Verify the Railway Session
+
+After successful pairing, the session should be written to:
+
+```text
+/app/data/whatsapp-session
+```
+
+inside the Railway Volume.
+
+You don't need to manually edit those files.
+
+---
+
+# 11. Test Railway Restart
+
+This is a critical test.
+
+After WhatsApp is connected, restart/redeploy the Railway backend.
+
+Expected:
+
+```text
+Backend starts
+      ↓
+MongoDB connects
+      ↓
+Baileys loads existing session
+      ↓
+Connecting
+      ↓
+Connected
+```
+
+You should **not have to scan the QR again**.
+
+If it asks you to pair again after every deployment/restart, check:
+
+```env
+WHATSAPP_SESSION_DIR=/app/data/whatsapp-session
+```
+
+and make sure the Volume is mounted at:
+
+```text
+/app/data
+```
+
+---
+
+# 12. Test Registration
+
+Open:
+
+```text
+https://aanandotsav.vercel.app/register
+```
+
+Create one test registration.
+
+The expected flow is:
+
+```text
+User submits registration
+        ↓
+MongoDB registration created
+        ↓
+HTTP 201 returned
+        ↓
+WhatsApp job queued
+        ↓
+WhatsApp worker processes job
+        ↓
+WhatsApp message sent
+```
+
+The registration request should **not wait for WhatsApp**.
+
+---
+
+# 13. Check the Admin Dashboard
+
+Return to:
+
+```text
+/admin/whatsapp
+```
+
+You should see something like:
+
+```text
+WhatsApp
+● Connected
+
+Queue
+
+Pending       Processing       Failed
+   0              0              0
+
+Last message
+Just now
+```
+
+The registration should also show:
+
+```text
+WhatsApp: ✓ Sent
+```
+
+---
+
+# 14. Check the Actual WhatsApp Message
+
+The registered phone should receive:
+
+* Registration confirmation
+* Entry Code
+* Registration QR
+* `/find` link
+
+Make sure the URL points to:
+
+```text
+https://aanandotsav.vercel.app
+```
+
+rather than localhost.
+
+---
+
+# 15. Test the Registration QR
+
+This is important.
+
+Take the QR received through WhatsApp and scan it with your actual Anandotsav scanner.
+
+Expected:
+
+```text
+WhatsApp QR
+     ↓
+Scanner
+     ↓
+Signed Entry Code
+     ↓
+Correct registration
+```
+
+The WhatsApp QR should behave exactly like the QR generated on your normal registration success page.
+
+---
+
+# 16. Test the Offline Queue
+
+Now test the feature you recently added.
+
+Temporarily disconnect/log out WhatsApp.
+
+Then create several registrations:
+
+```text
+Registration 1
+Registration 2
+Registration 3
+```
+
+They should still successfully register.
+
+In MongoDB:
+
+```text
+WhatsAppMessage
+
+Registration 1 → pending
+Registration 2 → pending
+Registration 3 → pending
+```
+
+The messages should **not disappear**.
+
+---
+
+# 17. Reconnect WhatsApp
+
+Reconnect the WhatsApp account.
+
+The worker should automatically start processing:
+
+```text
+Registration 1
+      ↓
+send
+      ↓
+delay
+      ↓
+Registration 2
+      ↓
+send
+      ↓
+delay
+      ↓
+Registration 3
+```
+
+You should not need to manually click Retry for every pending registration.
+
+---
+
+# 18. Test Logout Detection
+
+Log the WhatsApp account out from the linked device.
+
+Your admin page should eventually show:
+
+```text
+⚠ Logged Out
+
+WhatsApp requires pairing again.
+
+[ Pair Again ]
+```
+
+The queue should remain safe.
+
+For example:
+
+```text
+27 pending
+```
+
+should remain pending rather than being deleted.
+
+---
+
+# 19. Test Change Number
+
+From:
+
+```text
+/admin/whatsapp
+```
+
+click:
+
+**Change Number**
+
+Confirm the operation.
+
+Expected:
+
+```text
+Old number
+    ↓
+Disconnect
+    ↓
+Session cleared
+    ↓
+Pending jobs handled according to your implementation
+    ↓
+Pair new number
+    ↓
+New number connected
+```
+
+Then create a **new registration** and verify that it is sent through the new WhatsApp number.
+
+---
+
+# 20. Important Railway Production Checklist
+
+Before your event, verify all of these:
+
+### Railway
+
+```text
+☐ Latest Git commit deployed
+☐ WHATSAPP_ENABLED=true
+☐ PUBLIC_APP_URL=https://aanandotsav.vercel.app
+☐ WHATSAPP_SESSION_DIR=/app/data/whatsapp-session
+☐ WHATSAPP_SEND_REGISTRATION_CONFIRMATION=true
+☐ WHATSAPP_SEND_REGISTRATION_QR=true
+☐ Queue variables configured
+☐ Railway Volume created
+☐ Volume mounted at /app/data
+```
+
+### WhatsApp
+
+```text
+☐ Number paired
+☐ Status shows Connected
+☐ Number displayed correctly
+☐ Railway restart does not require re-pairing
+☐ Registration message received
+☐ QR received
+☐ QR scans successfully
+☐ /find link works
+```
+
+### Queue
+
+```text
+☐ Registration works when WhatsApp is connected
+☐ Registration works when WhatsApp is disconnected
+☐ Pending messages remain in MongoDB
+☐ Reconnection resumes queue
+☐ Messages are sent sequentially
+☐ Failed messages retry
+☐ Circuit breaker works
+☐ Duplicate messages are prevented
+```
+
+### Admin
+
+```text
+☐ /admin/whatsapp accessible to super_admin
+☐ Connected status visible
+☐ Logged-out status visible
+☐ Queue count visible
+☐ Message history works
+☐ Retry works
+☐ Change Number works
+☐ Reconnect works
+```
+
+---
+
+## Final production architecture
+
+Once configured, your setup should look like:
+
+```text
+                    Vercel
+                      │
+                      ▼
+             Anandotsav Frontend
+                      │
+                      ▼
+              Railway Backend
+              ┌───────────────┐
+              │ Node/Express  │
+              │               │
+              │ Baileys       │
+              │ WhatsApp Queue│
+              └───────┬───────┘
+                      │
+             ┌────────┴────────┐
+             ▼                 ▼
+          MongoDB          Railway Volume
+                              │
+                              ▼
+                     whatsapp-session
+                              │
+                              ▼
+                          WhatsApp
+```
+
+**The key Railway configuration is:**
+
+```text
+Environment Variable:
+WHATSAPP_SESSION_DIR=/app/data/whatsapp-session
+
+Volume:
+ /app/data
+```
+
+Don't commit the session directory to Git, and don't put WhatsApp credentials in Railway environment variables. The **Railway Volume is the persistent home for the Baileys session**.

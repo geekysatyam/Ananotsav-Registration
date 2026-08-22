@@ -345,6 +345,13 @@ function SuccessPage() {
 
                 <GiftCard name={member.fullName} />
 
+                {import.meta.env.VITE_WHATSAPP_CONFIRMATION_HINT === "true" && (
+                  <p className="relative mt-3 rounded-xl bg-secondary/10 px-3 py-2 text-center text-xs leading-relaxed text-secondary ring-1 ring-secondary/25 sm:mt-4 sm:text-sm">
+                    Your registration confirmation and Entry Pass will also be sent to your WhatsApp
+                    number.
+                  </p>
+                )}
+
                 <DownloadActions
                   member={member}
                   registrations={registrations}

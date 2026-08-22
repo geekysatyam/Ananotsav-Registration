@@ -263,6 +263,77 @@ export const api = {
       body: JSON.stringify(body),
     });
   },
+  whatsappStatus(token) {
+    return request("/api/admin/whatsapp/status", { headers: authHeaders(token) });
+  },
+  whatsappPairStart(token) {
+    return request("/api/admin/whatsapp/pair", {
+      method: "POST",
+      headers: authHeaders(token),
+    });
+  },
+  whatsappPairQr(token) {
+    return request("/api/admin/whatsapp/pair/qr", { headers: authHeaders(token) });
+  },
+  whatsappPairingCode(token, phone) {
+    return request("/api/admin/whatsapp/pairing-code", {
+      method: "POST",
+      headers: authHeaders(token),
+      body: JSON.stringify({ phone }),
+    });
+  },
+  whatsappPairCancel(token) {
+    return request("/api/admin/whatsapp/pair/cancel", {
+      method: "POST",
+      headers: authHeaders(token),
+    });
+  },
+  whatsappChangeNumber(token) {
+    return request("/api/admin/whatsapp/change-number", {
+      method: "POST",
+      headers: authHeaders(token),
+    });
+  },
+  whatsappReconnect(token) {
+    return request("/api/admin/whatsapp/reconnect", {
+      method: "POST",
+      headers: authHeaders(token),
+    });
+  },
+  whatsappDisconnect(token) {
+    return request("/api/admin/whatsapp/disconnect", {
+      method: "POST",
+      headers: authHeaders(token),
+    });
+  },
+  whatsappAckAlert(token) {
+    return request("/api/admin/whatsapp/ack-alert", {
+      method: "POST",
+      headers: authHeaders(token),
+    });
+  },
+  whatsappListMessages(token, params = {}) {
+    const qs = new URLSearchParams();
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== "") qs.set(k, String(v));
+    });
+    const query = qs.toString();
+    return request(`/api/admin/whatsapp/messages${query ? `?${query}` : ""}`, {
+      headers: authHeaders(token),
+    });
+  },
+  whatsappRetryMessage(token, id) {
+    return request(`/api/admin/whatsapp/messages/${id}/retry`, {
+      method: "POST",
+      headers: authHeaders(token),
+    });
+  },
+  whatsappRetryRegistration(token, registrationId) {
+    return request(`/api/admin/whatsapp/registrations/${registrationId}/retry`, {
+      method: "POST",
+      headers: authHeaders(token),
+    });
+  },
   listOptIn(token, kind, params = {}) {
     const qs = new URLSearchParams();
     if (params.search) qs.set("search", params.search);

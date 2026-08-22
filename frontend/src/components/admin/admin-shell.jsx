@@ -16,6 +16,7 @@ import {
   Gift,
   // Trophy,
   Shield,
+  MessageCircle,
 } from "lucide-react";
 import {
   api,
@@ -30,6 +31,7 @@ import { PatternBackdrop } from "@/components/motifs";
 
 const NAV = [
   { to: "/admin/admins", page: "admins", label: "Team access", icon: Shield },
+  { to: "/admin/whatsapp", page: "whatsapp", label: "WhatsApp", icon: MessageCircle, superOnly: true },
   { to: "/admin/scanner", page: "scanner", label: "Scanner", icon: ScanLine },
   { to: "/admin/register", page: "register", label: "Desk Register", icon: UserPlus },
   { to: "/admin/registrations", page: "registrations", label: "Registrations", icon: ClipboardList },
@@ -37,12 +39,11 @@ const NAV = [
   { to: "/admin/abhishek", page: "abhishek", label: "Abhishek", icon: Sparkles },
   { to: "/admin/fancy-dress", page: "fancy-dress", label: "Fancy Dress", icon: Baby },
   { to: "/admin/laddu-gopal", page: "laddu-gopal", label: "Laddu Gopal", icon: Gift },
-  // REFERRAL DISABLED
-  // { to: "/admin/leaderboard", page: "leaderboard", label: "Leaderboard", icon: Trophy },
 ];
 
 const PAGE_BY_PATH = {
   "/admin/admins": "admins",
+  "/admin/whatsapp": "whatsapp",
   "/admin/scanner": "scanner",
   "/admin/register": "register",
   "/admin/registrations": "registrations",
@@ -50,8 +51,6 @@ const PAGE_BY_PATH = {
   "/admin/abhishek": "abhishek",
   "/admin/fancy-dress": "fancy-dress",
   "/admin/laddu-gopal": "laddu-gopal",
-  // REFERRAL DISABLED
-  // "/admin/leaderboard": "leaderboard",
 };
 
 function firstAllowedPath(admin) {
@@ -75,7 +74,11 @@ export function AdminShell() {
   const admin = session?.admin ?? null;
 
   const navItems = useMemo(
-    () => NAV.filter((n) => adminHasPage(admin, n.page)),
+    () =>
+      NAV.filter((n) => {
+        if (n.superOnly) return admin?.role === "super_admin";
+        return adminHasPage(admin, n.page);
+      }),
     [admin],
   );
 
@@ -115,7 +118,11 @@ export function AdminShell() {
       navigate({ to: firstAllowedPath(admin) });
       return;
     }
-    if (page && !adminHasPage(admin, page)) {
+    if (page === "whatsapp" && admin.role !== "super_admin") {
+      navigate({ to: firstAllowedPath(admin) });
+      return;
+    }
+    if (page && page !== "whatsapp" && !adminHasPage(admin, page)) {
       navigate({ to: firstAllowedPath(admin) });
     }
   }, [admin, bootstrapping, pathname, navigate]);
