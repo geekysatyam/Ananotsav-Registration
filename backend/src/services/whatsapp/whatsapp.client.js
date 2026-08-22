@@ -21,7 +21,12 @@ let intentionalStop = false;
 let pairingQr = null;
 let heartbeatTimer = null;
 let pairingMode = false;
+/** True once Baileys has written registered creds (QR/pair accepted). */
+let sessionRegistered = false;
 let onLoggedOutHook = null;
+
+const POST_PAIR_RESTART_MS = 1_500;
+const NORMAL_RECONNECT_MS = 5_000;
 
 export function setLoggedOutHook(fn) {
   onLoggedOutHook = fn;
@@ -50,11 +55,40 @@ function startHeartbeat() {
   }, 60_000);
 }
 
+function extractStatusCode(error) {
+  if (!error) return null;
+  if (typeof error.output?.statusCode === 'number') return error.output.statusCode;
+  if (error instanceof Boom && typeof error.output?.statusCode === 'number') {
+    return error.output.statusCode;
+  }
+  if (typeof error.statusCode === 'number') return error.statusCode;
+  if (typeof error.data === 'number') return error.data;
+  return null;
+}
+
 function mapDisconnect(error) {
-  if (!error) return { statusCode: null, shouldReconnect: true, loggedOut: false };
-  const statusCode = error instanceof Boom ? error.output?.statusCode : error?.output?.statusCode;
+  if (!error) {
+    return { statusCode: null, shouldReconnect: true, loggedOut: false, restartRequired: false };
+  }
+  const statusCode = extractStatusCode(error);
   const loggedOut = statusCode === DisconnectReason.loggedOut;
-  return { statusCode, shouldReconnect: !loggedOut && !intentionalStop && !pairingMode, loggedOut };
+  // 515: after QR/pairing success Baileys must restart with saved credentials
+  const restartRequired =
+    statusCode === DisconnectReason.restartRequired || statusCode === 515;
+  // Never let pairingMode block a 515 / post-pair restart
+  const shouldReconnect =
+    !intentionalStop && !loggedOut && (restartRequired || !pairingMode);
+  return { statusCode, shouldReconnect, loggedOut, restartRequired };
+}
+
+function scheduleRestart(opts, { reason, delayMs }) {
+  if (reconnectTimer) clearTimeout(reconnectTimer);
+  reconnectTimer = setTimeout(() => {
+    startWhatsAppClient({ ...opts, pairingMode: false, printQr: false }).catch((err) => {
+      logger.error({ err: err?.message, reason }, 'WhatsApp restart failed');
+      patchWhatsAppConfig({ status: 'error', disconnectReason: err?.message }).catch(() => undefined);
+    });
+  }, delayMs);
 }
 
 /**
@@ -66,14 +100,17 @@ export async function startWhatsAppClient(opts = {}) {
   const sessionDir = ensureSessionDir();
   const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
   const { version } = await fetchLatestBaileysVersion().catch(() => ({ version: undefined }));
+  sessionRegistered = Boolean(state?.creds?.registered || state?.creds?.me);
 
   if (sock) {
     try {
       sock.ev.removeAllListeners('connection.update');
       sock.ev.removeAllListeners('creds.update');
+      sock.end?.(undefined);
     } catch {
       /* ignore */
     }
+    sock = null;
   }
 
   connectionState = 'connecting';
@@ -89,7 +126,12 @@ export async function startWhatsAppClient(opts = {}) {
     markOnlineOnConnect: false,
   });
 
-  sock.ev.on('creds.update', saveCreds);
+  sock.ev.on('creds.update', async () => {
+    await saveCreds();
+    if (state?.creds?.registered || state?.creds?.me) {
+      sessionRegistered = true;
+    }
+  });
 
   sock.ev.on('connection.update', (update) => {
     const { connection, lastDisconnect, qr } = update;
@@ -107,6 +149,7 @@ export async function startWhatsAppClient(opts = {}) {
     if (connection === 'open') {
       connectionState = 'open';
       authenticated = true;
+      sessionRegistered = true;
       pairingQr = null;
       pairingMode = false;
       lastDisconnectReason = null;
@@ -137,11 +180,16 @@ export async function startWhatsAppClient(opts = {}) {
     if (connection === 'close') {
       connectionState = 'close';
       stopHeartbeat();
-      const { statusCode, shouldReconnect, loggedOut } = mapDisconnect(lastDisconnect?.error);
+      const { statusCode, shouldReconnect, loggedOut, restartRequired } = mapDisconnect(
+        lastDisconnect?.error,
+      );
       lastDisconnectReason = statusCode ?? 'unknown';
       authenticated = false;
       const now = new Date();
-      logger.warn({ statusCode }, 'WhatsApp disconnected');
+      logger.warn(
+        { statusCode, restartRequired, pairingMode, sessionRegistered },
+        'WhatsApp disconnected',
+      );
 
       void (async () => {
         let previousStatus = 'disconnected';
@@ -153,6 +201,7 @@ export async function startWhatsAppClient(opts = {}) {
         }
 
         if (loggedOut) {
+          sessionRegistered = false;
           const phone = (await getOrCreateWhatsAppConfig().catch(() => null))?.phoneNumber;
           await patchWhatsAppConfig({
             status: 'logged_out',
@@ -172,6 +221,36 @@ export async function startWhatsAppClient(opts = {}) {
           return;
         }
 
+        // creds.update can land just after close; wait briefly so sessionRegistered is accurate
+        if (pairingMode && !restartRequired && !sessionRegistered) {
+          await new Promise((r) => setTimeout(r, 400));
+          if (state?.creds?.registered || state?.creds?.me) {
+            sessionRegistered = true;
+          }
+        }
+
+        // After successful QR/pair Baileys closes (515) — always restart with saved session.
+        // pairingMode must NOT block this path.
+        const needsPostPairRestart =
+          restartRequired || (pairingMode && sessionRegistered);
+
+        if (needsPostPairRestart) {
+          pairingMode = false;
+          pairingQr = null;
+          await patchWhatsAppConfig({
+            status: 'connecting',
+            lastDisconnectedAt: now,
+            disconnectReason: restartRequired ? '515_restart_required' : 'post_pair_restart',
+          }).catch(() => undefined);
+          logger.info(
+            { statusCode, delayMs: POST_PAIR_RESTART_MS, sessionRegistered },
+            'Pairing saved — restarting WhatsApp connection with saved session',
+          );
+          scheduleRestart(opts, { reason: 'post_pair', delayMs: POST_PAIR_RESTART_MS });
+          return;
+        }
+
+        // Still waiting for QR scan — do not reconnect (would spam new QRs)
         if (pairingMode) {
           await patchWhatsAppConfig({
             status: 'pairing',
@@ -188,15 +267,7 @@ export async function startWhatsAppClient(opts = {}) {
         }).catch(() => undefined);
 
         if (shouldReconnect) {
-          if (reconnectTimer) clearTimeout(reconnectTimer);
-          reconnectTimer = setTimeout(() => {
-            startWhatsAppClient(opts).catch((err) => {
-              logger.error({ err: err?.message }, 'WhatsApp reconnect failed');
-              patchWhatsAppConfig({ status: 'error', disconnectReason: err?.message }).catch(
-                () => undefined,
-              );
-            });
-          }, 5_000);
+          scheduleRestart(opts, { reason: 'reconnect', delayMs: NORMAL_RECONNECT_MS });
         }
       })();
     }
@@ -217,8 +288,11 @@ export async function stopWhatsAppClient() {
   sock = null;
   connectionState = 'close';
   authenticated = false;
+  pairingQr = null;
   if (!current) return;
   try {
+    current.ev.removeAllListeners('connection.update');
+    current.ev.removeAllListeners('creds.update');
     current.end?.(undefined);
   } catch {
     /* ignore */
@@ -237,6 +311,7 @@ export function getClientStatus() {
     lastDisconnectReason,
     hasPairingQr: Boolean(pairingQr),
     pairingMode,
+    sessionRegistered,
   };
 }
 
